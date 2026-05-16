@@ -15,4 +15,6 @@ interface StorageInterface
     public function del(string $key): bool;
 
     public function has(string $key): bool;
+
+    public function incrementAttempts(string $key): int;
 }

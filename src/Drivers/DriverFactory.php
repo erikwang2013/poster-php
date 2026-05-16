@@ -13,9 +13,14 @@ class DriverFactory
         $driver ??= 'auto';
 
         if ($driver === 'auto') {
-            return extension_loaded('imagick') ? new ImagickDriver() : new GdDriver();
+            return self::isImagickAvailable() ? new ImagickDriver() : new GdDriver();
         }
 
         return $driver === 'imagick' ? new ImagickDriver() : new GdDriver();
+    }
+
+    public static function isImagickAvailable(): bool
+    {
+        return extension_loaded('imagick') && class_exists('Imagick');
     }
 }

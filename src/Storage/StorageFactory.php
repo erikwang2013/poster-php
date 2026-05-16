@@ -6,27 +6,30 @@
 
 namespace Erikwang2013\Poster\Storage;
 
+use Erikwang2013\Poster\PosterConfig;
+use InvalidArgumentException;
+
 class StorageFactory
 {
     public static function create(?string $driver = null): StorageInterface
     {
-        $driver ??= 'auto';
+        $driver = $driver ?? PosterConfig::get('captcha.storage', 'auto');
 
         if ($driver === 'auto') {
-            if (extension_loaded('redis')) {
+            if (extension_loaded('redis') && class_exists('Redis')) {
                 return new RedisStorage();
             }
-            if (session_status() === PHP_SESSION_ACTIVE || headers_sent() === false) {
+            if (PHP_SAPI !== 'cli' && session_status() === PHP_SESSION_ACTIVE) {
                 return new SessionStorage();
             }
             return new FileStorage();
         }
 
         return match ($driver) {
-            'redis' => new RedisStorage(),
+            'redis'   => new RedisStorage(),
             'session' => new SessionStorage(),
-            'file' => new FileStorage(),
-            default => throw new \InvalidArgumentException("Unsupported storage driver: {$driver}"),
+            'file'    => new FileStorage(),
+            default   => throw new InvalidArgumentException("Unsupported storage driver: {$driver}"),
         };
     }
 }

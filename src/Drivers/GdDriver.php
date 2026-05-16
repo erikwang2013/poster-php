@@ -261,8 +261,10 @@ class GdDriver implements ImageDriverInterface
     public function clone(): static
     {
         $driver = new self();
-        $driver->create($this->width, $this->height);
-        imagecopy($driver->resource, $this->resource, 0, 0, 0, 0, $this->width, $this->height);
+        if ($this->resource !== null && $this->width > 0 && $this->height > 0) {
+            $driver->create($this->width, $this->height);
+            imagecopy($driver->resource, $this->resource, 0, 0, 0, 0, $this->width, $this->height);
+        }
         return $driver;
     }
 

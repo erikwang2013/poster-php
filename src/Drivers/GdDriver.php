@@ -278,7 +278,7 @@ class GdDriver implements ImageDriverInterface
 
     public function destroy(): void
     {
-        if ($this->resource !== null && is_resource($this->resource)) {
+        if ($this->resource !== null) {
             imagedestroy($this->resource);
             $this->resource = null;
         }

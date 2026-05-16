@@ -79,7 +79,7 @@ class ChartElement extends AbstractElement
         $chartH  = $h - $padding * 2;
         $chartW  = $w - $padding * 2;
         $axisY   = $y + $h - $padding;
-        $stepX   = $count > 1 ? intval($chartW / ($count - 1)) : 0;
+        $stepX   = intval($chartW / ($count - 1));
 
         // Axes
         $canvas->line($x + $padding, $y + $padding, $x + $padding, $axisY, ['color' => '#CCCCCC']);
@@ -127,21 +127,38 @@ class ChartElement extends AbstractElement
         $radius = intval(min($w, $h) / 2) - 10;
         $start  = -90;
 
-        $i = 0;
-        foreach ($data as $item) {
+        // Track assigned degrees; last slice gets remainder
+        $assigned = 0;
+        $count = count($data);
+
+        foreach ($data as $idx => $item) {
             $val   = is_array($item) ? ($item['value'] ?? 0) : $item;
             $label = is_array($item) ? ($item['label'] ?? '') : '';
-            $slice = intval(($val / $total) * 360);
-            if ($slice <= 0) { $i++; continue; }
-            $color = $colors[$i % count($colors)];
 
-            // Draw pie slice as filled arc via multiple small triangles (approximation)
-            $steps = max($slice, 1);
-            for ($deg = 0; $deg < $slice; $deg++) {
-                $ang = deg2rad($start + $deg);
-                $canvas->line($cx, $cy, $cx + intval(cos($ang) * $radius), $cy + intval(sin($ang) * $radius), [
-                    'color' => $color,
-                ]);
+            if ($idx === $count - 1) {
+                $slice = 360 - $assigned;
+            } else {
+                $slice = intval(round(($val / $total) * 360));
+            }
+            $assigned += $slice;
+            if ($slice <= 0) { $i = ($i ?? 0) + 1; continue; }
+            $i = $idx;
+            $color = $colors[$i % count($colors)];
+            $rgb = $this->hexToRgb($color);
+
+            // Draw filled pie slice using native GD filled arc
+            $res = $canvas->getResource();
+            if ($res instanceof \GdImage) {
+                $alloc = imagecolorallocate($res, $rgb[0], $rgb[1], $rgb[2]);
+                imagefilledarc($res, $cx, $cy, $radius * 2, $radius * 2, $start, $start + $slice, $alloc, IMG_ARC_PIE);
+            } else {
+                // Imagick fallback: draw solid wedge via polygon fan
+                $diameter = $radius * 2;
+                $steps = max($slice * 2, 4);
+                for ($d = 0; $d < $steps; $d++) {
+                    $ang = deg2rad($start + ($d / $steps) * $slice);
+                    $canvas->line($cx, $cy, $cx + intval(cos($ang) * $radius), $cy + intval(sin($ang) * $radius), ['color' => $color]);
+                }
             }
 
             // Label at middle angle
@@ -153,7 +170,13 @@ class ChartElement extends AbstractElement
             }
 
             $start += $slice;
-            $i++;
         }
+    }
+
+    private function hexToRgb(string $hex): array
+    {
+        $hex = ltrim($hex, '#');
+        if (strlen($hex) === 3) $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
+        return [hexdec(substr($hex, 0, 2)), hexdec(substr($hex, 2, 2)), hexdec(substr($hex, 4, 2))];
     }
 }

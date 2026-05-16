@@ -95,7 +95,8 @@ class CalendarElement extends AbstractElement
                     'color' => $cellBorder, 'filled' => false, 'strokeWidth' => 1,
                 ]);
 
-                $dayColor = ($col === 0 || ($startDay === 0 && $col === 6)) ? '#E74C3C' : $textColor;
+                $weekendCols = ($startDay === 0) ? [0, 6] : [5, 6];
+                $dayColor = in_array($col, $weekendCols, true) ? '#E74C3C' : $textColor;
                 if ($dateStr === $today) $dayColor = '#FFFFFF';
 
                 $canvas->text((string)$day, $cx + 8, $rowY + intval($cellSize * 0.3), [

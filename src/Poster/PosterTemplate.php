@@ -8,7 +8,9 @@ namespace Erikwang2013\Poster\Poster;
 
 use Erikwang2013\Poster\Poster\Elements\{
     TextElement, ImageElement, QrcodeElement, AvatarElement,
-    ShapeElement, LineElement, WatermarkElement, TableElement
+    ShapeElement, LineElement, WatermarkElement, TableElement,
+    ChartElement, CalendarElement, ArtisticTextElement,
+    EmojiElement, IconElement, EmoticonElement
 };
 
 class PosterTemplate
@@ -50,8 +52,14 @@ class PosterTemplate
                 'shape'     => new ShapeElement($def),
                 'line'      => new LineElement($def),
                 'watermark' => new WatermarkElement($def),
-                'table'     => new TableElement($def),
-                default     => null,
+                'table'         => new TableElement($def),
+                'chart'         => new ChartElement($def),
+                'calendar'      => new CalendarElement($def),
+                'artistictext'  => new ArtisticTextElement($def),
+                'emoji'         => new EmojiElement($def),
+                'icon'          => new IconElement($def),
+                'emoticon'      => new EmoticonElement($def),
+                default         => null,
             };
             if ($element !== null) {
                 if (method_exists($element, 'resolve')) $element->resolve($variables);

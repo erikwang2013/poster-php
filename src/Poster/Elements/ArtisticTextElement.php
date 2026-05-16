@@ -6,6 +6,7 @@
 
 namespace Erikwang2013\Poster\Poster\Elements;
 
+use Erikwang2013\Poster\Drivers\GdDriver;
 use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 
 class ArtisticTextElement extends AbstractElement
@@ -59,16 +60,56 @@ class ArtisticTextElement extends AbstractElement
                 break;
 
             case 'gradient':
-                // Vertical gradient (top color to bottom color)
-                $color2  = $this->options['color2'] ?? '#FF6B6B';
+                // True vertical gradient via per-pixel coloring on a temp mask
+                $color2 = $this->options['color2'] ?? '#FF6B6B';
                 $r1 = hexdec(substr($color, 1, 2)); $g1 = hexdec(substr($color, 3, 2)); $b1 = hexdec(substr($color, 5, 2));
                 $r2 = hexdec(substr($color2, 1, 2)); $g2 = hexdec(substr($color2, 3, 2)); $b2 = hexdec(substr($color2, 5, 2));
-                $steps = 8;
-                for ($i = 0; $i < $steps; $i++) {
-                    $ratio = $i / ($steps - 1);
-                    $c = sprintf('#%02X%02X%02X', intval($r1 + ($r2-$r1)*$ratio), intval($g1 + ($g2-$g1)*$ratio), intval($b1 + ($b2-$b1)*$ratio));
-                    $canvas->text($text, $x, $y + $i, $baseOpts + ['size' => $size, 'color' => $c]);
+
+                if ($font === null || !is_file($font)) {
+                    $canvas->text($text, $x, $y, $baseOpts + ['size' => $size, 'color' => $color]);
+                    break;
                 }
+
+                $bbox = imagettfbbox($size, 0, $font, $text);
+                if ($bbox === false) {
+                    $canvas->text($text, $x, $y, $baseOpts + ['size' => $size, 'color' => $color]);
+                    break;
+                }
+
+                $tw = $bbox[2] - $bbox[0] + 8;
+                $th = abs($bbox[7] - $bbox[1]) + 8;
+                $ox = -$bbox[0] + 4;
+                $oy = abs($bbox[7]) + 4;
+
+                // Render white text mask on transparent bg
+                $mask = imagecreatetruecolor(intval($tw), intval($th));
+                imagesavealpha($mask, true);
+                $tbg = imagecolorallocatealpha($mask, 0, 0, 0, 127);
+                imagefill($mask, 0, 0, $tbg);
+                $white = imagecolorallocate($mask, 255, 255, 255);
+                imagettftext($mask, $size, 0, intval($ox), intval($oy), $white, $font, $text);
+
+                // Color each pixel by Y-position gradient
+                for ($py = 0; $py < $th; $py++) {
+                    $ratio = $py / max(1, intval($th) - 1);
+                    $cr = intval($r1 + ($r2 - $r1) * $ratio);
+                    $cg = intval($g1 + ($g2 - $g1) * $ratio);
+                    $cb = intval($b1 + ($b2 - $b1) * $ratio);
+                    for ($px = 0; $px < $tw; $px++) {
+                        $pix = imagecolorat($mask, $px, $py);
+                        $a = ($pix >> 24) & 0x7F;
+                        if ($a < 64) {
+                            $col = imagecolorallocatealpha($mask, $cr, $cg, $cb, $a);
+                            imagesetpixel($mask, $px, $py, $col);
+                        }
+                    }
+                }
+
+                // Composite gradient text onto canvas
+                $temp = new GdDriver();
+                $temp->setGdResource($mask);
+                $canvas->image($temp, $x + $bbox[0] - 4, $y + $bbox[7] - 4);
+                $temp->destroy();
                 break;
 
             case 'neon':

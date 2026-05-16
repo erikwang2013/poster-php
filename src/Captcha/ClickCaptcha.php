@@ -9,11 +9,18 @@ namespace Erikwang2013\Poster\Captcha;
 class ClickCaptcha extends AbstractCaptcha
 {
     private int $targetCount = 3;
+    private string $targetType = 'text';
     private array $wordPool = ['树', '鸟', '花', '草', '云', '山', '河', '海', '日', '月', '星', '风', '雨', '雪', '火'];
 
     public function setTargetCount(int $count): static
     {
         $this->targetCount = min(5, max(1, $count));
+        return $this;
+    }
+
+    public function setTargetType(string $type): static
+    {
+        $this->targetType = $type;
         return $this;
     }
 

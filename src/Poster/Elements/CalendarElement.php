@@ -12,8 +12,8 @@ class CalendarElement extends AbstractElement
 {
     public function render(ImageDriverInterface $canvas): void
     {
-        $year     = intval($this->options['year'] ?? \date('Y'));
-        $month    = intval($this->options['month'] ?? \date('m'));
+        $year     = intval($this->options['year'] ?? date('Y'));
+        $month    = intval($this->options['month'] ?? date('m'));
         $x        = intval($this->options['x'] ?? 0);
         $y        = intval($this->options['y'] ?? 0);
         $cellSize = intval($this->options['cellSize'] ?? 60);
@@ -35,11 +35,11 @@ class CalendarElement extends AbstractElement
             : ['一', '二', '三', '四', '五', '六', '日'];
         $dayNamesEn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-        $daysInMonth = intval(\date('t', \mktime(0, 0, 0, $month, 1, $year)));
-        $firstDow    = intval(\date('w', \mktime(0, 0, 0, $month, 1, $year)));
+        $daysInMonth = intval(date('t', mktime(0, 0, 0, $month, 1, $year)));
+        $firstDow    = intval(date('w', mktime(0, 0, 0, $month, 1, $year)));
         $adjustedDow = $startDay === 0 ? $firstDow : (($firstDow + 6) % 7);
 
-        $today = \date('Y-m-d');
+        $today = date('Y-m-d');
         $width = $cellSize * 7;
 
         // Month/year title

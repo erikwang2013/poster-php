@@ -15,7 +15,7 @@ class FileStorage implements StorageInterface
 
     public function __construct(?string $path = null)
     {
-        $this->path = $path ?? PosterConfig::get('captcha.file.path', sys_get_temp_dir() . '/poster-captcha');
+        $this->path = $path ?? PosterConfig::get('captcha.file.path') ?? sys_get_temp_dir() . '/poster-captcha';
         if (!is_dir($this->path)) {
             if (!mkdir($this->path, 0755, true) && !is_dir($this->path)) {
                 throw new RuntimeException("Cannot create directory: {$this->path}");

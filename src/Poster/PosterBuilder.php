@@ -11,7 +11,9 @@ use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 use Erikwang2013\Poster\PosterConfig;
 use Erikwang2013\Poster\Poster\Elements\{
     TextElement, ImageElement, QrcodeElement, AvatarElement,
-    ShapeElement, LineElement, WatermarkElement, TableElement
+    ShapeElement, LineElement, WatermarkElement, TableElement,
+    ChartElement, CalendarElement, ArtisticTextElement,
+    EmojiElement, IconElement, EmoticonElement
 };
 
 class PosterBuilder
@@ -59,6 +61,12 @@ class PosterBuilder
     public function addLine(array $options = []): static { $this->elements[] = new LineElement($options); return $this; }
     public function addWatermark(string $text, array $options = []): static { $this->elements[] = new WatermarkElement(array_merge($options, ['text'=>$text])); return $this; }
     public function addTable(array $options = []): static { $this->elements[] = new TableElement($options); return $this; }
+    public function addChart(string $type, array $data, array $options = []): static { $this->elements[] = new ChartElement(array_merge($options, ['type'=>$type, 'data'=>$data])); return $this; }
+    public function addCalendar(array $options = []): static { $this->elements[] = new CalendarElement($options); return $this; }
+    public function addArtisticText(string $text, string $style, array $options = []): static { $this->elements[] = new ArtisticTextElement(array_merge($options, ['text'=>$text, 'style'=>$style])); return $this; }
+    public function addEmoji(string $emoji, array $options = []): static { $this->elements[] = new EmojiElement(array_merge($options, ['emoji'=>$emoji])); return $this; }
+    public function addIcon(string $icon, array $options = []): static { $this->elements[] = new IconElement(array_merge($options, ['icon'=>$icon])); return $this; }
+    public function addEmoticon(string $expression, array $options = []): static { $this->elements[] = new EmoticonElement(array_merge($options, ['expression'=>$expression])); return $this; }
     public function useTemplate(PosterTemplate $template): static { $this->template = $template; return $this; }
     public function with(array $variables): static { $this->templateVars = $variables; return $this; }
 

@@ -53,6 +53,95 @@ class PosterTest extends TestCase
         $builder->destroy();
     }
 
+    public function testChartBarElement(): void
+    {
+        $builder = new PosterBuilder();
+        $builder->width(400)->height(300)->background('#FFFFFF');
+        $builder->addChart('bar', [
+            ['label' => 'A', 'value' => 30],
+            ['label' => 'B', 'value' => 60],
+            ['label' => 'C', 'value' => 40],
+        ], ['x' => 10, 'y' => 10, 'width' => 380, 'height' => 280]);
+        $output = $builder->output('png');
+        $this->assertStringStartsWith('data:image/png;base64,', $output);
+        $builder->destroy();
+    }
+
+    public function testChartLineElement(): void
+    {
+        $builder = new PosterBuilder();
+        $builder->width(400)->height(300)->background('#FFFFFF');
+        $builder->addChart('line', [
+            ['label' => 'Jan', 'value' => 10],
+            ['label' => 'Feb', 'value' => 25],
+            ['label' => 'Mar', 'value' => 15],
+        ], ['x' => 10, 'y' => 10, 'width' => 380, 'height' => 280]);
+        $output = $builder->output('png');
+        $this->assertStringStartsWith('data:image/png;base64,', $output);
+        $builder->destroy();
+    }
+
+    public function testCalendarElement(): void
+    {
+        $builder = new PosterBuilder();
+        $builder->width(500)->height(500)->background('#FFFFFF');
+        $builder->addCalendar([
+            'x' => 10, 'y' => 10,
+            'year' => 2026, 'month' => 5,
+            'highlights' => ['2026-05-16' => '今天'],
+        ]);
+        $output = $builder->output('png');
+        $this->assertStringStartsWith('data:image/png;base64,', $output);
+        $builder->destroy();
+    }
+
+    public function testArtisticTextElement(): void
+    {
+        $builder = new PosterBuilder();
+        $builder->width(400)->height(150)->background('#FFFFFF');
+        $builder->addArtisticText('STROKE', 'stroke', [
+            'x' => 50, 'y' => 80, 'size' => 48,
+            'color' => '#FF6B6B', 'strokeColor' => '#000000', 'strokeWidth' => 2,
+        ]);
+        $builder->addArtisticText('NEON', 'neon', [
+            'x' => 250, 'y' => 80, 'size' => 36,
+            'color' => '#FF6B6B',
+        ]);
+        $output = $builder->output('png');
+        $this->assertStringStartsWith('data:image/png;base64,', $output);
+        $builder->destroy();
+    }
+
+    public function testEmojiElement(): void
+    {
+        $builder = new PosterBuilder();
+        $builder->width(150)->height(100)->background('#FFFFFF');
+        $builder->addEmoji('😀', ['x' => 20, 'y' => 20, 'size' => 48]);
+        $output = $builder->output('png');
+        $this->assertStringStartsWith('data:image/png;base64,', $output);
+        $builder->destroy();
+    }
+
+    public function testIconElement(): void
+    {
+        $builder = new PosterBuilder();
+        $builder->width(150)->height(100)->background('#FFFFFF');
+        $builder->addIcon('heart', ['x' => 20, 'y' => 40, 'size' => 32, 'color' => '#E74C3C']);
+        $output = $builder->output('png');
+        $this->assertStringStartsWith('data:image/png;base64,', $output);
+        $builder->destroy();
+    }
+
+    public function testEmoticonElement(): void
+    {
+        $builder = new PosterBuilder();
+        $builder->width(400)->height(100)->background('#FFFFFF');
+        $builder->addEmoticon('happy', ['x' => 20, 'y' => 40, 'size' => 24]);
+        $output = $builder->output('png');
+        $this->assertStringStartsWith('data:image/png;base64,', $output);
+        $builder->destroy();
+    }
+
     public function testImageElementPlacement(): void
     {
         $imgPath = sys_get_temp_dir() . '/poster-test-img-' . uniqid() . '.png';

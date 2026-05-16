@@ -41,7 +41,8 @@ class ClickCaptcha extends AbstractCaptcha
                 'color'  => '#FF000033',
                 'filled' => true,
             ]);
-            $bg->text($target['order'] . '.' . $target['text'], $target['x'], $target['y'] + 35, [
+            $textY = min($target['y'] + 35, $this->height - 5);
+            $bg->text($target['order'] . '.' . $target['text'], $target['x'], $textY, [
                 'size'  => 14,
                 'color' => '#000000',
                 'font'  => is_file($fontFile) ? $fontFile : null,

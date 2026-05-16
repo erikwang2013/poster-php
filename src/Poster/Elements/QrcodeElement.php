@@ -7,6 +7,7 @@
 namespace Erikwang2013\Poster\Poster\Elements;
 
 use Erikwang2013\Poster\Drivers\DriverFactory;
+use Erikwang2013\Poster\Drivers\GdDriver;
 use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 use Erikwang2013\Poster\Qrcode\QrcodeGenerator;
 
@@ -26,19 +27,8 @@ class QrcodeElement extends AbstractElement
         $generator->setText($content)->setSize($size)->setErrorLevel($level);
         $qrGd = $generator->render();
 
-        $qrDriver = DriverFactory::create('gd');
-        $qrDriver->create($size, $size);
-        $qrDriver->destroy();
-        $ref = new \ReflectionClass($qrDriver);
-        $resProp = $ref->getProperty('resource');
-        $resProp->setAccessible(true);
-        $resProp->setValue($qrDriver, $qrGd);
-        $wProp = $ref->getProperty('width');
-        $wProp->setAccessible(true);
-        $wProp->setValue($qrDriver, $size);
-        $hProp = $ref->getProperty('height');
-        $hProp->setAccessible(true);
-        $hProp->setValue($qrDriver, $size);
+        $qrDriver = new GdDriver();
+        $qrDriver->setGdResource($qrGd);
 
         if (!empty($this->options['logo']) && is_file($this->options['logo'])) {
             $logo = DriverFactory::create()->load($this->options['logo']);

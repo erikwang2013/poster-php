@@ -36,7 +36,8 @@ class CaptchaManager
         }
 
         $maxAttempts = PosterConfig::get('captcha.max_attempts', 3);
-        if (($stored['attempts'] ?? 0) >= $maxAttempts) {
+        $currentAttempts = $stored['attempts'] ?? 0;
+        if ($currentAttempts >= $maxAttempts) {
             $this->storage->del($key);
             return false;
         }
@@ -45,7 +46,12 @@ class CaptchaManager
         $userData = $data['data'] ?? null;
         $result = $this->check($type, $stored, $userData);
 
-        $this->storage->del($key);
+        if ($result) {
+            $this->storage->del($key);
+        } else {
+            $this->storage->incrementAttempts($key);
+        }
+
         return $result;
     }
 

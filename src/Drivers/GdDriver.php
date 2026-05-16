@@ -258,6 +258,14 @@ class GdDriver implements ImageDriverInterface
         return $this->resource;
     }
 
+    public function setGdResource(\GdImage $gd): void
+    {
+        $this->destroy();
+        $this->resource = $gd;
+        $this->width  = imagesx($gd);
+        $this->height = imagesy($gd);
+    }
+
     public function clone(): static
     {
         $driver = new self();

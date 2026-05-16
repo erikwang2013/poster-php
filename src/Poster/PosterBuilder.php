@@ -22,6 +22,10 @@ class PosterBuilder
     private array $elements = [];
     private ?PosterTemplate $template = null;
     private array $templateVars = [];
+    private ?string $pendingBgColor = null;
+    private ?string $pendingBgImage = null;
+    private ?array $pendingGradient = null;
+    private bool $canvasReady = false;
 
     public function __construct(?ImageDriverInterface $driver = null)
     {
@@ -33,30 +37,17 @@ class PosterBuilder
 
     public function background(string $colorOrPath): static
     {
-        $this->canvas->create($this->width, $this->height);
         if (preg_match('/^#?[0-9a-fA-F]{3,8}$/', $colorOrPath)) {
-            $this->canvas->rectangle(0, 0, $this->width, $this->height, ['color' => $colorOrPath, 'filled' => true]);
+            $this->pendingBgColor = $colorOrPath;
         } elseif (is_file($colorOrPath)) {
-            $bg = DriverFactory::create()->load($colorOrPath);
-            $bg->resize($this->width, $this->height);
-            $this->canvas->image($bg, 0, 0);
-            $bg->destroy();
+            $this->pendingBgImage = $colorOrPath;
         }
         return $this;
     }
 
     public function backgroundGradient(string $color1, string $color2, string $direction = 'vertical'): static
     {
-        $this->canvas->create($this->width, $this->height);
-        $r1 = hexdec(substr($color1, 1, 2)); $g1 = hexdec(substr($color1, 3, 2)); $b1 = hexdec(substr($color1, 5, 2));
-        $r2 = hexdec(substr($color2, 1, 2)); $g2 = hexdec(substr($color2, 3, 2)); $b2 = hexdec(substr($color2, 5, 2));
-        $steps = $direction === 'vertical' ? $this->height : $this->width;
-        for ($i = 0; $i < $steps; $i++) {
-            $ratio = $i / max($steps - 1, 1);
-            $color = sprintf('#%02X%02X%02X', intval($r1 + ($r2-$r1)*$ratio), intval($g1 + ($g2-$g1)*$ratio), intval($b1 + ($b2-$b1)*$ratio));
-            if ($direction === 'vertical') $this->canvas->line(0, $i, $this->width-1, $i, ['color'=>$color]);
-            else $this->canvas->line($i, 0, $i, $this->height-1, ['color'=>$color]);
-        }
+        $this->pendingGradient = [$color1, $color2, $direction];
         return $this;
     }
 
@@ -83,6 +74,35 @@ class PosterBuilder
         }
         if (!isset($this->width)) $this->width = PosterConfig::get('poster.default_width', 750);
         if (!isset($this->height)) $this->height = PosterConfig::get('poster.default_height', 1334);
+
+        // Deferred canvas creation with resolved dimensions
+        if (!$this->canvasReady) {
+            if ($this->pendingGradient !== null) {
+                $this->canvas->create($this->width, $this->height);
+                [$c1, $c2, $dir] = $this->pendingGradient;
+                $r1 = hexdec(substr($c1, 1, 2)); $g1 = hexdec(substr($c1, 3, 2)); $b1 = hexdec(substr($c1, 5, 2));
+                $r2 = hexdec(substr($c2, 1, 2)); $g2 = hexdec(substr($c2, 3, 2)); $b2 = hexdec(substr($c2, 5, 2));
+                $steps = $dir === 'vertical' ? $this->height : $this->width;
+                for ($i = 0; $i < $steps; $i++) {
+                    $ratio = $i / max($steps - 1, 1);
+                    $color = sprintf('#%02X%02X%02X', intval($r1 + ($r2-$r1)*$ratio), intval($g1 + ($g2-$g1)*$ratio), intval($b1 + ($b2-$b1)*$ratio));
+                    if ($dir === 'vertical') $this->canvas->line(0, $i, $this->width-1, $i, ['color'=>$color]);
+                    else $this->canvas->line($i, 0, $i, $this->height-1, ['color'=>$color]);
+                }
+            } elseif ($this->pendingBgImage !== null) {
+                $this->canvas->create($this->width, $this->height);
+                $bg = DriverFactory::create()->load($this->pendingBgImage);
+                $bg->resize($this->width, $this->height);
+                $this->canvas->image($bg, 0, 0);
+                $bg->destroy();
+            } else {
+                $this->canvas->create($this->width, $this->height);
+                $color = $this->pendingBgColor ?? '#FFFFFF';
+                $this->canvas->rectangle(0, 0, $this->width, $this->height, ['color' => $color, 'filled' => true]);
+            }
+            $this->canvasReady = true;
+        }
+
         foreach ($this->elements as $element) {
             if (method_exists($element, 'resolve')) $element->resolve($this->templateVars);
             $element->render($this->canvas);

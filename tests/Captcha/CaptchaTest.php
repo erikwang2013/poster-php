@@ -81,6 +81,30 @@ class CaptchaTest extends TestCase
         $this->assertFalse($verified);
     }
 
+    public function testClickCaptchaAllowsRetryOnFailure(): void
+    {
+        $result = $this->manager->create('click')->setDifficulty('easy')->generate();
+        $targets = $result['extra']['targets'];
+        $clickData = array_map(fn($t) => [$t['x'], $t['y']], $targets);
+
+        // First: wrong data, should fail but key persists for retry
+        $firstTry = $this->manager->verify($result['key'], ['type' => 'click', 'data' => [[0, 0]]]);
+        $this->assertFalse($firstTry);
+
+        // Second: correct data, should pass
+        $secondTry = $this->manager->verify($result['key'], ['type' => 'click', 'data' => $clickData]);
+        $this->assertTrue($secondTry);
+    }
+
+    public function testRotateCaptchaGenerateReturnsValidStructure(): void
+    {
+        $result = $this->manager->create('rotate')->generate();
+        $this->assertArrayHasKey('key', $result);
+        $this->assertArrayHasKey('image', $result);
+        $this->assertArrayHasKey('extra', $result);
+        $this->assertStringStartsWith('data:image/', $result['image']);
+    }
+
     public function testSliderCaptchaGenerateReturnsValidStructure(): void
     {
         $result = $this->manager->create('slider')->generate();

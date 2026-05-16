@@ -17,7 +17,11 @@ class StorageFactory
 
         if ($driver === 'auto') {
             if (extension_loaded('redis') && class_exists('Redis')) {
-                return new RedisStorage();
+                try {
+                    return new RedisStorage();
+                } catch (\Throwable $e) {
+                    // Redis unreachable, fall through to session/file
+                }
             }
             if (PHP_SAPI !== 'cli' && session_status() === PHP_SESSION_ACTIVE) {
                 return new SessionStorage();

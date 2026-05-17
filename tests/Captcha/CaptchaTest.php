@@ -105,6 +105,37 @@ class CaptchaTest extends TestCase
         $this->assertStringStartsWith('data:image/', $result['image']);
     }
 
+    public function testRandomCaptchaReturnsValidType(): void
+    {
+        $result = $this->manager->create('random')->generate();
+        $this->assertArrayHasKey('key', $result);
+        $this->assertArrayHasKey('type', $result);
+        $this->assertContains($result['type'], ['click', 'rotate', 'slider']);
+        $this->assertArrayHasKey('image', $result);
+        $this->assertArrayHasKey('extra', $result);
+        $this->assertStringStartsWith('data:image/', $result['image']);
+    }
+
+    public function testRandomCaptchaVerificationWorks(): void
+    {
+        $result = $this->manager->create('random')->generate();
+        $type = $result['type'];
+
+        if ($type === 'click') {
+            $targets = $result['extra']['targets'];
+            $data = array_map(fn($t) => [$t['x'], $t['y']], $targets);
+        } elseif ($type === 'slider') {
+            $data = $result['extra']['x'];
+        } else {
+            // rotate: hard to test since we don't know the stored angle
+            $this->assertNotNull($result['key']);
+            return;
+        }
+
+        $pass = $this->manager->verify($result['key'], ['type' => $type, 'data' => $data]);
+        $this->assertTrue($pass);
+    }
+
     public function testSliderCaptchaGenerateReturnsValidStructure(): void
     {
         $result = $this->manager->create('slider')->generate();

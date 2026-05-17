@@ -6,13 +6,14 @@ PHP image captcha & poster generation toolkit — framework-agnostic core with L
 
 ## Features
 
-### Captcha (3 types)
+### Captcha (3 types + random)
 
 | Type | Description |
 |------|-------------|
 | Click `click` | User clicks target characters on image in order |
 | Rotate `rotate` | User drags slider to rotate image back to correct orientation |
 | Slider `slider` | User drags puzzle piece into the gap |
+| Random `random` | Randomly picks one of the three captcha types |
 
 ### Poster Generation
 
@@ -95,6 +96,30 @@ $result = captcha_create('slider');
 // $result['extra'] = ['puzzle' => '...', 'puzzle_w' => 50, 'puzzle_h' => 50]
 
 $pass = captcha_verify($result['key'], 'slider', 173); // ±4px tolerance
+```
+
+#### Random Captcha
+
+Randomly picks one of click / rotate / slider to increase cracking difficulty.
+
+```php
+// Generate random captcha type
+$result = captcha_create('random');
+// $result['type'] = 'click' | 'rotate' | 'slider'
+
+// Frontend reads $result['type'] to render the matching component
+switch ($result['type']) {
+    case 'click':  /* render click targets */  break;
+    case 'rotate': /* render rotation slider */ break;
+    case 'slider': /* render puzzle piece */    break;
+}
+
+// Verify with the actual type from the result
+$pass = captcha_verify($result['key'], $result['type'], $userData);
+
+// Or via CaptchaManager
+$captcha = $manager->create('random')->generate();
+$pass = $manager->verify($captcha['key'], ['type' => $captcha['type'], 'data' => $userData]);
 ```
 
 #### Security

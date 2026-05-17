@@ -63,6 +63,7 @@ class ClickCaptcha extends AbstractCaptcha
 
         return [
             'key'   => $this->key,
+            'type'  => 'click',
             'image' => $image,
             'extra' => ['targets' => $targets],
         ];

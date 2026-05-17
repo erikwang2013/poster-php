@@ -43,6 +43,7 @@ class RotateCaptcha extends AbstractCaptcha
 
         return [
             'key'   => $this->key,
+            'type'  => 'rotate',
             'image' => $image,
             'extra' => [],
         ];

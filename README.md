@@ -6,13 +6,14 @@ PHP 图片验证码与海报生成工具包 —— 框架无关核心 + Laravel 
 
 ## 功能
 
-### 验证码（三种方式）
+### 验证码（三种方式 + 随机切换）
 
 | 类型 | 说明 |
 |------|------|
 | 点击验证 `click` | 用户按顺序点击图片上的目标文字 |
 | 旋转验证 `rotate` | 用户拖动滑块将图片旋转回正确角度 |
 | 滑块验证 `slider` | 用户拖动拼图块到缺口位置 |
+| 随机切换 `random` | 随机选取以上三种验证码之一 |
 
 ### 海报生成
 
@@ -133,6 +134,42 @@ $result = captcha_create('slider');
 // ];
 
 $pass = captcha_verify($result['key'], 'slider', 173);  // 用户滑动的 x 像素，±4px 容差
+```
+
+#### 4. 随机切换 (RandomCaptcha)
+
+系统随机从 click / rotate / slider 中选取一种验证码，增加破解难度。
+
+```php
+// 通过辅助函数 — 一行代码随机生成
+$result = captcha_create('random');
+// $result['type'] 返回实际选中的类型: 'click' | 'rotate' | 'slider'
+
+// 前端根据 type 渲染对应的交互组件
+switch ($result['type']) {
+    case 'click':
+        // 渲染点击组件：展示图片，用户依次点击 targets
+        break;
+    case 'rotate':
+        // 渲染旋转组件：展示图片，用户拖动旋转
+        break;
+    case 'slider':
+        // 渲染滑块组件：展示缺口图 + 拼图块
+        break;
+}
+
+// 验证时传入实际类型和用户操作数据
+$pass = captcha_verify($result['key'], $result['type'], $userData);
+// click: $userData = [[x1,y1],[x2,y2],...]
+// rotate: $userData = 185 (角度)
+// slider: $userData = 173 (像素)
+
+// 通过 CaptchaManager
+$captcha = $manager->create('random')->generate();
+$pass = $manager->verify($captcha['key'], [
+    'type' => $captcha['type'],
+    'data' => $userData,
+]);
 ```
 
 #### 验证安全特性

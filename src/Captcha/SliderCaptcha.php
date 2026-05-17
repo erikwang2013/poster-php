@@ -63,6 +63,7 @@ class SliderCaptcha extends AbstractCaptcha
 
         return [
             'key'   => $this->key,
+            'type'  => 'slider',
             'image' => $bgImage,
             'extra' => [
                 'x'         => $puzzleX,

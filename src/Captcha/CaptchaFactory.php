@@ -17,6 +17,11 @@ class CaptchaFactory
         ImageDriverInterface $imageDriver,
         StorageInterface $storage
     ): CaptchaInterface {
+        if ($type === 'random') {
+            $types = ['click', 'rotate', 'slider'];
+            $type = $types[array_rand($types)];
+        }
+
         return match ($type) {
             'click'   => new ClickCaptcha($imageDriver, $storage),
             'rotate'  => new RotateCaptcha($imageDriver, $storage),

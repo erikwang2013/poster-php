@@ -2,7 +2,7 @@
 
 PHP 图片验证码与海报生成工具包 —— 框架无关核心 + Laravel / ThinkPHP / Webman / Hyperf 适配。
 
-[English Documentation](README_EN.md)
+[English Documentation](README_EN.md) | [架构设计图](docs/architecture.md)
 
 ## 功能
 

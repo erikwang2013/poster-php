@@ -2,7 +2,7 @@
 
 PHP image captcha & poster generation toolkit — framework-agnostic core with Laravel / ThinkPHP / Webman / Hyperf adapters.
 
-[中文文档](README.md)
+[中文文档](README.md) | [Architecture Diagrams](docs/architecture.md)
 
 ## Features
 

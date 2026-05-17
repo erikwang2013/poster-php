@@ -4188,10 +4188,18 @@ Expected: `Poster saved to: .../examples/output-basic.jpg`
 | 4 | 1 | QR Code generator (pure PHP, ~400 lines) |
 | 5 | 4 | Captcha: Interface, Abstract, Factory, Manager |
 | 6 | 3 | Captcha: Click, Rotate, Slider implementations |
-| 7 | 10 | Poster elements: 1 interface + 1 abstract + 8 elements |
+| 7 | 10 | Poster elements: 1 interface + 1 abstract + 8 basic elements |
 | 8 | 2 | PosterBuilder + PosterTemplate |
 | 9 | 17 | helpers.php + 4 framework adapters (16 files) |
 | 10 | 6 | PHPUnit tests: Drivers, Storage, Captcha, Poster, QR + config |
+| 11 | 2 | Examples: captcha-click + poster-basic |
+| 12 | 4 | Code review fixes (Round 1): attempt limits, canvas defer, setGdResource, Redis fallback, retry, rotate tests |
+| 13 | 2 | README + .env.example with bilingual docs |
+| 14 | 6 | Extended poster elements: Chart, Calendar, ArtisticText, Emoji, Icon, Emoticon |
+| 15 | 4 | Code review fixes (Round 2): GdDriver destroy, Calendar weekend, PosterTemplate 6 types, setTargetType, composer ext, ArtisticText gradient, Chart pie arcs |
+| 16 | 4 | Random captcha switching + type field in results + tests + README update |
+
+**Total: ~60 files**, zero external dependencies, PHP 8.0+. 30 tests, 66 assertions.
 | 11 | 2 | Example scripts |
 
 **Total: ~55 files**, zero external dependencies, PHP 8.0+.

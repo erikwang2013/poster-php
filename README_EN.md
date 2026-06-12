@@ -57,7 +57,7 @@ Optional extensions:
 ```php
 $result = captcha_create('click', [
     'difficulty' => 'medium',    // 'easy'(2 targets) | 'medium'(3) | 'hard'(4)
-    'background' => null,        // custom background path, null=auto-generated
+    'background' => null,        // custom background path, null=procedural gradient (random style)
 ]);
 // Returns: ['key' => '...', 'image' => 'data:image/png;base64,...', 'extra' => ['targets' => [...]]]
 
@@ -130,6 +130,36 @@ $pass = $manager->verify($captcha['key'], ['type' => $captcha['type'], 'data' =>
 | Brute-force protection | Max 3 attempts per key (configurable) |
 | TTL | 300 seconds default (configurable) |
 | Randomization | Background colors, noise, positions randomly generated |
+| Visual Polish | Procedural gradient backgrounds with 3 styles (minimal/vibrant/natural), configurable default image directory |
+
+#### Background Image Configuration
+
+Captcha backgrounds support three-tier priority:
+
+1. **Single image** — via `setBackground('/path/to/bg.jpg')`
+2. **Image directory** — set `captcha.background_dir` to a directory of `*.jpg|png|gif|webp` images, randomly selected
+3. **Procedural generation** — the default, no setup required, three styles randomly selected
+
+```php
+// Option 1: specify a single background image
+$captcha = $manager->create('click')->setBackground('/path/to/bg.jpg');
+
+// Option 2: configure default background image directory (config/poster.php)
+'captcha' => [
+    'background_dir' => '/path/to/backgrounds',  // random image from directory
+    'background_styles' => ['minimal', 'vibrant', 'natural'], // procedural styles
+],
+
+// Option 3: do nothing, procedural gradient backgrounds used automatically
+```
+
+Three procedural styles:
+
+| Style | Description |
+|------|-------------|
+| `minimal` | Soft gradient + large low-opacity circles + geometric lines + sparse dots |
+| `vibrant` | Bright gradient + varied colorful circles + medium-density noise |
+| `natural` | Warm gradient + irregular blocks simulating paper texture + dense micro-dots |
 
 ### Poster
 
@@ -264,7 +294,7 @@ Auto-registered via ConfigProvider.
 
 ## Configuration
 
-See `config/poster.php`. Environment overrides in `.env.example`.
+See `config/poster.php` for full configuration including image driver, captcha (background directory/procedural styles/storage/TTL/tolerance), and poster settings. Environment overrides in `.env.example`.
 
 ## 开源不易，欢迎支持
 

@@ -60,7 +60,7 @@ composer require erikwang2013/poster-php
 // 通过辅助函数（框架无关）
 $result = captcha_create('click', [
     'difficulty' => 'medium',    // 'easy'(2目标) | 'medium'(3目标) | 'hard'(4目标)
-    'background' => null,        // 自定义背景图路径，null=自动生成
+    'background' => null,        // 自定义背景图路径，null=程序化渐变背景（随机风格）
 ]);
 
 // 返回结果
@@ -180,6 +180,36 @@ $pass = $manager->verify($captcha['key'], [
 | 防暴力 | 默认最多验证 3 次（可配置） |
 | 有效期 | 默认 300 秒（可配置） |
 | 随机性 | 每次生成的背景颜色、噪声、目标位置均随机 |
+| 背景美化 | 程序化渐变背景，三种风格（简约/活泼/自然）随机切换，支持配置默认背景图目录 |
+
+#### 背景图片配置
+
+验证码背景支持三级优先级：
+
+1. **单张图片** — 通过 `setBackground('/path/to/bg.jpg')` 指定
+2. **图片目录** — 配置 `captcha.background_dir` 指向图片目录，随机选用 `*.jpg|png|gif|webp`
+3. **程序化生成** — 默认方式，无需配置，三种风格随机切换
+
+```php
+// 方式一：代码指定单张图片
+$captcha = $manager->create('click')->setBackground('/path/to/bg.jpg');
+
+// 方式二：配置默认背景图目录（config/poster.php）
+'captcha' => [
+    'background_dir' => '/path/to/backgrounds',  // 随机选用目录中的图片
+    'background_styles' => ['minimal', 'vibrant', 'natural'], // 程序化风格
+],
+
+// 方式三：什么都不做，自动使用程序化渐变背景
+```
+
+三种程序化风格：
+
+| 风格 | 说明 |
+|------|------|
+| `minimal` 简约 | 柔和渐变 + 大尺寸低透明度圆形 + 几何线条 + 稀疏细点 |
+| `vibrant` 活泼 | 明亮渐变 + 多种大小彩色圆形 + 中等密度噪点 |
+| `natural` 自然 | 暖色渐变 + 不规则色块模拟纸张纹理 + 细微密点 |
 
 ### 二、海报生成
 
@@ -580,7 +610,7 @@ return [
 
 ## 配置
 
-见 `config/poster.php`，支持 `.env` 覆盖（参考 `.env.example`）。
+见 `config/poster.php`，完整配置项包括图像驱动、验证码（含背景图目录/程序化风格/存储/有效期/容差）、海报生成等。支持 `.env` 覆盖（参考 `.env.example`）。
 
 ## 目录结构
 

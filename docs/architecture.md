@@ -178,6 +178,7 @@ sequenceDiagram
     
     Captcha->>Captcha: generateKey() → bin2hex(random_bytes(16))
     Captcha->>Driver: clone() → createBackground()
+    Note over Captcha,Driver: 三级优先级<br/>① setBackground() 指定图片<br/>② background_dir 目录随机<br/>③ 程序化渐变生成 (minimal/vibrant/natural)
     Driver-->>Captcha: background image
     
     Captcha->>Captcha: placeTargets() → random positions
@@ -190,6 +191,22 @@ sequenceDiagram
     Captcha-->>Helper: ['key','type'=>'click','image'=>'data:...','extra'=>['targets'=>[...]]]
     Helper-->>Client: result array
 ```
+
+### 4.1 背景生成策略 (Background Generation)
+
+`AbstractCaptcha::createBackground()` 实现三级优先级：
+
+1. **自定义图片** — `setBackground('/path/to/bg.jpg')` 指定单张背景图
+2. **背景图目录** — 配置 `captcha.background_dir` 指向图片目录，随机选用
+3. **程序化生成** — 60 条色带模拟渐变 + 风格化装饰 + 噪点，三种风格随机：
+
+| 风格 | 渐变色系 | 装饰 | 噪点密度 |
+|------|---------|------|---------|
+| `minimal` 简约 | 浅蓝/浅紫/浅灰 | 大尺寸半透明圆 + 几何线 | 低 |
+| `vibrant` 活泼 | 蓝紫/粉红/青绿 | 多彩圆形填充+描边 | 中 |
+| `natural` 自然 | 米白/淡黄/浅棕 | 不规则半透明矩形 | 高 |
+
+所有绘制仅使用 `rectangle()`、`ellipse()`、`line()` 驱动原语，不依赖新接口。
 
 ---
 

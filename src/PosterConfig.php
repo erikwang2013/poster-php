@@ -9,15 +9,20 @@ namespace Erikwang2013\Poster;
 class PosterConfig
 {
     private static ?array $config = null;
+    private static int $loadedMtime = 0;
 
     public static function load(?string $path = null): array
     {
-        if (self::$config !== null && $path === null) {
+        $defaultPath = dirname(__DIR__) . '/config/poster.php';
+        $resolvedPath = $path ?? $defaultPath;
+
+        $currentMtime = is_file($resolvedPath) ? (int) filemtime($resolvedPath) : 0;
+        if (self::$config !== null && $path === null && $currentMtime === self::$loadedMtime) {
             return self::$config;
         }
-        $defaultPath = dirname(__DIR__) . '/config/poster.php';
-        $path = $path ?? $defaultPath;
-        self::$config = is_file($path) ? require $path : require $defaultPath;
+
+        self::$config = is_file($resolvedPath) ? require $resolvedPath : require $defaultPath;
+        self::$loadedMtime = (int) filemtime($resolvedPath);
         return self::$config;
     }
 

@@ -137,21 +137,25 @@ $pass = $manager->verify($captcha['key'], ['type' => $captcha['type'], 'data' =>
 Captcha backgrounds support three-tier priority:
 
 1. **Single image** — via `setBackground('/path/to/bg.jpg')`
-2. **Image directory** — set `captcha.background_dir` to a directory of `*.jpg|png|gif|webp` images, randomly selected
-3. **Procedural generation** — the default, no setup required, three styles randomly selected
+2. **Image directory** — set `captcha.background_dir`, defaults to `assets/backgrounds/` (6 built-in gradient backgrounds)
+3. **Procedural generation** — set `background_dir` to `null`, three random styles
 
 ```php
 // Option 1: specify a single background image
 $captcha = $manager->create('click')->setBackground('/path/to/bg.jpg');
 
-// Option 2: configure default background image directory (config/poster.php)
+// Option 2: replace with your own backgrounds (config/poster.php)
 'captcha' => [
-    'background_dir' => '/path/to/backgrounds',  // random image from directory
-    'background_styles' => ['minimal', 'vibrant', 'natural'], // procedural styles
+    // Put your own images in this directory, randomly selected
+    'background_dir' => '/path/to/my-backgrounds',
+    // Set to null for procedural gradient backgrounds
+    // 'background_dir' => null,
 ],
 
-// Option 3: do nothing, procedural gradient backgrounds used automatically
+// Option 3: do nothing, built-in defaults used automatically (assets/backgrounds/)
 ```
+
+**Built-in backgrounds**: `assets/backgrounds/` contains 6 pre-generated 400×250 PNG gradients: blue-purple, sunset, fresh-green, dark-elegant, pink-pastel, ocean-blue.
 
 Three procedural styles:
 

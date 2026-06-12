@@ -38,7 +38,7 @@ return [
         // 默认背景图目录（放 png/jpg/gif/webp），随机选用
         // null = 使用程序化生成
         // Background image directory; null = procedural generation
-        'background_dir' => null,
+        'background_dir' => dirname(__DIR__) . '/assets/backgrounds',
 
         // 程序化背景风格 / Procedural background styles
         // Available: 'minimal', 'vibrant', 'natural'

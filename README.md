@@ -187,21 +187,25 @@ $pass = $manager->verify($captcha['key'], [
 验证码背景支持三级优先级：
 
 1. **单张图片** — 通过 `setBackground('/path/to/bg.jpg')` 指定
-2. **图片目录** — 配置 `captcha.background_dir` 指向图片目录，随机选用 `*.jpg|png|gif|webp`
-3. **程序化生成** — 默认方式，无需配置，三种风格随机切换
+2. **图片目录** — 配置 `captcha.background_dir` 指向图片目录，默认指向 `assets/backgrounds/`（内置 6 张精美渐变背景图）
+3. **程序化生成** — 设 `background_dir` 为 `null` 时启用，三种风格随机切换
 
 ```php
 // 方式一：代码指定单张图片
 $captcha = $manager->create('click')->setBackground('/path/to/bg.jpg');
 
-// 方式二：配置默认背景图目录（config/poster.php）
+// 方式二：替换默认背景图（config/poster.php）
 'captcha' => [
-    'background_dir' => '/path/to/backgrounds',  // 随机选用目录中的图片
-    'background_styles' => ['minimal', 'vibrant', 'natural'], // 程序化风格
+    // 把自己的背景图放到这个目录，自动随机选用
+    'background_dir' => '/path/to/my-backgrounds',
+    // 设为 null 则使用程序化渐变背景
+    // 'background_dir' => null,
 ],
 
-// 方式三：什么都不做，自动使用程序化渐变背景
+// 方式三：什么都不做，自动使用内置默认背景图（assets/backgrounds/）
 ```
+
+**默认背景图**：`assets/backgrounds/` 自带 6 张 400×250 PNG 渐变背景，风格包括蓝紫、日落、清新绿、暗黑、粉彩、海洋蓝。
 
 三种程序化风格：
 

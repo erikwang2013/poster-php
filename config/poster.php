@@ -15,8 +15,7 @@ return [
         'quality' => 90,
 
         // 默认字体路径 / Default font path
-        // null = use bundled font / 使用包自带字体
-        'font' => null,
+        'font' => dirname(__DIR__) . '/src/fonts/Alibaba-PuHuiTi-Regular.ttf',
     ],
 
     // ── Captcha Module 验证码模块 ──
@@ -65,8 +64,7 @@ return [
         'default_height' => 1334,
 
         // 默认字体路径 / Default font path
-        // null = use bundled font / 使用包自带字体
-        'font' => null,
+        'font' => dirname(__DIR__) . '/src/fonts/Alibaba-PuHuiTi-Regular.ttf',
 
         // JPEG output quality / JPEG 输出质量 0-100
         'jpeg_quality' => 90,

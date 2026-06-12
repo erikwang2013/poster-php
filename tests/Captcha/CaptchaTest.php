@@ -146,4 +146,38 @@ class CaptchaTest extends TestCase
         $this->assertArrayHasKey('x', $result['extra']);
         $this->assertStringStartsWith('data:image/', $result['image']);
     }
+
+    public function testCaptchaBackgroundUsesProceduralGenerationByDefault(): void
+    {
+        \Erikwang2013\Poster\PosterConfig::merge([
+            'captcha' => ['background_dir' => null],
+        ]);
+        $result = $this->manager->create('click')->generate();
+        $this->assertStringStartsWith('data:image/png;base64,', $result['image']);
+        $this->assertNotEmpty($result['key']);
+        \Erikwang2013\Poster\PosterConfig::reset();
+    }
+
+    public function testCaptchaBackgroundRespectsCustomPathViaSetBackground(): void
+    {
+        $testImg = imagecreatetruecolor(100, 80);
+        imagefill($testImg, 0, 0, imagecolorallocate($testImg, 200, 100, 50));
+        $testPath = $this->tempDir . '/test-bg.png';
+        imagepng($testImg, $testPath);
+        imagedestroy($testImg);
+
+        $result = $this->manager->create('click')
+            ->setBackground($testPath)
+            ->generate();
+        $this->assertNotEmpty($result['key']);
+        unlink($testPath);
+        \Erikwang2013\Poster\PosterConfig::reset();
+    }
+
+    public function testSliderCaptchaPieceHasVisualImprovements(): void
+    {
+        $result = $this->manager->create('slider')->generate();
+        $this->assertArrayHasKey('puzzle', $result['extra']);
+        $this->assertNotEmpty($result['extra']['puzzle']);
+    }
 }

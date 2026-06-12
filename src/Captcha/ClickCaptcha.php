@@ -112,7 +112,7 @@ class ClickCaptcha extends AbstractCaptcha
                 $x = mt_rand($margin, $this->width - $margin);
                 $y = mt_rand($margin, $this->height - $margin);
                 $attempts++;
-            } while ($this->overlaps($x, $y, $usedAreas, 30) && $attempts < 50);
+            } while ($this->overlaps($x, $y, $usedAreas, 70) && $attempts < 80);
 
             $word = $this->wordPool[array_rand($this->wordPool)];
             $targets[] = ['x' => $x, 'y' => $y, 'text' => $word, 'order' => $i + 1];

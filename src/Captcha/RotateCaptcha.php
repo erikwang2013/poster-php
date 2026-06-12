@@ -31,7 +31,7 @@ class RotateCaptcha extends AbstractCaptcha
         $size = $bg->getSize();
 
         $this->actualAngle = mt_rand(intval($this->minAngle), intval($this->maxAngle));
-        $bg->rotate($this->actualAngle);
+        $bg->rotate($this->actualAngle, '#d0d0d0');
 
         $this->store([
             'angle'     => $this->actualAngle,

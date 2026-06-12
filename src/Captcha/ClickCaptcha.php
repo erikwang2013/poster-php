@@ -43,39 +43,47 @@ class ClickCaptcha extends AbstractCaptcha
         $targets = $this->placeTargets();
         $fontFile = dirname(__DIR__, 2) . '/src/fonts/Alibaba-PuHuiTi-Regular.ttf';
 
-        foreach ($targets as $target) {
+        $markerColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FF8E53'];
+        foreach ($targets as $idx => $target) {
+            $color = $markerColors[$idx % count($markerColors)];
+            // Outer white glow
+            $bg->ellipse($target['x'], $target['y'], 32, 32, [
+                'color'  => '#FFFFFF55',
+                'filled' => true,
+            ]);
             // Outer ring
             $bg->ellipse($target['x'], $target['y'], 28, 28, [
-                'color'  => '#FF6B6B',
+                'color'  => $color,
                 'filled' => false,
             ]);
             // Inner highlight
             $bg->ellipse($target['x'], $target['y'], 24, 24, [
-                'color'  => '#FF6B6B22',
+                'color'  => $color . '22',
                 'filled' => true,
             ]);
-            // Order number
-            $bg->text((string)$target['order'], $target['x'], $target['y'] + 6, [
-                'size'  => 16,
-                'color' => '#FF6B6B',
+            // Order number in center
+            $bg->text((string)$target['order'], $target['x'], $target['y'] + 7, [
+                'size'  => 18,
+                'color' => $color,
                 'font'  => is_file($fontFile) ? $fontFile : null,
                 'align' => 'center',
             ]);
 
-            // Pill label
+            // Pill label below target
             $labelText = $target['order'] . '.' . $target['text'];
-            $labelY = min($target['y'] + 38, $this->height - 14);
-            $pillW = mb_strlen($labelText) * 13 + 16;
+            $labelY = min($target['y'] + 42, $this->height - 14);
+            $font = is_file($fontFile) ? $fontFile : null;
+            $pillW = mb_strlen($labelText) * 14 + 20;
             $pillX = $target['x'] - intval($pillW / 2);
             $bg->rectangle($pillX, $labelY - 12, $pillW, 24, [
-                'color'  => '#FFFFFFD0',
+                'color'  => '#FFFFFFCC',
                 'filled' => true,
                 'radius' => 12,
             ]);
             $bg->text($labelText, $target['x'], $labelY + 6, [
                 'size'  => 14,
                 'color' => '#333333',
-                'font'  => is_file($fontFile) ? $fontFile : null,
+                'font'  => $font,
                 'align' => 'center',
             ]);
         }

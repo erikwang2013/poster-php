@@ -44,14 +44,37 @@ class ClickCaptcha extends AbstractCaptcha
         $fontFile = dirname(__DIR__, 2) . '/assets/font.ttf';
 
         foreach ($targets as $target) {
-            $bg->ellipse($target['x'], $target['y'], 25, 25, [
-                'color'  => '#FF000033',
+            // Outer ring
+            $bg->ellipse($target['x'], $target['y'], 28, 28, [
+                'color'  => '#FF6B6B',
+                'filled' => false,
+            ]);
+            // Inner highlight
+            $bg->ellipse($target['x'], $target['y'], 24, 24, [
+                'color'  => '#FF6B6B22',
                 'filled' => true,
             ]);
-            $textY = min($target['y'] + 35, $this->height - 5);
-            $bg->text($target['order'] . '.' . $target['text'], $target['x'], $textY, [
+            // Order number
+            $bg->text((string)$target['order'], $target['x'], $target['y'] + 6, [
+                'size'  => 16,
+                'color' => '#FF6B6B',
+                'font'  => is_file($fontFile) ? $fontFile : null,
+                'align' => 'center',
+            ]);
+
+            // Pill label
+            $labelText = $target['order'] . '.' . $target['text'];
+            $labelY = min($target['y'] + 38, $this->height - 14);
+            $pillW = mb_strlen($labelText) * 13 + 16;
+            $pillX = $target['x'] - intval($pillW / 2);
+            $bg->rectangle($pillX, $labelY - 12, $pillW, 24, [
+                'color'  => '#FFFFFFD0',
+                'filled' => true,
+                'radius' => 12,
+            ]);
+            $bg->text($labelText, $target['x'], $labelY + 6, [
                 'size'  => 14,
-                'color' => '#000000',
+                'color' => '#333333',
                 'font'  => is_file($fontFile) ? $fontFile : null,
                 'align' => 'center',
             ]);

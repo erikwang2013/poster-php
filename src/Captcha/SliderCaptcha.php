@@ -75,7 +75,7 @@ class SliderCaptcha extends AbstractCaptcha
         // Direction arrow
         $cx = intval($this->puzzleWidth / 2);
         $cy = intval($this->puzzleHeight / 2);
-        $fontFile = dirname(__DIR__, 2) . '/assets/font.ttf';
+        $fontFile = dirname(__DIR__, 2) . '/src/fonts/Alibaba-PuHuiTi-Regular.ttf';
         $piece->text('»', $cx, $cy + 6, [
             'size'  => 18,
             'color' => '#999999',

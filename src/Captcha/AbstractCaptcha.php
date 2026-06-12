@@ -110,7 +110,7 @@ abstract class AbstractCaptcha implements CaptchaInterface
         $palettes = $this->palettesForStyle($style);
         $palette = $palettes[array_rand($palettes)];
 
-        $steps = 60;
+        $steps = 120;
         for ($i = 0; $i < $steps; $i++) {
             $t = $i / ($steps - 1);
             $color = $this->interpolateColor($palette[0], $palette[1], $t);
@@ -119,6 +119,7 @@ abstract class AbstractCaptcha implements CaptchaInterface
             $h = $nextY - $y;
             $bg->rectangle(0, $y, $this->width, $h, ['color' => $color, 'filled' => true]);
         }
+        $bg->blur(2);
     }
 
     private function interpolateColor(string $c1, string $c2, float $t): string

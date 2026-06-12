@@ -41,7 +41,7 @@ class ClickCaptcha extends AbstractCaptcha
         }
 
         $targets = $this->placeTargets();
-        $fontFile = dirname(__DIR__, 2) . '/assets/font.ttf';
+        $fontFile = dirname(__DIR__, 2) . '/src/fonts/Alibaba-PuHuiTi-Regular.ttf';
 
         foreach ($targets as $target) {
             // Outer ring

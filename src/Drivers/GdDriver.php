@@ -184,7 +184,11 @@ class GdDriver implements ImageDriverInterface
         $color  = $options['color'] ?? '#FFFFFF';
         $rgb    = $this->hexToRgb($color);
         $filled = $options['filled'] ?? true;
-        $alloc  = imagecolorallocate($this->resource, $rgb[0], $rgb[1], $rgb[2]);
+        $alpha  = 0;
+        if (strlen(ltrim($color, '#')) === 8) {
+            $alpha = 127 - intval(hexdec(substr(ltrim($color, '#'), 6, 2)) / 2);
+        }
+        $alloc  = imagecolorallocatealpha($this->resource, $rgb[0], $rgb[1], $rgb[2], $alpha);
 
         if ($filled) {
             imagefilledellipse($this->resource, $cx, $cy, $rx * 2, $ry * 2, $alloc);
@@ -199,7 +203,11 @@ class GdDriver implements ImageDriverInterface
     {
         $color = $options['color'] ?? '#000000';
         $rgb   = $this->hexToRgb($color);
-        $alloc = imagecolorallocate($this->resource, $rgb[0], $rgb[1], $rgb[2]);
+        $alpha = 0;
+        if (strlen(ltrim($color, '#')) === 8) {
+            $alpha = 127 - intval(hexdec(substr(ltrim($color, '#'), 6, 2)) / 2);
+        }
+        $alloc = imagecolorallocatealpha($this->resource, $rgb[0], $rgb[1], $rgb[2], $alpha);
         imagesetthickness($this->resource, max(1, intval($options['width'] ?? 1)));
         imageline($this->resource, $x1, $y1, $x2, $y2, $alloc);
         imagesetthickness($this->resource, 1);

@@ -14,7 +14,11 @@ use Erikwang2013\Poster\PosterConfig;
 
 class CaptchaPlugin implements Bootstrap
 {
-    public static function start($worker): void { PosterConfig::load(dirname(__DIR__, 3) . '/config/poster.php'); }
+    public static function start($worker): void {
+        PosterConfig::load(dirname(__DIR__, 3) . '/config/poster.php');
+        $cfg = base_path() . '/config/poster.php';
+        if (is_file($cfg)) PosterConfig::merge(require $cfg);
+    }
     public static function captcha(): CaptchaManager
     {
         return new CaptchaManager(DriverFactory::create(PosterConfig::get('image.driver')), StorageFactory::create(PosterConfig::get('captcha.storage')));

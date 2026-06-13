@@ -55,9 +55,7 @@ abstract class AbstractCaptcha implements CaptchaInterface
             $files = glob($bgDir . '/*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
             if (!empty($files)) {
                 $bg->load($files[array_rand($files)]);
-                $size = $bg->getSize();
-                $this->width = $size['width'];
-                $this->height = $size['height'];
+                $bg->resize($this->width, $this->height);
                 return $bg;
             }
         }

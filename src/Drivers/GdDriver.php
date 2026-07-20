@@ -65,17 +65,52 @@ class GdDriver implements ImageDriverInterface
 
     public function rotate(float $angle, string $bgColor = '#000000'): static
     {
-        $rgb = $this->hexToRgb($bgColor);
-        $bg = imagecolorallocate($this->resource, $rgb[0], $rgb[1], $rgb[2]);
+        if ($bgColor === 'transparent') {
+            $bg = imagecolorallocatealpha($this->resource, 0, 0, 0, 127);
+        } else {
+            $rgb = $this->hexToRgb($bgColor);
+            $bg = imagecolorallocatealpha($this->resource, $rgb[0], $rgb[1], $rgb[2], 0);
+        }
+        imagealphablending($this->resource, false);
         $rotated = imagerotate($this->resource, -$angle, $bg);
         if ($rotated === false) {
             throw new RuntimeException("Image rotation failed");
         }
         imagedestroy($this->resource);
         $this->resource = $rotated;
+        imagealphablending($this->resource, true);
         imagesavealpha($this->resource, true);
         $this->width  = imagesx($this->resource);
         $this->height = imagesy($this->resource);
+        return $this;
+    }
+
+    public function circle(int $diameter): static
+    {
+        $new = imagecreatetruecolor($diameter, $diameter);
+        imagealphablending($new, false);
+        imagesavealpha($new, true);
+        $transparent = imagecolorallocatealpha($new, 0, 0, 0, 127);
+        imagefill($new, 0, 0, $transparent);
+
+        $r = $diameter / 2;
+        $r2 = $r * $r;
+
+        for ($x = 0; $x < $diameter; $x++) {
+            for ($y = 0; $y < $diameter; $y++) {
+                $dx = $x - $r + 0.5;
+                $dy = $y - $r + 0.5;
+                if ($dx * $dx + $dy * $dy <= $r2) {
+                    $color = imagecolorat($this->resource, $x, $y);
+                    imagesetpixel($new, $x, $y, $color);
+                }
+            }
+        }
+
+        imagedestroy($this->resource);
+        $this->resource = $new;
+        $this->width = $diameter;
+        $this->height = $diameter;
         return $this;
     }
 

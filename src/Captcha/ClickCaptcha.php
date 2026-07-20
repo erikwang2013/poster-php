@@ -8,15 +8,7 @@ namespace Erikwang2013\Poster\Captcha;
 
 class ClickCaptcha extends AbstractCaptcha
 {
-    private int $targetCount = 3;
     private string $targetType = 'text';
-    private array $wordPool = ['树', '鸟', '花', '草', '云', '山', '河', '海', '日', '月', '星', '风', '雨', '雪', '火'];
-
-    public function setTargetCount(int $count): static
-    {
-        $this->targetCount = min(5, max(1, $count));
-        return $this;
-    }
 
     public function setTargetType(string $type): static
     {
@@ -24,10 +16,7 @@ class ClickCaptcha extends AbstractCaptcha
         return $this;
     }
 
-    protected function getType(): string
-    {
-        return 'click';
-    }
+    protected function getType(): string { return 'click'; }
 
     public function generate(): array
     {
@@ -41,96 +30,37 @@ class ClickCaptcha extends AbstractCaptcha
         }
 
         $targets = $this->placeTargets();
-        $fontFile = dirname(__DIR__, 2) . '/src/fonts/Alibaba-PuHuiTi-Regular.ttf';
+        $fontFile = dirname(__DIR__, 2) . '/assets/font.ttf';
 
-        $markerColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FF8E53'];
-        foreach ($targets as $idx => $target) {
-            $color = $markerColors[$idx % count($markerColors)];
-            // Outer white glow
-            $bg->ellipse($target['x'], $target['y'], 32, 32, [
-                'color'  => '#FFFFFF55',
-                'filled' => true,
-            ]);
-            // Outer ring
-            $bg->ellipse($target['x'], $target['y'], 28, 28, [
-                'color'  => $color,
-                'filled' => false,
-            ]);
-            // Inner highlight
-            $bg->ellipse($target['x'], $target['y'], 24, 24, [
-                'color'  => $color . '22',
-                'filled' => true,
-            ]);
-            // Order number in center
-            $bg->text((string)$target['order'], $target['x'], $target['y'] + 7, [
-                'size'  => 18,
-                'color' => $color,
-                'font'  => is_file($fontFile) ? $fontFile : null,
-                'align' => 'center',
-            ]);
-
-            // Pill label below target
-            $labelText = $target['order'] . '.' . $target['text'];
-            $labelY = min($target['y'] + 42, $this->height - 14);
-            $font = is_file($fontFile) ? $fontFile : null;
-            $pillW = mb_strlen($labelText) * 14 + 20;
-            $pillX = $target['x'] - intval($pillW / 2);
-            $bg->rectangle($pillX, $labelY - 12, $pillW, 24, [
-                'color'  => '#FFFFFFCC',
-                'filled' => true,
-                'radius' => 12,
-            ]);
+        foreach ($targets as $target) {
+            $color = '#FF4444';
             $bg->text($labelText, $target['x'], $labelY + 6, [
-                'size'  => 14,
-                'color' => '#333333',
-                'font'  => $font,
-                'align' => 'center',
+                'size' => 16, 'color' => $color,
+                'font' => is_file($fontFile) ? $fontFile : null, 'align' => 'center',
             ]);
         }
 
         $this->store(['targets' => $targets]);
         $image = $bg->output('png');
         $bg->destroy();
-
-        return [
-            'key'   => $this->key,
-            'type'  => 'click',
-            'image' => $image,
-            'extra' => ['targets' => $targets],
-        ];
+        return ['key' => $this->key, 'type' => 'click', 'image' => $image, 'extra' => ['targets' => $targets]];
     }
 
     private function placeTargets(): array
     {
         $targets = [];
         $margin = 40;
-        $usedAreas = [];
-
+        $words = match ($this->difficulty) {
+            'easy' => ['云', '风'],
+            'hard' => ['星', '雨', '山', '火'],
+            default => ['云', '风', '山'],
+        };
         for ($i = 0; $i < $this->targetCount; $i++) {
-            $attempts = 0;
-            do {
-                $x = mt_rand($margin, $this->width - $margin);
-                $y = mt_rand($margin, $this->height - $margin);
-                $attempts++;
-            } while ($this->overlaps($x, $y, $usedAreas, 70) && $attempts < 80);
-
-            $word = $this->wordPool[array_rand($this->wordPool)];
+            $x = mt_rand($margin, $this->width - $margin);
+            $y = mt_rand($margin, $this->height - $margin - 40);
+            $word = $words[$i % count($words)];
             $targets[] = ['x' => $x, 'y' => $y, 'text' => $word, 'order' => $i + 1];
-            $usedAreas[] = ['x' => $x, 'y' => $y];
         }
-
         return $targets;
-    }
-
-    private function overlaps(int $x, int $y, array $areas, int $minDist): bool
-    {
-        foreach ($areas as $area) {
-            $dx = $x - $area['x'];
-            $dy = $y - $area['y'];
-            if (sqrt($dx * $dx + $dy * $dy) < $minDist) {
-                return true;
-            }
-        }
-        return false;
     }
 }

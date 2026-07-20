@@ -16,6 +16,8 @@ interface ImageDriverInterface
 
     public function rotate(float $angle, string $bgColor = '#000000'): self;
 
+    public function circle(int $diameter): self;
+
     public function crop(int $x, int $y, int $width, int $height): self;
 
     public function text(string $text, int $x, int $y, array $options = []): self;

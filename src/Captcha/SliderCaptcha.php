@@ -29,26 +29,14 @@ class SliderCaptcha extends AbstractCaptcha
         $puzzleX = mt_rand(50, $this->width - $this->puzzleWidth - 50);
         $puzzleY = mt_rand(20, $this->height - $this->puzzleHeight - 20);
 
-        // Extract puzzle piece from background content (before drawing gap)
+        // Extract puzzle piece from background (before drawing gap)
         $piece = $bg->clone();
         $piece->crop($puzzleX, $puzzleY, $this->puzzleWidth, $this->puzzleHeight);
 
-        // White border on puzzle piece
-        $piece->rectangle(0, 0, $this->puzzleWidth, $this->puzzleHeight, [
-            'color'       => '#FFFFFF',
-            'filled'      => false,
-            'strokeWidth' => 3,
-        ]);
-
-        // Draw gap on background — semi-transparent dark overlay
+        // Draw gap — dark semi-transparent rectangle, no border
         $bg->rectangle($puzzleX, $puzzleY, $this->puzzleWidth, $this->puzzleHeight, [
-            'color'  => '#00000030',
+            'color'  => '#00000040',
             'filled' => true,
-        ]);
-        $bg->rectangle($puzzleX, $puzzleY, $this->puzzleWidth, $this->puzzleHeight, [
-            'color'       => '#FFFFFF90',
-            'filled'      => false,
-            'strokeWidth' => 2,
         ]);
 
         $this->store(['x' => $puzzleX, 'y' => $puzzleY]);
@@ -65,6 +53,7 @@ class SliderCaptcha extends AbstractCaptcha
             'image' => $bgImage,
             'extra' => [
                 'x'         => $puzzleX,
+                'y'         => $puzzleY,
                 'puzzle'    => $pzImage,
                 'puzzle_w'  => $this->puzzleWidth,
                 'puzzle_h'  => $this->puzzleHeight,

@@ -41,7 +41,30 @@ class ImagickDriver implements ImageDriverInterface
 
     public function rotate(float $angle, string $bgColor = '#000000'): static
     {
-        $this->resource->rotateImage(new ImagickPixel($bgColor), -$angle);
+        $pixel = $bgColor === 'transparent'
+            ? new ImagickPixel('transparent')
+            : new ImagickPixel($bgColor);
+        $this->resource->rotateImage($pixel, -$angle);
+        return $this;
+    }
+
+    public function circle(int $diameter): static
+    {
+        $this->resource->resizeImage($diameter, $diameter, Imagick::FILTER_LANCZOS, 1);
+
+        $mask = new Imagick();
+        $mask->newImage($diameter, $diameter, new ImagickPixel('transparent'));
+        $mask->setImageFormat('png');
+
+        $draw = new ImagickDraw();
+        $draw->setFillColor(new ImagickPixel('white'));
+        $draw->circle($diameter / 2, $diameter / 2, $diameter / 2, 0);
+        $mask->drawImage($draw);
+        $draw->destroy();
+
+        $this->resource->compositeImage($mask, Imagick::COMPOSITE_COPYOPACITY, 0, 0);
+        $mask->destroy();
+
         return $this;
     }
 

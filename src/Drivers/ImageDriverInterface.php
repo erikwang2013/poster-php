@@ -32,6 +32,8 @@ interface ImageDriverInterface
 
     public function blur(int $radius = 1): self;
 
+    public function sharpen(float $amount = 1.0): self;
+
     public function pixelate(int $blockSize = 3): self;
 
     public function save(string $path, string $format = 'jpg', int $quality = 90): bool;

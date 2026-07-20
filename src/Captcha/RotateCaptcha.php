@@ -29,7 +29,7 @@ class RotateCaptcha extends AbstractCaptcha
         $this->generateKey();
 
         $outputSize = 30;
-        $workSize = 600;
+        $workSize = 120;
 
         $this->width = $workSize;
         $this->height = $workSize;
@@ -37,10 +37,14 @@ class RotateCaptcha extends AbstractCaptcha
 
         $this->actualAngle = mt_rand(intval($this->minAngle), intval($this->maxAngle));
         $bg->rotate($this->actualAngle, 'transparent');
+        $bg->sharpen(0.7);
 
-        $bg->resize($workSize, $workSize);
+        $rotated = $bg->getSize();
+        $cx = intval(($rotated['width'] - $workSize) / 2);
+        $cy = intval(($rotated['height'] - $workSize) / 2);
+        $bg->crop($cx, $cy, $workSize, $workSize);
+
         $bg->circle($workSize);
-
         $bg->resize($outputSize, $outputSize);
 
         $this->store([

@@ -257,6 +257,19 @@ class GdDriver implements ImageDriverInterface
         return $this;
     }
 
+    public function sharpen(float $amount = 1.0): static
+    {
+        $a = max(0, min(3, $amount));
+        $center = $a * 4 + 1;
+        $edge = -$a;
+        imageconvolution($this->resource, [
+            [0, $edge, 0],
+            [$edge, $center, $edge],
+            [0, $edge, 0],
+        ], 1, 0);
+        return $this;
+    }
+
     public function pixelate(int $blockSize = 3): static
     {
         imagefilter($this->resource, IMG_FILTER_PIXELATE, max(1, $blockSize), true);

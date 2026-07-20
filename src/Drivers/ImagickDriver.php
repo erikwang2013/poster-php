@@ -200,6 +200,12 @@ class ImagickDriver implements ImageDriverInterface
         return $this;
     }
 
+    public function sharpen(float $amount = 1.0): static
+    {
+        $this->resource->sharpenImage(0, $amount);
+        return $this;
+    }
+
     public function pixelate(int $blockSize = 3): static
     {
         $w = $this->resource->getImageWidth();

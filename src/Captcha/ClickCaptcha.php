@@ -31,12 +31,15 @@ class ClickCaptcha extends AbstractCaptcha
 
         $targets = $this->placeTargets();
         $fontFile = dirname(__DIR__, 2) . '/assets/font.ttf';
+        if (!is_file($fontFile)) {
+            $fontFile = '/usr/share/fonts/fonts-gb/GB_ST_GB18030.ttf';
+        }
 
         foreach ($targets as $target) {
             $color = '#FF4444';
-            $bg->text($labelText, $target['x'], $labelY + 6, [
+            $bg->text($target['text'], $target['x'], $target['y'] + 6, [
                 'size' => 16, 'color' => $color,
-                'font' => is_file($fontFile) ? $fontFile : null, 'align' => 'center',
+                'font' => $fontFile, 'align' => 'center',
             ]);
         }
 

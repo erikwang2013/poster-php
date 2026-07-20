@@ -35,10 +35,11 @@ class RotateCaptcha extends AbstractCaptcha
         $this->height = $workSize;
         $bg = $this->createBackground();
 
-        $bg->circle($workSize);
-
         $this->actualAngle = mt_rand(intval($this->minAngle), intval($this->maxAngle));
         $bg->rotate($this->actualAngle, 'transparent');
+
+        $bg->resize($workSize, $workSize);
+        $bg->circle($workSize);
 
         $bg->resize($outputSize, $outputSize);
 

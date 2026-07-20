@@ -8,9 +8,16 @@ namespace Erikwang2013\Poster\Captcha;
 
 class RotateCaptcha extends AbstractCaptcha
 {
+    private int $captchaSize = 200;
     private float $minAngle = 30;
     private float $maxAngle = 330;
     private float $actualAngle = 0;
+
+    public function setSize(int $size): static
+    {
+        $this->captchaSize = max(60, min(400, $size));
+        return $this;
+    }
 
     public function setAngleRange(float $min, float $max): static
     {
@@ -28,7 +35,7 @@ class RotateCaptcha extends AbstractCaptcha
     {
         $this->generateKey();
 
-        $size = 30;
+        $size = $this->captchaSize;
 
         $this->width = $size;
         $this->height = $size;

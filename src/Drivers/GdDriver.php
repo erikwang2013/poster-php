@@ -87,28 +87,44 @@ class GdDriver implements ImageDriverInterface
 
     public function circle(int $diameter): static
     {
-        $new = imagecreatetruecolor($diameter, $diameter);
-        imagealphablending($new, false);
-        imagesavealpha($new, true);
-        $transparent = imagecolorallocatealpha($new, 0, 0, 0, 127);
-        imagefill($new, 0, 0, $transparent);
+        $this->resize($diameter, $diameter);
 
-        $r = $diameter / 2;
-        $r2 = $r * $r;
+        // Supersampled antialiased circle mask
+        $scale = 4;
+        $superSize = $diameter * $scale;
+        $super = imagecreatetruecolor($superSize, $superSize);
+        imagealphablending($super, false);
+        imagesavealpha($super, true);
+        imagefill($super, 0, 0, imagecolorallocatealpha($super, 0, 0, 0, 127));
+        imagefilledellipse($super, $superSize / 2, $superSize / 2, $superSize, $superSize,
+            imagecolorallocatealpha($super, 255, 255, 255, 0));
+        $mask = imagecreatetruecolor($diameter, $diameter);
+        imagealphablending($mask, false);
+        imagesavealpha($mask, true);
+        imagefill($mask, 0, 0, imagecolorallocatealpha($mask, 0, 0, 0, 127));
+        imagecopyresampled($mask, $super, 0, 0, 0, 0, $diameter, $diameter, $superSize, $superSize);
+        imagedestroy($super);
+
+        $result = imagecreatetruecolor($diameter, $diameter);
+        imagealphablending($result, false);
+        imagesavealpha($result, true);
+        imagefill($result, 0, 0, imagecolorallocatealpha($result, 0, 0, 0, 127));
 
         for ($x = 0; $x < $diameter; $x++) {
             for ($y = 0; $y < $diameter; $y++) {
-                $dx = $x - $r + 0.5;
-                $dy = $y - $r + 0.5;
-                if ($dx * $dx + $dy * $dy <= $r2) {
-                    $color = imagecolorat($this->resource, $x, $y);
-                    imagesetpixel($new, $x, $y, $color);
+                $maskAlpha = (imagecolorat($mask, $x, $y) >> 24) & 0x7F;
+                if ($maskAlpha < 127) {
+                    $src = imagecolorat($this->resource, $x, $y);
+                    $alloc = imagecolorallocatealpha($result,
+                        ($src >> 16) & 0xFF, ($src >> 8) & 0xFF, $src & 0xFF, $maskAlpha);
+                    imagesetpixel($result, $x, $y, $alloc);
                 }
             }
         }
 
+        imagedestroy($mask);
         imagedestroy($this->resource);
-        $this->resource = $new;
+        $this->resource = $result;
         $this->width = $diameter;
         $this->height = $diameter;
         return $this;

@@ -29,16 +29,21 @@ class RotateCaptcha extends AbstractCaptcha
         $this->generateKey();
         $bg = $this->createBackground();
 
-        $size = 200;
-        $bg->resize($size, $size);
-        $bg->circle($size);
+        // Work at high resolution for quality, then downsample to output size
+        $workSize = 300;
+        $outputSize = 30;
+
+        $bg->resize($workSize, $workSize);
+        $bg->circle($workSize);
 
         $this->actualAngle = mt_rand(intval($this->minAngle), intval($this->maxAngle));
         $bg->rotate($this->actualAngle, 'transparent');
 
+        $bg->resize($outputSize, $outputSize);
+
         $this->store([
             'angle'     => $this->actualAngle,
-            'orig_size' => ['width' => $size, 'height' => $size],
+            'orig_size' => ['width' => $outputSize, 'height' => $outputSize],
         ]);
 
         $image = $bg->output('png');

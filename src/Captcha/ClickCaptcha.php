@@ -6,9 +6,19 @@
 
 namespace Erikwang2013\Poster\Captcha;
 
+use Erikwang2013\Poster\PosterConfig;
+
+
 class ClickCaptcha extends AbstractCaptcha
 {
     private string $targetType = 'text';
+    private ?array $words = null;
+
+    public function setWords(array $words): static
+    {
+        $this->words = $words;
+        return $this;
+    }
 
     public function setTargetType(string $type): static
     {
@@ -53,11 +63,13 @@ class ClickCaptcha extends AbstractCaptcha
     {
         $targets = [];
         $margin = 40;
-        $words = match ($this->difficulty) {
-            'easy' => ['云', '风'],
-            'hard' => ['星', '雨', '山', '火'],
-            default => ['云', '风', '山'],
-        };
+        $words = $this->words
+            ?? PosterConfig::get('captcha.click_words')
+            ?? match ($this->difficulty) {
+                'easy' => ['云', '风'],
+                'hard' => ['星', '雨', '山', '火'],
+                default => ['云', '风', '山'],
+            };
         for ($i = 0; $i < $this->targetCount; $i++) {
             $x = mt_rand($margin, $this->width - $margin);
             $y = mt_rand($margin, $this->height - $margin - 40);

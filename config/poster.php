@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  * This source file is subject to the MIT license that is bundled with this package.
@@ -64,6 +65,37 @@ return [
             // 存储路径 / Storage path, null = system temp dir / 系统临时目录
             'path' => null,
         ],
+        'click_words' => [
+            '合',
+            '家',
+            '欢',
+            '乐',
+            '良',
+            '辰',
+            '美',
+            '景',
+            '千',
+            '变',
+            '万',
+            '化',
+            '心',
+            '有',
+            '灵',
+            '犀',
+            '五',
+            '湖',
+            '四',
+            '海',
+            '山',
+            '川',
+            '美',
+            '景',
+            '花',
+            '好',
+            '月',
+            '圆'
+
+        ]
     ],
 
     // ── Poster Module 海报生成模块 ──

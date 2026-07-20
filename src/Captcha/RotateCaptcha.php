@@ -33,6 +33,10 @@ class RotateCaptcha extends AbstractCaptcha
         $this->width = $size;
         $this->height = $size;
         $bg = $this->createBackground();
+        $res = $bg->getResource();
+        if ($res instanceof \GdImage) {
+            imagefilter($res, IMG_FILTER_CONTRAST, 25);
+        }
 
         $this->actualAngle = mt_rand(intval($this->minAngle), intval($this->maxAngle));
         $bg->rotate($this->actualAngle, 'transparent');

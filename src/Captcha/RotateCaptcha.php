@@ -27,13 +27,14 @@ class RotateCaptcha extends AbstractCaptcha
     public function generate(): array
     {
         $this->generateKey();
+
+        $outputSize = 30;
+        $workSize = 600;
+
+        $this->width = $workSize;
+        $this->height = $workSize;
         $bg = $this->createBackground();
 
-        // Work at high resolution for quality, then downsample to output size
-        $workSize = 300;
-        $outputSize = 30;
-
-        $bg->resize($workSize, $workSize);
         $bg->circle($workSize);
 
         $this->actualAngle = mt_rand(intval($this->minAngle), intval($this->maxAngle));

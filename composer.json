@@ -47,7 +47,13 @@
         }
     },
     "scripts": {
-        "test": "phpunit"
+        "test": "phpunit",
+        "post-install-cmd": [
+            "Erikwang2013\\Poster\\Installer::copyConfig"
+        ],
+        "post-update-cmd": [
+            "Erikwang2013\\Poster\\Installer::copyConfig"
+        ]
     },
     "minimum-stability": "stable",
     "prefer-stable": true

@@ -33,6 +33,9 @@ return [
         // Prevents brute-force enumeration / 防暴力枚举
         'max_attempts' => 3,
 
+        // 默认验证码类型 / Default captcha type: 'click' | 'rotate' | 'slider' | 'random'
+        'default_type' => 'random',
+
         // 默认难度 / Default difficulty: 'easy' | 'medium' | 'hard'
         'default_difficulty' => 'medium',
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
  * This source file is subject to the MIT license that is bundled with this package.
@@ -13,6 +14,7 @@ class ClickCaptcha extends AbstractCaptcha
 {
     private string $targetType = 'text';
     private ?array $words = null;
+    protected int $targetCount = 5;
 
     public function setWords(array $words): static
     {
@@ -26,13 +28,15 @@ class ClickCaptcha extends AbstractCaptcha
         return $this;
     }
 
-    protected function getType(): string { return 'click'; }
+    protected function getType(): string
+    {
+        return 'click';
+    }
 
     public function generate(): array
     {
         $this->generateKey();
         $bg = $this->createBackground();
-
         if ($this->difficulty === 'easy') {
             $this->targetCount = 2;
         } elseif ($this->difficulty === 'hard') {
@@ -48,8 +52,10 @@ class ClickCaptcha extends AbstractCaptcha
         foreach ($targets as $target) {
             $color = '#FF4444';
             $bg->text($target['text'], $target['x'], $target['y'] + 6, [
-                'size' => 16, 'color' => $color,
-                'font' => $fontFile, 'align' => 'center',
+                'size' => 16,
+                'color' => $color,
+                'font' => $fontFile,
+                'align' => 'center',
             ]);
         }
 

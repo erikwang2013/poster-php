@@ -11,8 +11,9 @@ use Erikwang2013\Poster\Poster\PosterBuilder;
 use Erikwang2013\Poster\PosterConfig;
 
 if (!function_exists('captcha_create')) {
-    function captcha_create(string $type = 'click', array $options = []): array
+    function captcha_create(?string $type = null, array $options = []): array
     {
+        $type ??= PosterConfig::get('captcha.default_type', 'random');
         $manager = new CaptchaManager(
             DriverFactory::create(PosterConfig::get('image.driver')),
             StorageFactory::create(PosterConfig::get('captcha.storage'))

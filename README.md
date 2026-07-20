@@ -91,6 +91,7 @@ $captcha = $manager->create('click')
     ->setDifficulty('hard')
     ->setTargetCount(4)            // 自定义目标数量 1-5
     ->setTargetType('text')        // 'text' 文字 | 'icon' 图标
+    ->setWords(['猫', '狗', '鸟', '鱼']) // 自定义文字池（可选）
     ->setBackground('/path/to/bg.jpg');
 $result = $captcha->generate();
 
@@ -113,6 +114,7 @@ $pass = captcha_verify($result['key'], 'rotate', 185);  // 用户旋转角度，
 
 // 通过 CaptchaManager
 $captcha = $manager->create('rotate')
+    ->setSize(200)                 // 圆形直径 60-400（默认 200）
     ->setAngleRange(45, 315)       // 自定义旋转角度范围
     ->generate();
 ```
@@ -614,7 +616,20 @@ return [
 
 ## 配置
 
-见 `config/poster.php`，完整配置项包括图像驱动、验证码（含背景图目录/程序化风格/存储/有效期/容差）、海报生成等。支持 `.env` 覆盖（参考 `.env.example`）。
+`composer require` 后自动将 `config/poster.php` 复制到项目 `config/` 目录（已存在则跳过）。兼容 Laravel / ThinkPHP / Webman（`config/poster.php`）和 Hyperf（`config/autoload/poster.php`）。
+
+主要配置项：
+
+| 配置项 | 默认值 | 说明 |
+|--------|--------|------|
+| `captcha.default_type` | `random` | 默认验证码类型：`click` / `rotate` / `slider` / `random` |
+| `captcha.default_difficulty` | `medium` | 默认难度：`easy` / `medium` / `hard` |
+| `captcha.click_words` | `[合,家,欢,...]` | click 验证码文字池，可自定义 |
+| `captcha.background_dir` | `assets/backgrounds/` | 背景图目录，`null` 则程序化生成 |
+| `captcha.ttl` | `300` | 验证码有效期（秒） |
+| `captcha.max_attempts` | `3` | 最大验证次数 |
+| `captcha.tolerance` | `{click:18,rotate:5,slider:4}` | 各类型容差 |
+| `image.driver` | `auto` | 图像驱动：`auto` / `gd` / `imagick` |
 
 ## 目录结构
 

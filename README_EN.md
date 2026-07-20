@@ -73,6 +73,7 @@ $manager = new CaptchaManager(DriverFactory::create(), new FileStorage());
 $captcha = $manager->create('click')
     ->setDifficulty('hard')
     ->setTargetCount(4)
+    ->setWords(['cat', 'dog', 'bird', 'fish']) // custom word pool (optional)
     ->setBackground('/path/to/bg.jpg');
 $result = $captcha->generate();
 
@@ -85,8 +86,11 @@ $pass = $manager->verify($result['key'], ['type' => 'click', 'data' => [[120,80]
 $result = captcha_create('rotate');
 $pass = captcha_verify($result['key'], 'rotate', 185); // ±5° tolerance
 
-// Custom angle range
-$captcha = $manager->create('rotate')->setAngleRange(45, 315)->generate();
+// Custom size & angle range
+$captcha = $manager->create('rotate')
+    ->setSize(200)                 // circle diameter 60-400 (default 200)
+    ->setAngleRange(45, 315)
+    ->generate();
 ```
 
 #### Slider Captcha
@@ -298,7 +302,20 @@ Auto-registered via ConfigProvider.
 
 ## Configuration
 
-See `config/poster.php` for full configuration including image driver, captcha (background directory/procedural styles/storage/TTL/tolerance), and poster settings. Environment overrides in `.env.example`.
+After `composer require`, `config/poster.php` is auto-copied to your project's `config/` directory (skipped if already exists). Compatible with Laravel / ThinkPHP / Webman (`config/poster.php`) and Hyperf (`config/autoload/poster.php`).
+
+Key config options:
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `captcha.default_type` | `random` | Default captcha type: `click` / `rotate` / `slider` / `random` |
+| `captcha.default_difficulty` | `medium` | Default difficulty: `easy` / `medium` / `hard` |
+| `captcha.click_words` | `[合,家,欢,...]` | Click captcha word pool, customizable |
+| `captcha.background_dir` | `assets/backgrounds/` | Background image directory, `null` for procedural |
+| `captcha.ttl` | `300` | Key TTL in seconds |
+| `captcha.max_attempts` | `3` | Max verification attempts |
+| `captcha.tolerance` | `{click:18,rotate:5,slider:4}` | Per-type tolerance |
+| `image.driver` | `auto` | Image driver: `auto` / `gd` / `imagick` |
 
 ## 开源不易，欢迎支持
 

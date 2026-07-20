@@ -14,16 +14,30 @@ class PosterConfig
     public static function load(?string $path = null): array
     {
         $defaultPath = dirname(__DIR__) . '/config/poster.php';
-        $resolvedPath = $path ?? $defaultPath;
+        $resolvedPath = $path ?? self::findProjectConfig() ?? $defaultPath;
 
         $currentMtime = is_file($resolvedPath) ? (int) filemtime($resolvedPath) : 0;
         if (self::$config !== null && $path === null && $currentMtime === self::$loadedMtime) {
             return self::$config;
         }
 
-        self::$config = is_file($resolvedPath) ? require $resolvedPath : require $defaultPath;
-        self::$loadedMtime = (int) filemtime($resolvedPath);
+        self::$config = require $resolvedPath;
+        self::$loadedMtime = $currentMtime;
         return self::$config;
+    }
+
+    private static function findProjectConfig(): ?string
+    {
+        $projectRoot = dirname(__DIR__, 3);
+        foreach ([
+            $projectRoot . '/config/poster.php',
+            $projectRoot . '/config/autoload/poster.php',
+        ] as $f) {
+            if (is_file($f)) {
+                return $f;
+            }
+        }
+        return null;
     }
 
     public static function get(string $key, mixed $default = null): mixed

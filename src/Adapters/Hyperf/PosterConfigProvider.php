@@ -23,12 +23,3 @@ class PosterConfigProvider
         ];
     }
 }
-
-class PosterBuilderFactory
-{
-    public function __invoke(): PosterBuilder
-    {
-        PosterConfig::load(dirname(__DIR__, 3) . '/config/poster.php');
-        return new PosterBuilder(DriverFactory::create(PosterConfig::get('image.driver')));
-    }
-}

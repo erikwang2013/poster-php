@@ -24,12 +24,3 @@ class CaptchaConfigProvider
         ];
     }
 }
-
-class CaptchaManagerFactory
-{
-    public function __invoke(): CaptchaManager
-    {
-        PosterConfig::load(dirname(__DIR__, 3) . '/config/poster.php');
-        return new CaptchaManager(DriverFactory::create(PosterConfig::get('image.driver')), StorageFactory::create(PosterConfig::get('captcha.storage')));
-    }
-}

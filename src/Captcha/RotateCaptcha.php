@@ -42,7 +42,7 @@ class RotateCaptcha extends AbstractCaptcha
         $bg = $this->createBackground();
         $res = $bg->getResource();
         if ($res instanceof \GdImage) {
-            imagefilter($res, IMG_FILTER_CONTRAST, 25);
+            imagefilter($res, IMG_FILTER_CONTRAST, 12);
         }
 
         $this->actualAngle = mt_rand(intval($this->minAngle), intval($this->maxAngle));

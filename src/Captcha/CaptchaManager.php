@@ -96,9 +96,12 @@ class CaptchaManager
         if (!is_numeric($userData) || !isset($stored['angle'])) {
             return false;
         }
-        $angle = floatval($userData);
+        $angle = fmod(floatval($userData), 360);
+        if ($angle < 0) {
+            $angle += 360;
+        }
         $actual = floatval($stored['angle']);
-        $diff = abs($angle - (360 - $actual));
+        $diff = abs($angle - $actual);
         if ($diff > 180) {
             $diff = 360 - $diff;
         }

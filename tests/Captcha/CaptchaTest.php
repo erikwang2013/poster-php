@@ -14,6 +14,7 @@ use PHPUnit\Framework\TestCase;
 class CaptchaTest extends TestCase
 {
     private CaptchaManager $manager;
+    private FileStorage $storage;
     private string $tempDir;
 
     protected function setUp(): void
@@ -21,8 +22,8 @@ class CaptchaTest extends TestCase
         $this->tempDir = sys_get_temp_dir() . '/poster-test-captcha-' . uniqid();
         mkdir($this->tempDir, 0755, true);
         $driver = new GdDriver();
-        $storage = new FileStorage($this->tempDir);
-        $this->manager = new CaptchaManager($driver, $storage);
+        $this->storage = new FileStorage($this->tempDir);
+        $this->manager = new CaptchaManager($driver, $this->storage);
     }
 
     protected function tearDown(): void
@@ -31,13 +32,25 @@ class CaptchaTest extends TestCase
         rmdir($this->tempDir);
     }
 
+    private function getStoredTargets(string $key): array
+    {
+        $stored = $this->storage->get($key);
+        return $stored['targets'] ?? [];
+    }
+
+    private function getStoredSliderX(string $key): int
+    {
+        $stored = $this->storage->get($key);
+        return $stored['x'] ?? 0;
+    }
+
     public function testClickCaptchaGenerateReturnsValidStructure(): void
     {
         $result = $this->manager->create('click')->setDifficulty('easy')->generate();
         $this->assertArrayHasKey('key', $result);
         $this->assertArrayHasKey('image', $result);
         $this->assertArrayHasKey('extra', $result);
-        $this->assertArrayHasKey('targets', $result['extra']);
+        $this->assertArrayHasKey('texts', $result['extra']);
         $this->assertStringStartsWith('data:image/', $result['image']);
         $this->assertNotEmpty($result['key']);
     }
@@ -45,7 +58,7 @@ class CaptchaTest extends TestCase
     public function testClickCaptchaVerifyPassesWithCorrectData(): void
     {
         $result = $this->manager->create('click')->setDifficulty('easy')->generate();
-        $targets = $result['extra']['targets'];
+        $targets = $this->getStoredTargets($result['key']);
         $clickData = [];
         foreach ($targets as $t) {
             $clickData[] = [$t['x'], $t['y']];
@@ -60,7 +73,7 @@ class CaptchaTest extends TestCase
     public function testClickCaptchaIsOneTimeUse(): void
     {
         $result = $this->manager->create('click')->setDifficulty('easy')->generate();
-        $targets = $result['extra']['targets'];
+        $targets = $this->getStoredTargets($result['key']);
         $clickData = [];
         foreach ($targets as $t) {
             $clickData[] = [$t['x'], $t['y']];
@@ -84,7 +97,7 @@ class CaptchaTest extends TestCase
     public function testClickCaptchaAllowsRetryOnFailure(): void
     {
         $result = $this->manager->create('click')->setDifficulty('easy')->generate();
-        $targets = $result['extra']['targets'];
+        $targets = $this->getStoredTargets($result['key']);
         $clickData = array_map(fn($t) => [$t['x'], $t['y']], $targets);
 
         // First: wrong data, should fail but key persists for retry
@@ -122,10 +135,10 @@ class CaptchaTest extends TestCase
         $type = $result['type'];
 
         if ($type === 'click') {
-            $targets = $result['extra']['targets'];
+            $targets = $this->getStoredTargets($result['key']);
             $data = array_map(fn($t) => [$t['x'], $t['y']], $targets);
         } elseif ($type === 'slider') {
-            $data = $result['extra']['x'];
+            $data = $this->getStoredSliderX($result['key']);
         } else {
             // rotate: hard to test since we don't know the stored angle
             $this->assertNotNull($result['key']);
@@ -143,7 +156,6 @@ class CaptchaTest extends TestCase
         $this->assertArrayHasKey('image', $result);
         $this->assertArrayHasKey('extra', $result);
         $this->assertArrayHasKey('puzzle', $result['extra']);
-        $this->assertArrayHasKey('x', $result['extra']);
         $this->assertStringStartsWith('data:image/', $result['image']);
     }
 

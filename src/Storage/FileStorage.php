@@ -75,16 +75,32 @@ class FileStorage implements StorageInterface
         if (!is_file($file)) {
             return 0;
         }
-        $content = file_get_contents($file);
-        if ($content === false) {
+        $fp = fopen($file, 'c+');
+        if (!$fp || !flock($fp, LOCK_EX)) {
+            if ($fp) {
+                fclose($fp);
+            }
+            return 0;
+        }
+        $content = stream_get_contents($fp);
+        if ($content === false || $content === '') {
+            flock($fp, LOCK_UN);
+            fclose($fp);
             return 0;
         }
         $payload = json_decode($content, true);
         if (!is_array($payload)) {
+            flock($fp, LOCK_UN);
+            fclose($fp);
             return 0;
         }
         $payload['attempts'] = ($payload['attempts'] ?? 0) + 1;
-        file_put_contents($file, json_encode($payload, JSON_UNESCAPED_UNICODE), LOCK_EX);
+        ftruncate($fp, 0);
+        rewind($fp);
+        fwrite($fp, json_encode($payload, JSON_UNESCAPED_UNICODE));
+        fflush($fp);
+        flock($fp, LOCK_UN);
+        fclose($fp);
         return $payload['attempts'];
     }
 

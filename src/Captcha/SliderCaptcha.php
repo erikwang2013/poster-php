@@ -52,8 +52,6 @@ class SliderCaptcha extends AbstractCaptcha
             'type'  => 'slider',
             'image' => $bgImage,
             'extra' => [
-                'x'         => $puzzleX,
-                'y'         => $puzzleY,
                 'puzzle'    => $pzImage,
                 'puzzle_w'  => $this->puzzleWidth,
                 'puzzle_h'  => $this->puzzleHeight,

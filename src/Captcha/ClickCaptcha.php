@@ -62,7 +62,14 @@ class ClickCaptcha extends AbstractCaptcha
         $this->store(['targets' => $targets]);
         $image = $bg->output('png');
         $bg->destroy();
-        return ['key' => $this->key, 'type' => 'click', 'image' => $image, 'extra' => ['targets' => $targets]];
+        return [
+            'key'   => $this->key,
+            'type'  => 'click',
+            'image' => $image,
+            'extra' => [
+                'texts' => array_map(fn($t) => ['text' => $t['text'], 'order' => $t['order']], $targets),
+            ],
+        ];
     }
 
     private function placeTargets(): array
@@ -77,8 +84,12 @@ class ClickCaptcha extends AbstractCaptcha
                 default => ['云', '风', '山'],
             };
         for ($i = 0; $i < $this->targetCount; $i++) {
-            $x = mt_rand($margin, $this->width - $margin);
-            $y = mt_rand($margin, $this->height - $margin - 40);
+            $xMin = max(1, $margin);
+            $xMax = max($xMin + 1, $this->width - $margin);
+            $yMin = max(1, $margin);
+            $yMax = max($yMin + 1, $this->height - $margin - 40);
+            $x = mt_rand($xMin, $xMax);
+            $y = mt_rand($yMin, $yMax);
             $word = $words[$i % count($words)];
             $targets[] = ['x' => $x, 'y' => $y, 'text' => $word, 'order' => $i + 1];
         }

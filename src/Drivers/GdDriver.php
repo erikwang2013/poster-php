@@ -161,7 +161,10 @@ class GdDriver implements ImageDriverInterface
         if ($fontFile && is_file($fontFile)) {
             $lines = ($maxWidth > 0) ? $this->wrapTextTtf($text, $fontFile, $size, $maxWidth) : explode("\n", $text);
             foreach ($lines as $i => $line) {
-                $bbox = imagettfbbox($size, $angle, $fontFile, $line);
+                $bbox = @imagettfbbox($size, $angle, $fontFile, $line);
+                if ($bbox === false) {
+                    continue;
+                }
                 $lineW = $bbox[2] - $bbox[0];
                 $lx = match ($align) {
                     'center' => $x - intval($lineW / 2),
@@ -382,7 +385,10 @@ class GdDriver implements ImageDriverInterface
             $current = '';
             foreach ($chars as $char) {
                 $test = $current . $char;
-                $bbox = imagettfbbox($size, 0, $fontFile, $test);
+                $bbox = @imagettfbbox($size, 0, $fontFile, $test);
+                if ($bbox === false) {
+                    continue 2; // skip character that can't be rendered
+                }
                 $w = $bbox[2] - $bbox[0];
                 if ($w > $maxWidth && $current !== '') {
                     $lines[] = $current;

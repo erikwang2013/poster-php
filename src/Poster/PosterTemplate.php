@@ -55,7 +55,7 @@ class PosterTemplate
                 'table'         => new TableElement($def),
                 'chart'         => new ChartElement($def),
                 'calendar'      => new CalendarElement($def),
-                'artistictext'  => new ArtisticTextElement($def),
+                'artistictext', 'artistic-text' => new ArtisticTextElement($def),
                 'emoji'         => new EmojiElement($def),
                 'icon'          => new IconElement($def),
                 'emoticon'      => new EmoticonElement($def),

@@ -317,11 +317,13 @@ Key config options:
 | `captcha.tolerance` | `{click:18,rotate:5,slider:4}` | Per-type tolerance |
 | `image.driver` | `auto` | Image driver: `auto` / `gd` / `imagick` |
 
-## 开源不易，欢迎支持
+## Support Open Source
 
-| 微信 | 支付宝 |
+If you find this project useful, your support is greatly appreciated!
+
+| WeChat | Alipay |
 |:---:|:---:|
-| ![微信](./docs/weixinpay.png "微信") | ![支付宝](./docs/alipay.png "支付宝") |
+| <img src="./docs/weixinpay.png" width="130" height="130" alt="WeChat Pay"> | <img src="./docs/alipay.png" width="130" height="130" alt="Alipay"> |
 
 ---
 

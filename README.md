@@ -648,7 +648,7 @@ src/
 
 | 微信 | 支付宝 |
 |:---:|:---:|
-| ![微信](./docs/weixinpay.png "微信") | ![支付宝](./docs/alipay.png "支付宝") |
+| <img src="./docs/weixinpay.png" width="130" height="130" alt="微信赞赏码"> | <img src="./docs/alipay.png" width="130" height="130" alt="支付宝赞赏码"> |
 
 ---
 

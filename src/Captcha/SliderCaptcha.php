@@ -26,8 +26,8 @@ class SliderCaptcha extends AbstractCaptcha
             $this->puzzleHeight = 40;
         }
 
-        $puzzleX = mt_rand(50, $this->width - $this->puzzleWidth - 50);
-        $puzzleY = mt_rand(20, $this->height - $this->puzzleHeight - 20);
+        $puzzleX = random_int(50, $this->width - $this->puzzleWidth - 50);
+        $puzzleY = random_int(20, $this->height - $this->puzzleHeight - 20);
 
         // Extract puzzle piece from background (before drawing gap)
         $piece = $bg->clone();

@@ -45,7 +45,7 @@ class RotateCaptcha extends AbstractCaptcha
             imagefilter($res, IMG_FILTER_CONTRAST, 12);
         }
 
-        $this->actualAngle = mt_rand(intval($this->minAngle), intval($this->maxAngle));
+        $this->actualAngle = random_int(intval($this->minAngle), intval($this->maxAngle));
         $bg->rotate($this->actualAngle, 'transparent');
 
         $rotated = $bg->getSize();

@@ -88,8 +88,8 @@ class ClickCaptcha extends AbstractCaptcha
             $xMax = max($xMin + 1, $this->width - $margin);
             $yMin = max(1, $margin);
             $yMax = max($yMin + 1, $this->height - $margin - 40);
-            $x = mt_rand($xMin, $xMax);
-            $y = mt_rand($yMin, $yMax);
+            $x = random_int($xMin, $xMax);
+            $y = random_int($yMin, $yMax);
             $word = $words[$i % count($words)];
             $targets[] = ['x' => $x, 'y' => $y, 'text' => $word, 'order' => $i + 1];
         }

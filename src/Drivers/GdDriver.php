@@ -253,6 +253,19 @@ class GdDriver implements ImageDriverInterface
         return $this;
     }
 
+    public function filledArc(int $cx, int $cy, int $w, int $h, int $startAngle, int $endAngle, array $options = []): static
+    {
+        $color  = $options['color'] ?? '#FFFFFF';
+        $rgb    = $this->hexToRgb($color);
+        $alpha  = 0;
+        if (strlen(ltrim($color, '#')) === 8) {
+            $alpha = 127 - intval(hexdec(substr(ltrim($color, '#'), 6, 2)) / 2);
+        }
+        $alloc  = imagecolorallocatealpha($this->resource, $rgb[0], $rgb[1], $rgb[2], $alpha);
+        imagefilledarc($this->resource, $cx, $cy, $w, $h, $startAngle, $endAngle, $alloc, IMG_ARC_PIE);
+        return $this;
+    }
+
     public function line(int $x1, int $y1, int $x2, int $y2, array $options = []): static
     {
         $color = $options['color'] ?? '#000000';

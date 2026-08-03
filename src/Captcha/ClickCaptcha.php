@@ -44,10 +44,8 @@ class ClickCaptcha extends AbstractCaptcha
         }
 
         $targets = $this->placeTargets();
-        $fontFile = dirname(__DIR__, 2) . '/assets/font.ttf';
-        if (!is_file($fontFile)) {
-            $fontFile = '/usr/share/fonts/fonts-gb/GB_ST_GB18030.ttf';
-        }
+        $fontFile = PosterConfig::get('image.font')
+            ?? dirname(__DIR__, 2) . '/src/fonts/Alibaba-PuHuiTi-Regular.ttf';
 
         foreach ($targets as $target) {
             $color = '#FF4444';

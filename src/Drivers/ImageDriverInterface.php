@@ -28,6 +28,8 @@ interface ImageDriverInterface
 
     public function ellipse(int $cx, int $cy, int $rx, int $ry, array $options = []): self;
 
+    public function filledArc(int $cx, int $cy, int $w, int $h, int $startAngle, int $endAngle, array $options = []): self;
+
     public function line(int $x1, int $y1, int $x2, int $y2, array $options = []): self;
 
     public function blur(int $radius = 1): self;

@@ -14,7 +14,7 @@ $result = $manager->create('click')->setDifficulty('easy')->generate();
 
 echo "Key: " . $result['key'] . "\n";
 echo "Image: " . substr($result['image'], 0, 60) . "...\n";
-echo "Targets:\n";
-foreach ($result['extra']['targets'] as $t) {
-    echo "  Order {$t['order']}: \"{$t['text']}\" at ({$t['x']}, {$t['y']})\n";
+echo "Texts:\n";
+foreach ($result['extra']['texts'] as $t) {
+    echo "  Order {$t['order']}: \"{$t['text']}\"\n";
 }

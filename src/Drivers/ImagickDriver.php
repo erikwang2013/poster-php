@@ -183,6 +183,30 @@ class ImagickDriver implements ImageDriverInterface
         return $this;
     }
 
+    public function filledArc(int $cx, int $cy, int $w, int $h, int $startAngle, int $endAngle, array $options = []): static
+    {
+        $draw = new ImagickDraw();
+        $draw->setFillColor(new ImagickPixel($options['color'] ?? '#FFFFFF'));
+
+        $rx = $w / 2;
+        $ry = $h / 2;
+        $sx = $cx + $rx * cos(deg2rad($startAngle));
+        $sy = $cy + $ry * sin(deg2rad($startAngle));
+        $ex = $cx + $rx * cos(deg2rad($endAngle));
+        $ey = $cy + $ry * sin(deg2rad($endAngle));
+
+        $draw->pathStart();
+        $draw->pathMoveToAbsolute($cx, $cy);
+        $draw->pathLineToAbsolute($sx, $sy);
+        $draw->pathEllipticArcAbsolute($rx, $ry, 0, false, true, $ex, $ey);
+        $draw->pathClose();
+        $draw->pathFinish();
+
+        $this->resource->drawImage($draw);
+        $draw->destroy();
+        return $this;
+    }
+
     public function line(int $x1, int $y1, int $x2, int $y2, array $options = []): static
     {
         $draw = new ImagickDraw();

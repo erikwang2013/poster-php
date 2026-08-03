@@ -27,8 +27,14 @@ class Installer
         }
         $dir = dirname($dest);
         if (!is_dir($dir)) {
-            @mkdir($dir, 0755, true);
+            mkdir($dir, 0755, true);
         }
-        copy($source, $dest);
+        $content = file_get_contents($source);
+        $content = str_replace(
+            'dirname(__DIR__)',
+            var_export(dirname(__DIR__), true),
+            $content
+        );
+        file_put_contents($dest, $content);
     }
 }

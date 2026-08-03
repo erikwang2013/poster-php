@@ -127,7 +127,6 @@ class ChartElement extends AbstractElement
         $radius = intval(min($w, $h) / 2) - 10;
         $start  = -90;
 
-        // Track assigned degrees; last slice gets remainder
         $assigned = 0;
         $count = count($data);
 
@@ -141,27 +140,11 @@ class ChartElement extends AbstractElement
                 $slice = intval(round(($val / $total) * 360));
             }
             $assigned += $slice;
-            if ($slice <= 0) { $i = ($i ?? 0) + 1; continue; }
-            $i = $idx;
-            $color = $colors[$i % count($colors)];
-            $rgb = $this->hexToRgb($color);
+            if ($slice <= 0) continue;
 
-            // Draw filled pie slice using native GD filled arc
-            $res = $canvas->getResource();
-            if ($res instanceof \GdImage) {
-                $alloc = imagecolorallocate($res, $rgb[0], $rgb[1], $rgb[2]);
-                imagefilledarc($res, $cx, $cy, $radius * 2, $radius * 2, $start, $start + $slice, $alloc, IMG_ARC_PIE);
-            } else {
-                // Imagick fallback: draw solid wedge via polygon fan
-                $diameter = $radius * 2;
-                $steps = max($slice * 2, 4);
-                for ($d = 0; $d < $steps; $d++) {
-                    $ang = deg2rad($start + ($d / $steps) * $slice);
-                    $canvas->line($cx, $cy, $cx + intval(cos($ang) * $radius), $cy + intval(sin($ang) * $radius), ['color' => $color]);
-                }
-            }
+            $color = $colors[$idx % count($colors)];
+            $canvas->filledArc($cx, $cy, $radius * 2, $radius * 2, $start, $start + $slice, ['color' => $color]);
 
-            // Label at middle angle
             $midAng = deg2rad($start + $slice / 2);
             $lx = $cx + intval(cos($midAng) * ($radius + 25));
             $ly = $cy + intval(sin($midAng) * ($radius + 25));
@@ -171,12 +154,5 @@ class ChartElement extends AbstractElement
 
             $start += $slice;
         }
-    }
-
-    private function hexToRgb(string $hex): array
-    {
-        $hex = ltrim($hex, '#');
-        if (strlen($hex) === 3) $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
-        return [hexdec(substr($hex, 0, 2)), hexdec(substr($hex, 2, 2)), hexdec(substr($hex, 4, 2))];
     }
 }

@@ -17,7 +17,7 @@ class FileStorage implements StorageInterface
     {
         $this->path = $path ?? PosterConfig::get('captcha.file.path') ?? sys_get_temp_dir() . '/poster-captcha';
         if (!is_dir($this->path)) {
-            if (!mkdir($this->path, 0755, true) && !is_dir($this->path)) {
+            if (!mkdir($this->path, 0700, true) && !is_dir($this->path)) {
                 throw new RuntimeException("Cannot create directory: {$this->path}");
             }
         }
@@ -31,7 +31,11 @@ class FileStorage implements StorageInterface
             'expire_at' => time() + $ttl,
             'attempts'  => $data['attempts'] ?? 0,
         ];
-        return file_put_contents($file, json_encode($payload, JSON_UNESCAPED_UNICODE), LOCK_EX) !== false;
+        $written = file_put_contents($file, json_encode($payload, JSON_UNESCAPED_UNICODE), LOCK_EX) !== false;
+        if ($written) {
+            @chmod($file, 0600);
+        }
+        return $written;
     }
 
     public function get(string $key): ?array
@@ -52,7 +56,7 @@ class FileStorage implements StorageInterface
             unlink($file);
             return null;
         }
-        return $payload['data'];
+        return array_merge($payload['data'], ['attempts' => $payload['attempts'] ?? 0]);
     }
 
     public function del(string $key): bool

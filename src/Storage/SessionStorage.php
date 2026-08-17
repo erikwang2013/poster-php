@@ -30,7 +30,7 @@ class SessionStorage implements StorageInterface
             unset($_SESSION[$this->prefix][$key]);
             return null;
         }
-        return $entry['data'];
+        return array_merge($entry['data'], ['attempts' => $entry['attempts'] ?? 0]);
     }
 
     public function del(string $key): bool

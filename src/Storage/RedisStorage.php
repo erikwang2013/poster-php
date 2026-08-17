@@ -36,10 +36,12 @@ class RedisStorage implements StorageInterface
             'expire_at' => time() + $ttl,
             'attempts'  => $data['attempts'] ?? 0,
         ];
-        return $this->redis->setex(
+        $this->redis->setex(
             $this->prefix . $key, $ttl,
             json_encode($payload, JSON_UNESCAPED_UNICODE)
         );
+        // 独立原子计数键：get+setex 非原子会丢计数，INCR 无此问题
+        return $this->redis->setex($this->prefix . $key . ':att', $ttl, 0);
     }
 
     public function get(string $key): ?array
@@ -52,12 +54,14 @@ class RedisStorage implements StorageInterface
         if (!is_array($payload)) {
             return null;
         }
-        return $payload['data'];
+        return array_merge($payload['data'], [
+            'attempts' => (int) $this->redis->get($this->prefix . $key . ':att'),
+        ]);
     }
 
     public function del(string $key): bool
     {
-        $this->redis->del($this->prefix . $key);
+        $this->redis->del([$this->prefix . $key, $this->prefix . $key . ':att']);
         return true;
     }
 
@@ -68,17 +72,15 @@ class RedisStorage implements StorageInterface
 
     public function incrementAttempts(string $key): int
     {
-        $content = $this->redis->get($this->prefix . $key);
-        if ($content === false) {
-            return 0;
+        $counterKey = $this->prefix . $key . ':att';
+        $attempts = $this->redis->incr($counterKey);
+        if ($attempts === 1) {
+            // 旧版本写入的键没有计数键，首次 INCR 时补上过期时间
+            $ttl = $this->redis->ttl($this->prefix . $key);
+            if ($ttl > 0) {
+                $this->redis->expire($counterKey, $ttl);
+            }
         }
-        $payload = json_decode($content, true);
-        if (!is_array($payload)) {
-            return 0;
-        }
-        $payload['attempts'] = ($payload['attempts'] ?? 0) + 1;
-        $ttl = max(1, ($payload['expire_at'] ?? time() + 300) - time());
-        $this->redis->setex($this->prefix . $key, intval($ttl), json_encode($payload, JSON_UNESCAPED_UNICODE));
-        return $payload['attempts'];
+        return $attempts;
     }
 }

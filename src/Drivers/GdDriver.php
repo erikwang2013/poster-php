@@ -11,6 +11,8 @@ use RuntimeException;
 
 class GdDriver implements ImageDriverInterface
 {
+    private const MAX_PIXELS = 40000000;
+
     private $resource;
     private int $width = 0;
     private int $height = 0;
@@ -24,13 +26,19 @@ class GdDriver implements ImageDriverInterface
         if ($info === false) {
             throw new RuntimeException("Cannot read image: $path");
         }
+        if ($info[0] * $info[1] > self::MAX_PIXELS) {
+            throw new RuntimeException("Image too large: {$info[0]}x{$info[1]} (max " . self::MAX_PIXELS . ' pixels)');
+        }
         $this->resource = match ($info[2]) {
-            IMAGETYPE_JPEG => imagecreatefromjpeg($path),
-            IMAGETYPE_PNG  => imagecreatefrompng($path),
-            IMAGETYPE_GIF  => imagecreatefromgif($path),
-            IMAGETYPE_WEBP => imagecreatefromwebp($path),
+            IMAGETYPE_JPEG => @imagecreatefromjpeg($path),
+            IMAGETYPE_PNG  => @imagecreatefrompng($path),
+            IMAGETYPE_GIF  => @imagecreatefromgif($path),
+            IMAGETYPE_WEBP => @imagecreatefromwebp($path),
             default        => throw new RuntimeException("Unsupported image type: " . $info[2]),
         };
+        if ($this->resource === false) {
+            throw new RuntimeException("Failed to decode image: $path");
+        }
         $this->width  = imagesx($this->resource);
         $this->height = imagesy($this->resource);
         return $this;
@@ -115,9 +123,7 @@ class GdDriver implements ImageDriverInterface
                 $maskAlpha = (imagecolorat($mask, $x, $y) >> 24) & 0x7F;
                 if ($maskAlpha < 127) {
                     $src = imagecolorat($this->resource, $x, $y);
-                    $alloc = imagecolorallocatealpha($result,
-                        ($src >> 16) & 0xFF, ($src >> 8) & 0xFF, $src & 0xFF, $maskAlpha);
-                    imagesetpixel($result, $x, $y, $alloc);
+                    imagesetpixel($result, $x, $y, ($src & 0xFFFFFF) | ($maskAlpha << 24));
                 }
             }
         }
@@ -191,6 +197,14 @@ class GdDriver implements ImageDriverInterface
     public function image(ImageDriverInterface $overlay, int $x, int $y, array $options = []): static
     {
         $ov = $overlay->getResource();
+        $owned = false;
+        if ($ov instanceof \Imagick) {
+            $ov = imagecreatefromstring($ov->getImageBlob());
+            if ($ov === false) {
+                throw new RuntimeException('Cannot convert Imagick overlay to GD');
+            }
+            $owned = true;
+        }
         $ovW = imagesx($ov);
         $ovH = imagesy($ov);
 
@@ -198,7 +212,12 @@ class GdDriver implements ImageDriverInterface
         $destH = $options['height'] ?? $ovH;
 
         if (($options['radius'] ?? 0) > 0) {
-            $ov = $this->roundCornersGD($ov, intval($options['radius']));
+            $rounded = $this->roundCornersGD($ov, intval($options['radius']));
+            if ($owned) {
+                imagedestroy($ov);
+            }
+            $ov = $rounded;
+            $owned = true;
         }
 
         if (isset($options['shadow'])) {
@@ -206,6 +225,9 @@ class GdDriver implements ImageDriverInterface
         }
 
         imagecopyresampled($this->resource, $ov, $x, $y, 0, 0, $destW, $destH, $ovW, $ovH);
+        if ($owned) {
+            imagedestroy($ov);
+        }
         return $this;
     }
 
@@ -366,7 +388,7 @@ class GdDriver implements ImageDriverInterface
 
     public function destroy(): void
     {
-        if ($this->resource !== null) {
+        if ($this->resource instanceof \GdImage) {
             imagedestroy($this->resource);
             $this->resource = null;
         }
@@ -512,15 +534,28 @@ class GdDriver implements ImageDriverInterface
         $sAlloc = imagecolorallocatealpha($shadowImg, $rgb[0], $rgb[1], $rgb[2], 0);
         imagefilledrectangle($shadowImg, $blur, $blur, $blur + $w - 1, $blur + $h - 1, $sAlloc);
 
-        for ($i = 0; $i < min($blur * 2, 20); $i++) {
-            imagefilter($shadowImg, IMG_FILTER_GAUSSIAN_BLUR);
+        // Blur on a 1/4-scale copy, then upscale: gaussian blur dominates cost, result is visually equivalent
+        $sw2 = max(1, intdiv($sw, 4));
+        $sh2 = max(1, intdiv($sh, 4));
+        $small = imagecreatetruecolor($sw2, $sh2);
+        imagealphablending($small, false);
+        imagesavealpha($small, true);
+        imagecopyresampled($small, $shadowImg, 0, 0, 0, 0, $sw2, $sh2, $sw, $sh);
+        imagedestroy($shadowImg);
+        for ($i = 0; $i < min(max(3, intdiv($blur, 2)), 8); $i++) {
+            imagefilter($small, IMG_FILTER_GAUSSIAN_BLUR);
         }
+        $final = imagecreatetruecolor($sw, $sh);
+        imagealphablending($final, false);
+        imagesavealpha($final, true);
+        imagecopyresampled($final, $small, 0, 0, 0, 0, $sw, $sh, $sw2, $sh2);
+        imagedestroy($small);
 
         imagecopy(
-            $this->resource, $shadowImg,
+            $this->resource, $final,
             $x + $offsetX - $blur, $y + $offsetY - $blur,
             0, 0, $sw, $sh
         );
-        imagedestroy($shadowImg);
+        imagedestroy($final);
     }
 }

@@ -45,7 +45,15 @@ class RotateCaptcha extends AbstractCaptcha
             imagefilter($res, IMG_FILTER_CONTRAST, 12);
         }
 
-        $this->actualAngle = random_int(intval($this->minAngle), intval($this->maxAngle));
+        // 按难度调节角度范围；setAngleRange 的上下限优先，并钳制 min<=max
+        [$rangeMin, $rangeMax] = match ($this->difficulty) {
+            'easy' => [10, 90],
+            'hard' => [90, 330],
+            default => [30, 200],
+        };
+        $lo = max(intval($this->minAngle), $rangeMin);
+        $hi = max($lo, min(intval($this->maxAngle), $rangeMax));
+        $this->actualAngle = random_int($lo, $hi);
         $bg->rotate($this->actualAngle, 'transparent');
 
         $rotated = $bg->getSize();

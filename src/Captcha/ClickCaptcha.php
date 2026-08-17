@@ -14,7 +14,7 @@ class ClickCaptcha extends AbstractCaptcha
 {
     private string $targetType = 'text';
     private ?array $words = null;
-    protected int $targetCount = 5;
+    protected int $targetCount;
 
     public function setWords(array $words): static
     {
@@ -41,6 +41,8 @@ class ClickCaptcha extends AbstractCaptcha
             $this->targetCount = 2;
         } elseif ($this->difficulty === 'hard') {
             $this->targetCount = 4;
+        } else {
+            $this->targetCount = 3;
         }
 
         $targets = $this->placeTargets();
@@ -74,9 +76,10 @@ class ClickCaptcha extends AbstractCaptcha
     {
         $targets = [];
         $margin = 40;
+        // ?: 而非 ??：setWords([]) 时空数组会走到兜底，避免 count(0) 取模除零
         $words = $this->words
-            ?? PosterConfig::get('captcha.click_words')
-            ?? match ($this->difficulty) {
+            ?: PosterConfig::get('captcha.click_words')
+            ?: match ($this->difficulty) {
                 'easy' => ['云', '风'],
                 'hard' => ['星', '雨', '山', '火'],
                 default => ['云', '风', '山'],

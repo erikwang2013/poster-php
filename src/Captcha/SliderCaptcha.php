@@ -26,8 +26,13 @@ class SliderCaptcha extends AbstractCaptcha
             $this->puzzleHeight = 40;
         }
 
-        $puzzleX = random_int(50, $this->width - $this->puzzleWidth - 50);
-        $puzzleY = random_int(20, $this->height - $this->puzzleHeight - 20);
+        // 小背景图时 min 可能 > max，钳制到合法区间
+        $xMin = 50;
+        $xMax = max($xMin, $this->width - $this->puzzleWidth - $xMin);
+        $yMin = 20;
+        $yMax = max($yMin, $this->height - $this->puzzleHeight - $yMin);
+        $puzzleX = random_int($xMin, $xMax);
+        $puzzleY = random_int($yMin, $yMax);
 
         // Extract puzzle piece from background (before drawing gap)
         $piece = $bg->clone();
@@ -38,6 +43,17 @@ class SliderCaptcha extends AbstractCaptcha
             'color'  => '#00000040',
             'filled' => true,
         ]);
+
+        // 混淆：全图撒同色同尺寸噪点块，让"找最暗区域"的扫描无法唯一确定 gap 位置
+        for ($i = 0; $i < 30; $i++) {
+            $bg->ellipse(
+                random_int(0, $this->width - 1),
+                random_int(0, $this->height - 1),
+                random_int(intval($this->puzzleWidth / 3), intval($this->puzzleWidth / 2)),
+                random_int(intval($this->puzzleHeight / 3), intval($this->puzzleHeight / 2)),
+                ['color' => '#00000040', 'filled' => true]
+            );
+        }
 
         $this->store(['x' => $puzzleX, 'y' => $puzzleY]);
 

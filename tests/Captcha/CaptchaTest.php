@@ -192,4 +192,39 @@ class CaptchaTest extends TestCase
         $this->assertArrayHasKey('puzzle', $result['extra']);
         $this->assertNotEmpty($result['extra']['puzzle']);
     }
+
+    public function testMaxAttemptsBlocksAfterLimit(): void
+    {
+        \Erikwang2013\Poster\PosterConfig::merge(['captcha' => ['max_attempts' => 2]]);
+        $result = $this->manager->create('click')->setDifficulty('easy')->generate();
+        $targets = $this->getStoredTargets($result['key']);
+        $clickData = array_map(fn($t) => [$t['x'], $t['y']], $targets);
+
+        $this->assertFalse($this->manager->verify($result['key'], ['type' => 'click', 'data' => [[0, 0]]]));
+        $this->assertFalse($this->manager->verify($result['key'], ['type' => 'click', 'data' => [[0, 0]]]));
+        // 达到上限后 key 被删除，正确答案也无法通过
+        $this->assertFalse($this->manager->verify($result['key'], ['type' => 'click', 'data' => $clickData]));
+        \Erikwang2013\Poster\PosterConfig::reset();
+    }
+
+    public function testRotateDifficultyAffectsAngleRange(): void
+    {
+        $result = $this->manager->create('rotate')->setDifficulty('easy')->generate();
+        $stored = $this->storage->get($result['key']);
+        $this->assertGreaterThanOrEqual(10, $stored['angle']);
+        $this->assertLessThanOrEqual(90, $stored['angle']);
+    }
+
+    public function testSliderCaptchaWorksWithSmallBackground(): void
+    {
+        $testImg = imagecreatetruecolor(100, 80);
+        imagefill($testImg, 0, 0, imagecolorallocate($testImg, 200, 100, 50));
+        $testPath = $this->tempDir . '/test-bg-small.png';
+        imagepng($testImg, $testPath);
+        imagedestroy($testImg);
+
+        $result = $this->manager->create('slider')->setBackground($testPath)->generate();
+        $this->assertNotEmpty($result['key']);
+        unlink($testPath);
+    }
 }

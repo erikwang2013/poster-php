@@ -14,7 +14,18 @@ use RuntimeException;
 
 class ImagickDriver implements ImageDriverInterface
 {
+    private const MEMORY_LIMIT = 256 * 1024 * 1024;
+    private const MAP_LIMIT = 512 * 1024 * 1024;
+    private const PIXELS_LIMIT = 40000000;
+
     private Imagick $resource;
+
+    public function __construct()
+    {
+        Imagick::setResourceLimit(Imagick::RESOURCETYPE_MEMORY, self::MEMORY_LIMIT);
+        Imagick::setResourceLimit(Imagick::RESOURCETYPE_MAP, self::MAP_LIMIT);
+        Imagick::setResourceLimit(Imagick::RESOURCETYPE_PIXELS, self::PIXELS_LIMIT);
+    }
 
     public function load(string $path): static
     {
@@ -114,6 +125,14 @@ class ImagickDriver implements ImageDriverInterface
     public function image(ImageDriverInterface $overlay, int $x, int $y, array $options = []): static
     {
         $ov = $overlay->getResource();
+        if ($ov instanceof \Imagick) {
+            $ov = clone $ov;
+        } else {
+            ob_start();
+            imagepng($ov);
+            $ov = new Imagick();
+            $ov->readImageBlob(ob_get_clean());
+        }
         $destW = $options['width'] ?? $ov->getImageWidth();
         $destH = $options['height'] ?? $ov->getImageHeight();
 
@@ -133,6 +152,7 @@ class ImagickDriver implements ImageDriverInterface
         }
 
         $this->resource->compositeImage($ov, Imagick::COMPOSITE_OVER, $x, $y);
+        $ov->destroy();
         return $this;
     }
 
@@ -247,22 +267,27 @@ class ImagickDriver implements ImageDriverInterface
             mkdir($dir, 0755, true);
         }
 
+        $prev = $this->resource->getImageFormat();
         $this->resource->setImageFormat(strtolower($format));
         if (in_array(strtolower($format), ['jpg', 'jpeg'])) {
             $this->resource->setImageCompression(Imagick::COMPRESSION_JPEG);
             $this->resource->setImageCompressionQuality($quality);
         }
-        return $this->resource->writeImage($path);
+        $result = $this->resource->writeImage($path);
+        $this->resource->setImageFormat($prev);
+        return $result;
     }
 
     public function output(string $format = 'jpg', int $quality = 90): string
     {
+        $prev = $this->resource->getImageFormat();
         $this->resource->setImageFormat(strtolower($format));
         if (in_array(strtolower($format), ['jpg', 'jpeg'])) {
             $this->resource->setImageCompression(Imagick::COMPRESSION_JPEG);
             $this->resource->setImageCompressionQuality($quality);
         }
         $data = $this->resource->getImageBlob();
+        $this->resource->setImageFormat($prev);
         return 'data:image/' . strtolower($format) . ';base64,' . base64_encode($data);
     }
 

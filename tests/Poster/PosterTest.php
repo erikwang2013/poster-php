@@ -6,9 +6,21 @@
 
 namespace Erikwang2013\Poster\Tests\Poster;
 
+use Erikwang2013\Poster\Drivers\GdDriver;
 use Erikwang2013\Poster\Poster\PosterBuilder;
 use Erikwang2013\Poster\Poster\PosterTemplate;
 use PHPUnit\Framework\TestCase;
+
+class TextCountingDriver extends GdDriver
+{
+    public int $textCalls = 0;
+
+    public function text(string $text, int $x, int $y, array $options = []): static
+    {
+        $this->textCalls++;
+        return parent::text($text, $x, $y, $options);
+    }
+}
 
 class PosterTest extends TestCase
 {
@@ -23,6 +35,20 @@ class PosterTest extends TestCase
         $result = $builder->save($path);
         $this->assertTrue($result);
         $this->assertFileExists($path);
+        unlink($path);
+        $builder->destroy();
+    }
+
+    public function testSaveThenOutputRendersElementsOnce(): void
+    {
+        $driver = new TextCountingDriver();
+        $builder = new PosterBuilder($driver);
+        $builder->width(100)->height(100)->background('#FFFFFF');
+        $builder->addText('Once', ['x' => 10, 'y' => 50, 'size' => 16, 'color' => '#000000']);
+        $path = sys_get_temp_dir() . '/poster-test-save-output-' . uniqid() . '.jpg';
+        $this->assertTrue($builder->save($path));
+        $this->assertStringStartsWith('data:image/png;base64,', $builder->output('png'));
+        $this->assertSame(1, $driver->textCalls);
         unlink($path);
         $builder->destroy();
     }

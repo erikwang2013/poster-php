@@ -448,7 +448,7 @@ class QrcodeGenerator
     private function renderImage(array $modules, int $moduleCount): GdImage
     {
         $totalCount = $moduleCount + $this->margin * 2;
-        $scale = intval($this->size / $totalCount);
+        $scale = max(1, intval($this->size / $totalCount));
         $imgSize = $totalCount * $scale;
 
         $img = imagecreatetruecolor($imgSize, $imgSize);

@@ -36,4 +36,14 @@ class QrcodeTest extends TestCase
         $this->assertGreaterThan(500, strlen($pngData));
         imagedestroy($image);
     }
+
+    public function testSmallSizeDoesNotCrash(): void
+    {
+        $qr = new QrcodeGenerator();
+        $qr->setText('x')->setSize(21);
+        $image = $qr->render();
+        $this->assertInstanceOf(\GdImage::class, $image);
+        $this->assertGreaterThan(0, imagesx($image));
+        imagedestroy($image);
+    }
 }

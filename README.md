@@ -68,15 +68,15 @@ $result = captcha_create('click', [
 //     'key'   => 'abc123...',           // 验证唯一标识，传给前端
 //     'image' => 'data:image/png;base64,...', // 图片 base64
 //     'extra' => [
-//         'targets' => [
-//             ['order' => 1, 'text' => '树', 'x' => 120, 'y' => 80],
-//             ['order' => 2, 'text' => '鸟', 'x' => 200, 'y' => 150],
-//             ['order' => 3, 'text' => '花', 'x' => 310, 'y' => 95],
+//         'texts' => [
+//             ['order' => 1, 'text' => '树'],
+//             ['order' => 2, 'text' => '鸟'],
+//             ['order' => 3, 'text' => '花'],
 //         ],
 //     ],
 // ];
 
-// 前端根据 targets 渲染提示文字，用户依次点击对应位置
+// 前端按 order 顺序展示提示文字，用户依次点击对应位置（目标坐标不返回，仅服务端校验）
 // 前端提交用户点击坐标 [[x1,y1], [x2,y2], [x3,y3]]
 $pass = captcha_verify($result['key'], 'click', [[120, 80], [200, 150], [310, 95]]);
 // 返回 true / false，容差半径 18px
@@ -88,8 +88,7 @@ use Erikwang2013\Poster\Storage\FileStorage;
 
 $manager = new CaptchaManager(DriverFactory::create(), new FileStorage());
 $captcha = $manager->create('click')
-    ->setDifficulty('hard')
-    ->setTargetCount(4)            // 自定义目标数量 1-5
+    ->setDifficulty('hard')        // easy=2目标 | medium=3目标 | hard=4目标
     ->setTargetType('text')        // 'text' 文字 | 'icon' 图标
     ->setWords(['猫', '狗', '鸟', '鱼']) // 自定义文字池（可选）
     ->setBackground('/path/to/bg.jpg');
@@ -150,7 +149,7 @@ $result = captcha_create('random');
 // 前端根据 type 渲染对应的交互组件
 switch ($result['type']) {
     case 'click':
-        // 渲染点击组件：展示图片，用户依次点击 targets
+        // 渲染点击组件：展示图片，用户依次点击 extra.texts 提示文字
         break;
     case 'rotate':
         // 渲染旋转组件：展示图片，用户拖动旋转

@@ -28,6 +28,7 @@ class PosterBuilder
     private ?string $pendingBgImage = null;
     private ?array $pendingGradient = null;
     private bool $canvasReady = false;
+    private bool $rendered = false;
 
     public function __construct(?ImageDriverInterface $driver = null)
     {
@@ -75,6 +76,9 @@ class PosterBuilder
 
     private function render(): void
     {
+        if ($this->rendered) {
+            return;
+        }
         if ($this->template !== null) {
             $this->elements = $this->template->build($this->templateVars);
             $this->width = $this->template->getWidth();
@@ -91,11 +95,14 @@ class PosterBuilder
                 $r1 = hexdec(substr($c1, 1, 2)); $g1 = hexdec(substr($c1, 3, 2)); $b1 = hexdec(substr($c1, 5, 2));
                 $r2 = hexdec(substr($c2, 1, 2)); $g2 = hexdec(substr($c2, 3, 2)); $b2 = hexdec(substr($c2, 5, 2));
                 $steps = $dir === 'vertical' ? $this->height : $this->width;
-                for ($i = 0; $i < $steps; $i++) {
-                    $ratio = $i / max($steps - 1, 1);
+                $band = 8;
+                for ($i = 0; $i < $steps; $i += $band) {
+                    // 取色带中点比例，8px 一档近似线性渐变，避免逐像素 line()
+                    $ratio = ($i + $band / 2) / max($steps - 1, 1);
                     $color = sprintf('#%02X%02X%02X', intval($r1 + ($r2-$r1)*$ratio), intval($g1 + ($g2-$g1)*$ratio), intval($b1 + ($b2-$b1)*$ratio));
-                    if ($dir === 'vertical') $this->canvas->line(0, $i, $this->width-1, $i, ['color'=>$color]);
-                    else $this->canvas->line($i, 0, $i, $this->height-1, ['color'=>$color]);
+                    $height = min($band, $steps - $i);
+                    if ($dir === 'vertical') $this->canvas->rectangle(0, $i, $this->width, $height, ['color'=>$color, 'filled'=>true]);
+                    else $this->canvas->rectangle($i, 0, $height, $this->height, ['color'=>$color, 'filled'=>true]);
                 }
             } elseif ($this->pendingBgImage !== null) {
                 $this->canvas->create($this->width, $this->height);
@@ -115,6 +122,7 @@ class PosterBuilder
             if (method_exists($element, 'resolve')) $element->resolve($this->templateVars);
             $element->render($this->canvas);
         }
+        $this->rendered = true;
     }
 
     public function destroy(): void { $this->canvas->destroy(); }

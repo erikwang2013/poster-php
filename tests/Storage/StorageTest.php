@@ -57,4 +57,16 @@ class StorageTest extends TestCase
         $this->assertTrue($this->storage->del($key));
         $this->assertNull($this->storage->get($key));
     }
+
+    public function testAttemptsPersistAfterIncrement(): void
+    {
+        $key = 'attempts-key';
+        $this->storage->set($key, ['type' => 'click'], 60);
+
+        $this->assertSame(0, $this->storage->get($key)['attempts']);
+        $this->assertSame(1, $this->storage->incrementAttempts($key));
+        $this->assertSame(1, $this->storage->get($key)['attempts']);
+        $this->assertSame(2, $this->storage->incrementAttempts($key));
+        $this->assertSame(2, $this->storage->get($key)['attempts']);
+    }
 }

@@ -8,10 +8,12 @@
 namespace Erikwang2013\Poster\Captcha;
 
 use Erikwang2013\Poster\PosterConfig;
+use InvalidArgumentException;
 
 
 class ClickCaptcha extends AbstractCaptcha
 {
+    /** 目标类型：目前仅支持 'text'（中文字符），见设计文档；'image' 等类型尚无资源与配置支撑 */
     private string $targetType = 'text';
     private ?array $words = null;
     protected int $targetCount;
@@ -35,6 +37,12 @@ class ClickCaptcha extends AbstractCaptcha
 
     public function generate(): array
     {
+        if ($this->targetType !== 'text') {
+            throw new InvalidArgumentException(sprintf(
+                'Unsupported click target type "%s"; supported: text',
+                $this->targetType
+            ));
+        }
         $this->generateKey();
         $bg = $this->createBackground();
         if ($this->difficulty === 'easy') {

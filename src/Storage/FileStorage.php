@@ -16,10 +16,11 @@ class FileStorage implements StorageInterface
     public function __construct(?string $path = null)
     {
         $this->path = $path ?? PosterConfig::get('captcha.file.path') ?? sys_get_temp_dir() . '/poster-captcha';
-        if (!is_dir($this->path)) {
-            if (!mkdir($this->path, 0700, true) && !is_dir($this->path)) {
-                throw new RuntimeException("Cannot create directory: {$this->path}");
-            }
+        if (file_exists($this->path) && !is_dir($this->path)) {
+            throw new RuntimeException("Path is not a directory: {$this->path}");
+        }
+        if (!is_dir($this->path) && !mkdir($this->path, 0700, true) && !is_dir($this->path)) {
+            throw new RuntimeException("Cannot create directory: {$this->path}");
         }
     }
 
@@ -31,7 +32,11 @@ class FileStorage implements StorageInterface
             'expire_at' => time() + $ttl,
             'attempts'  => $data['attempts'] ?? 0,
         ];
-        $written = file_put_contents($file, json_encode($payload, JSON_UNESCAPED_UNICODE), LOCK_EX) !== false;
+        $encoded = json_encode($payload, JSON_UNESCAPED_UNICODE);
+        if ($encoded === false) {
+            return false;
+        }
+        $written = file_put_contents($file, $encoded, LOCK_EX) !== false;
         if ($written) {
             @chmod($file, 0600);
         }

@@ -102,9 +102,12 @@ class IconElement extends AbstractElement
 
     private function codepointToChar(string $codepoint): string
     {
-        // Handle \u{XXXX} format
-        $hex = str_replace(['\\u{', '\\u', '}'], '', $codepoint);
-        $cp = hexdec(trim($hex));
+        // Handle formats: \u{XXXX}, \uXXXX, U+XXXX, XXXX
+        $hex = trim(str_replace(['\\u{', '\\u', 'U+', 'u+', '}'], '', $codepoint));
+        if (!ctype_xdigit($hex)) {
+            return '';
+        }
+        $cp = hexdec($hex);
         return mb_chr($cp, 'UTF-8') ?: '';
     }
 }

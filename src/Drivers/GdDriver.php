@@ -46,6 +46,9 @@ class GdDriver implements ImageDriverInterface
 
     public function create(int $width, int $height): static
     {
+        if ($width <= 0 || $height <= 0) {
+            throw new InvalidArgumentException("Width and height must be greater than 0, got {$width}x{$height}");
+        }
         $this->resource = imagecreatetruecolor($width, $height);
         imagealphablending($this->resource, true);
         imagesavealpha($this->resource, true);

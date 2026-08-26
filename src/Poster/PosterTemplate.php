@@ -33,7 +33,17 @@ class PosterTemplate
 
     public static function fromJson(string $json): self
     {
-        return self::fromConfig(json_decode($json, true) ?? []);
+        $data = json_decode($json, true);
+        if ($data === null) {
+            // 非法 JSON（解析失败）回退默认配置
+            return self::fromConfig([]);
+        }
+        if (!is_array($data)) {
+            throw new \InvalidArgumentException(
+                'Invalid JSON: expected an object, got ' . get_debug_type($data)
+            );
+        }
+        return self::fromConfig($data);
     }
 
     public function getWidth(): int { return $this->width; }

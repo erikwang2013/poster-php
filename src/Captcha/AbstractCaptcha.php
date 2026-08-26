@@ -9,6 +9,7 @@ namespace Erikwang2013\Poster\Captcha;
 use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 use Erikwang2013\Poster\Storage\StorageInterface;
 use Erikwang2013\Poster\PosterConfig;
+use InvalidArgumentException;
 
 abstract class AbstractCaptcha implements CaptchaInterface
 {
@@ -70,6 +71,12 @@ abstract class AbstractCaptcha implements CaptchaInterface
 
     private function generateProceduralBackground(ImageDriverInterface $bg, string $style): void
     {
+        if (!in_array($style, ['minimal', 'vibrant', 'natural'], true)) {
+            throw new InvalidArgumentException(sprintf(
+                'Unknown background style "%s"; supported: minimal, vibrant, natural',
+                $style
+            ));
+        }
         $this->generateGradient($bg, $style);
         $this->generateDecorations($bg, $style);
         $this->generateNoise($bg, $style);

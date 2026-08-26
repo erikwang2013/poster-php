@@ -77,6 +77,9 @@ class EmojiElement extends AbstractElement
         }
         // Support formats: "U+1F600", "1F600", "0x1F600"
         $hex = str_replace(['U+', 'u+', '0x', '0X'], '', trim($codepoint));
+        if (!ctype_xdigit($hex)) {
+            return '';
+        }
         $cp = hexdec($hex);
         return mb_chr($cp, 'UTF-8') ?: '';
     }

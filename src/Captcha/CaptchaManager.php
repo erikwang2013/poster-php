@@ -73,7 +73,7 @@ class CaptchaManager
 
     private function checkClick(array $stored, mixed $userData, int $tolerance): bool
     {
-        if (!is_array($userData) || !isset($stored['targets']) || !is_array($stored['targets'])) {
+        if (!is_array($userData) || !isset($stored['targets']) || !is_array($stored['targets']) || $stored['targets'] === []) {
             return false;
         }
         if (count($userData) !== count($stored['targets'])) {

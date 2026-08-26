@@ -87,6 +87,9 @@ class QrcodeGenerator
         39 => 0x27541, 40 => 0x28C69,
     ];
 
+    // Coordinates of data modules; the mask applies only to these, never to function patterns
+    private array $dataCells = [];
+
     // --- Public API ---
     public function setText(string $text): static { $this->text = $text; return $this; }
     public function setSize(int $size): static { $this->size = max(21, $size); return $this; }
@@ -97,7 +100,7 @@ class QrcodeGenerator
 
     public function render(): GdImage
     {
-        if (empty($this->text)) {
+        if ($this->text === '') {
             throw new InvalidArgumentException('QR code text cannot be empty');
         }
 
@@ -120,7 +123,7 @@ class QrcodeGenerator
         $this->placeData($modules, $dataBits, $moduleCount);
 
         $mask = $this->bestMask($modules, $moduleCount);
-        $this->applyMask($modules, $moduleCount, $mask);
+        $this->applyMask($modules, $mask);
         $this->placeFormat($modules, $ecLevelIndex, $mask, $moduleCount);
         if ($version >= 7) {
             $this->placeVersion($modules, $version, $moduleCount);
@@ -283,6 +286,7 @@ class QrcodeGenerator
 
     private function placeData(array &$m, string $bits, int $n): void
     {
+        $this->dataCells = [];
         $idx = 0;
         $up = true;
         $col = $n - 1;
@@ -295,6 +299,7 @@ class QrcodeGenerator
                     $cc = $col - $c;
                     if ($m[$row][$cc] === null) {
                         $m[$row][$cc] = $idx < strlen($bits) && $bits[$idx] === '1';
+                        $this->dataCells[] = [$row, $cc];
                         $idx++;
                     }
                 }
@@ -305,25 +310,23 @@ class QrcodeGenerator
     }
 
     // --- Mask patterns ---
-    private function applyMask(array &$m, int $n, int $mask): void
+    // Mask applies to the encoding region only; function patterns (finder, timing,
+    // alignment, separator, dark module, format) must never be inverted.
+    private function applyMask(array &$m, int $mask): void
     {
-        for ($r = 0; $r < $n; $r++) {
-            for ($c = 0; $c < $n; $c++) {
-                if ($m[$r][$c] !== null && is_bool($m[$r][$c])) {
-                    $invert = match ($mask) {
-                        0 => ($r + $c) % 2 === 0,
-                        1 => $r % 2 === 0,
-                        2 => $c % 3 === 0,
-                        3 => ($r + $c) % 3 === 0,
-                        4 => (intval($r / 2) + intval($c / 3)) % 2 === 0,
-                        5 => ($r * $c) % 2 + ($r * $c) % 3 === 0,
-                        6 => (($r * $c) % 2 + ($r * $c) % 3) % 2 === 0,
-                        7 => (($r + $c) % 2 + ($r * $c) % 3) % 2 === 0,
-                        default => false,
-                    };
-                    if ($invert) $m[$r][$c] = !$m[$r][$c];
-                }
-            }
+        foreach ($this->dataCells as [$r, $c]) {
+            $invert = match ($mask) {
+                0 => ($r + $c) % 2 === 0,
+                1 => $r % 2 === 0,
+                2 => $c % 3 === 0,
+                3 => ($r + $c) % 3 === 0,
+                4 => (intval($r / 2) + intval($c / 3)) % 2 === 0,
+                5 => ($r * $c) % 2 + ($r * $c) % 3 === 0,
+                6 => (($r * $c) % 2 + ($r * $c) % 3) % 2 === 0,
+                7 => (($r + $c) % 2 + ($r * $c) % 3) % 2 === 0,
+                default => false,
+            };
+            if ($invert) $m[$r][$c] = !$m[$r][$c];
         }
     }
 
@@ -335,7 +338,7 @@ class QrcodeGenerator
 
         for ($mask = 0; $mask < 8; $mask++) {
             $copy = array_map(fn($row) => array_map(fn($v) => $v, $row), $test);
-            $this->applyMask($copy, $n, $mask);
+            $this->applyMask($copy, $mask);
             $score = $this->penalty($copy, $n);
             if ($score < $bestScore) {
                 $bestScore = $score;

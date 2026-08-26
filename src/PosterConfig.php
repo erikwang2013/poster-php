@@ -10,31 +10,39 @@ class PosterConfig
 {
     private static ?array $config = null;
     private static int $loadedMtime = 0;
+    private static ?string $loadedPath = null;
 
     public static function load(?string $path = null): array
     {
         $defaultPath = dirname(__DIR__) . '/config/poster.php';
-        $resolvedPath = $path ?? self::findProjectConfig() ?? $defaultPath;
+        $resolvedPath = $path ?? self::$loadedPath ?? self::findProjectConfig() ?? $defaultPath;
 
         $currentMtime = is_file($resolvedPath) ? (int) filemtime($resolvedPath) : 0;
-        if (self::$config !== null && $path === null && $currentMtime === self::$loadedMtime) {
+        if (self::$config !== null
+            && self::$loadedPath === $resolvedPath
+            && $currentMtime === self::$loadedMtime) {
             return self::$config;
         }
 
         self::$config = require $resolvedPath;
         self::$loadedMtime = $currentMtime;
+        self::$loadedPath = $resolvedPath;
         return self::$config;
     }
 
     private static function findProjectConfig(): ?string
     {
-        $projectRoot = dirname(__DIR__, 3);
-        foreach ([
-            $projectRoot . '/config/poster.php',
-            $projectRoot . '/config/autoload/poster.php',
-        ] as $f) {
-            if (is_file($f)) {
-                return $f;
+        // 项目根推导：与 Installer::copyConfig 发布位置一致，取当前工作目录；
+        // 兜底 src/ 上一级（经典布局 项目/包根/src 时即项目根）。
+        $roots = array_unique(array_filter([getcwd() ?: '', dirname(__DIR__, 2)]));
+        foreach ($roots as $projectRoot) {
+            foreach ([
+                $projectRoot . '/config/poster.php',
+                $projectRoot . '/config/autoload/poster.php',
+            ] as $f) {
+                if (is_file($f)) {
+                    return $f;
+                }
             }
         }
         return null;
@@ -63,5 +71,6 @@ class PosterConfig
     public static function reset(): void
     {
         self::$config = null;
+        self::$loadedPath = null;
     }
 }

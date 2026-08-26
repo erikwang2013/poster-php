@@ -22,7 +22,7 @@ abstract class AbstractElement implements ElementInterface
 
     protected function resolvePlaceholders(string $text, array $variables): string
     {
-        return preg_replace_callback('/\{\{(\w+)\}\}/', function ($m) use ($variables) {
+        return preg_replace_callback('/\{\{\s*(\w+)\s*\}\}/', function ($m) use ($variables) {
             return $variables[$m[1]] ?? $m[0];
         }, $text);
     }

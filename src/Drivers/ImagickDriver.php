@@ -307,7 +307,9 @@ class ImagickDriver implements ImageDriverInterface
     public function clone(): static
     {
         $driver = new self();
-        $driver->resource = clone $this->resource;
+        if (isset($this->resource)) {
+            $driver->resource = clone $this->resource;
+        }
         return $driver;
     }
 

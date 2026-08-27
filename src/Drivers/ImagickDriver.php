@@ -22,9 +22,15 @@ class ImagickDriver implements ImageDriverInterface
 
     public function __construct()
     {
-        Imagick::setResourceLimit(Imagick::RESOURCETYPE_MEMORY, self::MEMORY_LIMIT);
-        Imagick::setResourceLimit(Imagick::RESOURCETYPE_MAP, self::MAP_LIMIT);
-        Imagick::setResourceLimit(Imagick::RESOURCETYPE_PIXELS, self::PIXELS_LIMIT);
+        if (defined('Imagick::RESOURCETYPE_MEMORY')) {
+            Imagick::setResourceLimit(Imagick::RESOURCETYPE_MEMORY, self::MEMORY_LIMIT);
+        }
+        if (defined('Imagick::RESOURCETYPE_MAP')) {
+            Imagick::setResourceLimit(Imagick::RESOURCETYPE_MAP, self::MAP_LIMIT);
+        }
+        if (defined('Imagick::RESOURCETYPE_PIXELS')) {
+            Imagick::setResourceLimit(Imagick::RESOURCETYPE_PIXELS, self::PIXELS_LIMIT);
+        }
     }
 
     public function load(string $path): static

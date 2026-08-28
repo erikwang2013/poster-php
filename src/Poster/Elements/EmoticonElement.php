@@ -10,6 +10,8 @@ use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 
 class EmoticonElement extends AbstractElement
 {
+    protected array $resolveKeys = ['text'];
+
     // Common kaomoji / emoticons
     private const KAOMOJI = [
         'happy'    => '(｡•̀ᴗ-)✧',
@@ -52,14 +54,6 @@ class EmoticonElement extends AbstractElement
         }
 
         $canvas->text($content, $x, $y, $opts);
-    }
-
-    public function resolve(array $variables): static
-    {
-        if (isset($this->options['text'])) {
-            $this->options['text'] = $this->resolvePlaceholders($this->options['text'], $variables);
-        }
-        return $this;
     }
 
     /**

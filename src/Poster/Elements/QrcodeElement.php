@@ -13,6 +13,8 @@ use Erikwang2013\Poster\Qrcode\QrcodeGenerator;
 
 class QrcodeElement extends AbstractElement
 {
+    protected array $resolveKeys = ['content'];
+
     public function render(ImageDriverInterface $canvas): void
     {
         $content = $this->options['content'] ?? '';
@@ -53,11 +55,4 @@ class QrcodeElement extends AbstractElement
         }
     }
 
-    public function resolve(array $variables): static
-    {
-        if (isset($this->options['content'])) {
-            $this->options['content'] = $this->resolvePlaceholders($this->options['content'], $variables);
-        }
-        return $this;
-    }
 }

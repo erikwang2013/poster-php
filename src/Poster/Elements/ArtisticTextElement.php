@@ -11,6 +11,8 @@ use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 
 class ArtisticTextElement extends AbstractElement
 {
+    protected array $resolveKeys = ['text', 'content'];
+
     public function render(ImageDriverInterface $canvas): void
     {
         $text  = $this->options['text'] ?? $this->options['content'] ?? '';
@@ -129,12 +131,4 @@ class ArtisticTextElement extends AbstractElement
         }
     }
 
-    public function resolve(array $variables): static
-    {
-        $key = isset($this->options['text']) ? 'text' : 'content';
-        if (isset($this->options[$key])) {
-            $this->options[$key] = $this->resolvePlaceholders($this->options[$key], $variables);
-        }
-        return $this;
-    }
 }

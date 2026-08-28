@@ -33,7 +33,6 @@ class CalendarElement extends AbstractElement
         $dayNames = $startDay === 0
             ? ['日', '一', '二', '三', '四', '五', '六']
             : ['一', '二', '三', '四', '五', '六', '日'];
-        $dayNamesEn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
         $daysInMonth = intval(date('t', mktime(0, 0, 0, $month, 1, $year)));
         $firstDow    = intval(date('w', mktime(0, 0, 0, $month, 1, $year)));

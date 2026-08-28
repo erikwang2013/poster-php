@@ -27,7 +27,6 @@ class PosterBuilder
     private ?string $pendingBgColor = null;
     private ?string $pendingBgImage = null;
     private ?array $pendingGradient = null;
-    private bool $canvasReady = false;
     private bool $rendered = false;
 
     public function __construct(?ImageDriverInterface $driver = null)
@@ -88,34 +87,31 @@ class PosterBuilder
         if (!isset($this->height)) $this->height = PosterConfig::get('poster.default_height', 1334);
 
         // Deferred canvas creation with resolved dimensions
-        if (!$this->canvasReady) {
-            if ($this->pendingGradient !== null) {
-                $this->canvas->create($this->width, $this->height);
-                [$c1, $c2, $dir] = $this->pendingGradient;
-                $r1 = hexdec(substr($c1, 1, 2)); $g1 = hexdec(substr($c1, 3, 2)); $b1 = hexdec(substr($c1, 5, 2));
-                $r2 = hexdec(substr($c2, 1, 2)); $g2 = hexdec(substr($c2, 3, 2)); $b2 = hexdec(substr($c2, 5, 2));
-                $steps = $dir === 'vertical' ? $this->height : $this->width;
-                $band = 8;
-                for ($i = 0; $i < $steps; $i += $band) {
-                    // 取色带中点比例，8px 一档近似线性渐变，避免逐像素 line()
-                    $ratio = ($i + $band / 2) / max($steps - 1, 1);
-                    $color = sprintf('#%02X%02X%02X', intval($r1 + ($r2-$r1)*$ratio), intval($g1 + ($g2-$g1)*$ratio), intval($b1 + ($b2-$b1)*$ratio));
-                    $height = min($band, $steps - $i);
-                    if ($dir === 'vertical') $this->canvas->rectangle(0, $i, $this->width, $height, ['color'=>$color, 'filled'=>true]);
-                    else $this->canvas->rectangle($i, 0, $height, $this->height, ['color'=>$color, 'filled'=>true]);
-                }
-            } elseif ($this->pendingBgImage !== null) {
-                $this->canvas->create($this->width, $this->height);
-                $bg = DriverFactory::create()->load($this->pendingBgImage);
-                $bg->resize($this->width, $this->height);
-                $this->canvas->image($bg, 0, 0);
-                $bg->destroy();
-            } else {
-                $this->canvas->create($this->width, $this->height);
-                $color = $this->pendingBgColor ?? '#FFFFFF';
-                $this->canvas->rectangle(0, 0, $this->width, $this->height, ['color' => $color, 'filled' => true]);
+        if ($this->pendingGradient !== null) {
+            $this->canvas->create($this->width, $this->height);
+            [$c1, $c2, $dir] = $this->pendingGradient;
+            $r1 = hexdec(substr($c1, 1, 2)); $g1 = hexdec(substr($c1, 3, 2)); $b1 = hexdec(substr($c1, 5, 2));
+            $r2 = hexdec(substr($c2, 1, 2)); $g2 = hexdec(substr($c2, 3, 2)); $b2 = hexdec(substr($c2, 5, 2));
+            $steps = $dir === 'vertical' ? $this->height : $this->width;
+            $band = 8;
+            for ($i = 0; $i < $steps; $i += $band) {
+                // 取色带中点比例，8px 一档近似线性渐变，避免逐像素 line()
+                $ratio = ($i + $band / 2) / max($steps - 1, 1);
+                $color = sprintf('#%02X%02X%02X', intval($r1 + ($r2-$r1)*$ratio), intval($g1 + ($g2-$g1)*$ratio), intval($b1 + ($b2-$b1)*$ratio));
+                $height = min($band, $steps - $i);
+                if ($dir === 'vertical') $this->canvas->rectangle(0, $i, $this->width, $height, ['color'=>$color, 'filled'=>true]);
+                else $this->canvas->rectangle($i, 0, $height, $this->height, ['color'=>$color, 'filled'=>true]);
             }
-            $this->canvasReady = true;
+        } elseif ($this->pendingBgImage !== null) {
+            $this->canvas->create($this->width, $this->height);
+            $bg = DriverFactory::create()->load($this->pendingBgImage);
+            $bg->resize($this->width, $this->height);
+            $this->canvas->image($bg, 0, 0);
+            $bg->destroy();
+        } else {
+            $this->canvas->create($this->width, $this->height);
+            $color = $this->pendingBgColor ?? '#FFFFFF';
+            $this->canvas->rectangle(0, 0, $this->width, $this->height, ['color' => $color, 'filled' => true]);
         }
 
         foreach ($this->elements as $element) {

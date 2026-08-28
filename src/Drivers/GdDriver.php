@@ -11,6 +11,8 @@ use RuntimeException;
 
 class GdDriver implements ImageDriverInterface
 {
+    use TextTrait;
+
     private const MAX_PIXELS = 40000000;
 
     private $resource;
@@ -237,15 +239,11 @@ class GdDriver implements ImageDriverInterface
     public function rectangle(int $x, int $y, int $width, int $height, array $options = []): static
     {
         $color  = $options['color'] ?? '#FFFFFF';
-        $rgb    = $this->hexToRgb($color);
         $radius = intval($options['radius'] ?? 0);
         $filled = $options['filled'] ?? true;
 
         $alpha = isset($options['opacity']) ? intval((1 - $options['opacity']) * 127) : 0;
-        if (strlen(ltrim($color, '#')) === 8) {
-            $alpha = 127 - intval(hexdec(substr(ltrim($color, '#'), 6, 2)) / 2);
-        }
-        $alloc = imagecolorallocatealpha($this->resource, $rgb[0], $rgb[1], $rgb[2], $alpha);
+        $alloc = $this->allocColor($color, $alpha);
 
         if ($radius > 0) {
             $this->roundedRectGD($x, $y, $x + $width - 1, $y + $height - 1, $radius, $alloc, $filled);
@@ -261,13 +259,8 @@ class GdDriver implements ImageDriverInterface
     public function ellipse(int $cx, int $cy, int $rx, int $ry, array $options = []): static
     {
         $color  = $options['color'] ?? '#FFFFFF';
-        $rgb    = $this->hexToRgb($color);
         $filled = $options['filled'] ?? true;
-        $alpha  = 0;
-        if (strlen(ltrim($color, '#')) === 8) {
-            $alpha = 127 - intval(hexdec(substr(ltrim($color, '#'), 6, 2)) / 2);
-        }
-        $alloc  = imagecolorallocatealpha($this->resource, $rgb[0], $rgb[1], $rgb[2], $alpha);
+        $alloc  = $this->allocColor($color);
 
         if ($filled) {
             imagefilledellipse($this->resource, $cx, $cy, $rx * 2, $ry * 2, $alloc);
@@ -280,13 +273,8 @@ class GdDriver implements ImageDriverInterface
 
     public function filledArc(int $cx, int $cy, int $w, int $h, int $startAngle, int $endAngle, array $options = []): static
     {
-        $color  = $options['color'] ?? '#FFFFFF';
-        $rgb    = $this->hexToRgb($color);
-        $alpha  = 0;
-        if (strlen(ltrim($color, '#')) === 8) {
-            $alpha = 127 - intval(hexdec(substr(ltrim($color, '#'), 6, 2)) / 2);
-        }
-        $alloc  = imagecolorallocatealpha($this->resource, $rgb[0], $rgb[1], $rgb[2], $alpha);
+        $color = $options['color'] ?? '#FFFFFF';
+        $alloc = $this->allocColor($color);
         imagefilledarc($this->resource, $cx, $cy, $w, $h, $startAngle, $endAngle, $alloc, IMG_ARC_PIE);
         return $this;
     }
@@ -294,12 +282,7 @@ class GdDriver implements ImageDriverInterface
     public function line(int $x1, int $y1, int $x2, int $y2, array $options = []): static
     {
         $color = $options['color'] ?? '#000000';
-        $rgb   = $this->hexToRgb($color);
-        $alpha = 0;
-        if (strlen(ltrim($color, '#')) === 8) {
-            $alpha = 127 - intval(hexdec(substr(ltrim($color, '#'), 6, 2)) / 2);
-        }
-        $alloc = imagecolorallocatealpha($this->resource, $rgb[0], $rgb[1], $rgb[2], $alpha);
+        $alloc = $this->allocColor($color);
         imagesetthickness($this->resource, max(1, intval($options['width'] ?? 1)));
         imageline($this->resource, $x1, $y1, $x2, $y2, $alloc);
         imagesetthickness($this->resource, 1);
@@ -402,6 +385,15 @@ class GdDriver implements ImageDriverInterface
         $this->destroy();
     }
 
+    private function allocColor(string $color, int $alpha = 0): int
+    {
+        $rgb = $this->hexToRgb($color);
+        if (strlen(ltrim($color, '#')) === 8) {
+            $alpha = 127 - intval(hexdec(substr(ltrim($color, '#'), 6, 2)) / 2);
+        }
+        return imagecolorallocatealpha($this->resource, $rgb[0], $rgb[1], $rgb[2], $alpha);
+    }
+
     private function hexToRgb(string $hex): array
     {
         $hex = ltrim($hex, '#');
@@ -456,15 +448,6 @@ class GdDriver implements ImageDriverInterface
             }
         }
         return $lines ?: [$text];
-    }
-
-    private function splitText(string $text): array
-    {
-        if (preg_match('/[\x{4e00}-\x{9fff}]/u', $text)) {
-            preg_match_all('/./us', $text, $matches);
-            return $matches[0];
-        }
-        return preg_split('/(\s+)/', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
     }
 
     private function roundCornersGD($image, int $radius)

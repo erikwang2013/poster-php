@@ -11,6 +11,8 @@ use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 
 class AvatarElement extends AbstractElement
 {
+    protected array $resolveKeys = ['src'];
+
     public function render(ImageDriverInterface $canvas): void
     {
         $src = $this->options['src'] ?? '';
@@ -29,11 +31,4 @@ class AvatarElement extends AbstractElement
         $img->destroy();
     }
 
-    public function resolve(array $variables): static
-    {
-        if (isset($this->options['src'])) {
-            $this->options['src'] = $this->resolvePlaceholders($this->options['src'], $variables);
-        }
-        return $this;
-    }
 }

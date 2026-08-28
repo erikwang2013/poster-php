@@ -10,6 +10,8 @@ use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 
 class WatermarkElement extends AbstractElement
 {
+    protected array $resolveKeys = ['text'];
+
     public function render(ImageDriverInterface $canvas): void
     {
         $text = $this->options['text'] ?? '';
@@ -32,11 +34,4 @@ class WatermarkElement extends AbstractElement
         }
     }
 
-    public function resolve(array $variables): static
-    {
-        if (isset($this->options['text'])) {
-            $this->options['text'] = $this->resolvePlaceholders($this->options['text'], $variables);
-        }
-        return $this;
-    }
 }

@@ -34,7 +34,7 @@ class ChartElement extends AbstractElement
         if ($count === 0) return;
 
         $barW    = intval(($w - $padding * 2) / $count - 10);
-        $maxVal  = max(array_map(fn($v) => is_array($v) ? ($v['value'] ?? 0) : $v, $data)) ?: 1;
+        $maxVal  = max(array_map(fn($v) => $this->value($v), $data)) ?: 1;
         $chartH  = $h - $padding * 2;
         $axisY   = $y + $h - $padding;
 
@@ -45,8 +45,8 @@ class ChartElement extends AbstractElement
 
         for ($i = 0; $i < $count; $i++) {
             $item  = $data[$i];
-            $label = is_array($item) ? ($item['label'] ?? '') : '';
-            $val   = is_array($item) ? ($item['value'] ?? 0) : $item;
+            $label = $this->label($item);
+            $val   = $this->value($item);
             $barH  = intval(($val / $maxVal) * $chartH);
             $bx    = $x + $padding + $i * intval(($w - $padding * 2) / $count) + 5;
             $by    = $axisY - $barH;
@@ -75,7 +75,7 @@ class ChartElement extends AbstractElement
         $count   = count($data);
         if ($count < 2) return;
 
-        $maxVal  = max(array_map(fn($v) => is_array($v) ? ($v['value'] ?? 0) : $v, $data)) ?: 1;
+        $maxVal  = max(array_map(fn($v) => $this->value($v), $data)) ?: 1;
         $chartH  = $h - $padding * 2;
         $chartW  = $w - $padding * 2;
         $axisY   = $y + $h - $padding;
@@ -94,7 +94,7 @@ class ChartElement extends AbstractElement
         $points = [];
         for ($i = 0; $i < $count; $i++) {
             $item = $data[$i];
-            $val  = is_array($item) ? ($item['value'] ?? 0) : $item;
+            $val  = $this->value($item);
             $px   = $x + $padding + $i * $stepX;
             $py   = $axisY - intval(($val / $maxVal) * $chartH);
             $points[] = [$px, $py];
@@ -102,7 +102,7 @@ class ChartElement extends AbstractElement
             // Dot
             $canvas->ellipse($px, $py, 4, 4, ['color' => $lineColor, 'filled' => true]);
 
-            $label = is_array($item) ? ($item['label'] ?? '') : '';
+            $label = $this->label($item);
             if ($label !== '') {
                 $canvas->text($label, $px, $axisY + 18, ['size' => 11, 'color' => '#666666', 'align' => 'center']);
             }
@@ -119,7 +119,7 @@ class ChartElement extends AbstractElement
     private function drawPie(ImageDriverInterface $canvas, array $data, int $x, int $y, int $w, int $h): void
     {
         $colors = $this->options['colors'] ?? ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
-        $total  = array_sum(array_map(fn($v) => is_array($v) ? ($v['value'] ?? 0) : $v, $data));
+        $total  = array_sum(array_map(fn($v) => $this->value($v), $data));
         if ($total <= 0) return;
 
         $cx     = $x + intval($w / 2);
@@ -131,8 +131,8 @@ class ChartElement extends AbstractElement
         $count = count($data);
 
         foreach ($data as $idx => $item) {
-            $val   = is_array($item) ? ($item['value'] ?? 0) : $item;
-            $label = is_array($item) ? ($item['label'] ?? '') : '';
+            $val   = $this->value($item);
+            $label = $this->label($item);
 
             if ($idx === $count - 1) {
                 $slice = 360 - $assigned;
@@ -154,5 +154,15 @@ class ChartElement extends AbstractElement
 
             $start += $slice;
         }
+    }
+
+    private function value(mixed $item): int|float|string
+    {
+        return is_array($item) ? ($item['value'] ?? 0) : $item;
+    }
+
+    private function label(mixed $item): string
+    {
+        return is_array($item) ? ($item['label'] ?? '') : '';
     }
 }

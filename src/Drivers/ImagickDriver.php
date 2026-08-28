@@ -14,6 +14,8 @@ use RuntimeException;
 
 class ImagickDriver implements ImageDriverInterface
 {
+    use TextTrait;
+
     private const MEMORY_LIMIT = 256 * 1024 * 1024;
     private const MAP_LIMIT = 512 * 1024 * 1024;
     private const PIXELS_LIMIT = 40000000;
@@ -354,12 +356,4 @@ class ImagickDriver implements ImageDriverInterface
         return $lines ?: explode("\n", $text);
     }
 
-    private function splitText(string $text): array
-    {
-        if (preg_match('/[\x{4e00}-\x{9fff}]/u', $text)) {
-            preg_match_all('/./us', $text, $matches);
-            return $matches[0];
-        }
-        return preg_split('/(\s+)/', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
-    }
 }

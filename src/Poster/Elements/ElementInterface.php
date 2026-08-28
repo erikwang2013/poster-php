@@ -12,4 +12,5 @@ interface ElementInterface
 {
     public function render(ImageDriverInterface $canvas): void;
     public function toArray(): array;
+    public function resolve(array $variables): static;
 }

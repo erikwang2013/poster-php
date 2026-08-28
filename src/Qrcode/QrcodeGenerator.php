@@ -336,13 +336,21 @@ class QrcodeGenerator
         $bestScore = PHP_INT_MAX;
         $test = $modules;
 
+        // applyMask 只翻转数据区，快照数据格值即可，避免整矩阵深拷贝 8 次
+        $snapshot = [];
+        foreach ($this->dataCells as [$r, $c]) {
+            $snapshot[] = $test[$r][$c];
+        }
+
         for ($mask = 0; $mask < 8; $mask++) {
-            $copy = array_map(fn($row) => array_map(fn($v) => $v, $row), $test);
-            $this->applyMask($copy, $mask);
-            $score = $this->penalty($copy, $n);
+            $this->applyMask($test, $mask);
+            $score = $this->penalty($test, $n);
             if ($score < $bestScore) {
                 $bestScore = $score;
                 $bestMask = $mask;
+            }
+            foreach ($this->dataCells as $i => [$r, $c]) {
+                $test[$r][$c] = $snapshot[$i];
             }
         }
 

@@ -10,6 +10,8 @@ use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 
 class EmojiElement extends AbstractElement
 {
+    protected array $resolveKeys = ['emoji'];
+
     // Common emoji font paths by OS
     private const EMOJI_FONT_PATHS = [
         '/System/Library/Fonts/Apple Color Emoji.ttc',       // macOS
@@ -54,18 +56,19 @@ class EmojiElement extends AbstractElement
         ]);
     }
 
-    public function resolve(array $variables): static
-    {
-        if (isset($this->options['emoji'])) {
-            $this->options['emoji'] = $this->resolvePlaceholders($this->options['emoji'], $variables);
-        }
-        return $this;
-    }
+    private static ?string $emojiFont = null;
+    private static bool $emojiFontChecked = false;
 
     private function findEmojiFont(): ?string
     {
+        if (self::$emojiFontChecked) {
+            return self::$emojiFont;
+        }
+        self::$emojiFontChecked = true;
         foreach (self::EMOJI_FONT_PATHS as $path) {
-            if (is_file($path)) return $path;
+            if (is_file($path)) {
+                return self::$emojiFont = $path;
+            }
         }
         return null;
     }

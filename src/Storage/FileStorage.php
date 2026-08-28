@@ -57,7 +57,7 @@ class FileStorage implements StorageInterface
         if (!is_array($payload)) {
             return null;
         }
-        if ($payload['expire_at'] < time()) {
+        if (!isset($payload['expire_at'], $payload['data']) || $payload['expire_at'] < time()) {
             unlink($file);
             return null;
         }

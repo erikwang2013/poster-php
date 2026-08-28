@@ -10,6 +10,9 @@ abstract class AbstractElement implements ElementInterface
 {
     protected array $options = [];
 
+    /** 需要做占位符替换的选项键，子类按需声明 */
+    protected array $resolveKeys = [];
+
     public function __construct(array $options = [])
     {
         $this->options = $options;
@@ -18,6 +21,16 @@ abstract class AbstractElement implements ElementInterface
     public function toArray(): array
     {
         return ['type' => static::class, 'options' => $this->options];
+    }
+
+    public function resolve(array $variables): static
+    {
+        foreach ($this->resolveKeys as $key) {
+            if (isset($this->options[$key])) {
+                $this->options[$key] = $this->resolvePlaceholders($this->options[$key], $variables);
+            }
+        }
+        return $this;
     }
 
     protected function resolvePlaceholders(string $text, array $variables): string

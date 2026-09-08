@@ -187,9 +187,9 @@ class AbstractCaptchaTest extends TestCase
     /** 测试：配置了未知背景风格时抛出带合法取值列表的 InvalidArgumentException */
     public function testUnknownBackgroundStyleThrowsInvalidArgumentException(): void
     {
-        // array_replace_recursive 按索引合并，需覆盖全部 3 个样式位
+        // merge 对顺序数组整体替换，单元素列表即可清空合法样式位
         PosterConfig::merge([
-            'captcha' => ['background_dir' => null, 'background_styles' => ['bogus', 'bogus', 'bogus']],
+            'captcha' => ['background_dir' => null, 'background_styles' => ['bogus']],
         ]);
         $captcha = $this->makeCaptcha(new GdDriver(), $this->createMock(StorageInterface::class));
         $this->expectException(InvalidArgumentException::class);

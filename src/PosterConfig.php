@@ -64,8 +64,27 @@ class PosterConfig
     public static function merge(array $overrides): array
     {
         self::load();
-        self::$config = array_replace_recursive(self::$config ?? [], $overrides);
+        self::$config = self::deepMerge(self::$config ?? [], $overrides);
         return self::$config;
+    }
+
+    /**
+     * 递归合并配置：顺序数组整体替换，关联数组递归覆盖。
+     * array_replace_recursive 对顺序数组只按索引合并，覆盖短列表会残留旧尾部
+     * （如 click_words 覆盖为 ['子','丑'] 后仍带着原词表其余字）。
+     */
+    private static function deepMerge(array $base, array $overrides): array
+    {
+        foreach ($overrides as $key => $value) {
+            $isList = is_array($value) && array_keys($value) === range(0, count($value) - 1);
+            if (is_array($value) && !$isList
+                && isset($base[$key]) && is_array($base[$key])) {
+                $base[$key] = self::deepMerge($base[$key], $value);
+            } else {
+                $base[$key] = $value;
+            }
+        }
+        return $base;
     }
 
     public static function reset(): void

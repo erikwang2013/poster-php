@@ -92,14 +92,19 @@ class ClickCaptcha extends AbstractCaptcha
                 'hard' => ['星', '雨', '山', '火'],
                 default => ['云', '风', '山'],
             };
+        // 随机取词：从词表抽一个删一个，同一轮不重复；词表被抽空（少于目标数）时重置续抽
+        $pool = $words;
         for ($i = 0; $i < $this->targetCount; $i++) {
+            if ($pool === []) {
+                $pool = $words;
+            }
             $xMin = max(1, $margin);
             $xMax = max($xMin + 1, $this->width - $margin);
             $yMin = max(1, $margin);
             $yMax = max($yMin + 1, $this->height - $margin - 40);
             $x = random_int($xMin, $xMax);
             $y = random_int($yMin, $yMax);
-            $word = $words[$i % count($words)];
+            $word = array_splice($pool, random_int(0, count($pool) - 1), 1)[0];
             $targets[] = ['x' => $x, 'y' => $y, 'text' => $word, 'order' => $i + 1];
         }
         return $targets;

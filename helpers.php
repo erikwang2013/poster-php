@@ -19,7 +19,9 @@ if (!function_exists('captcha_create')) {
             StorageFactory::create(PosterConfig::get('captcha.storage'))
         );
         $captcha = $manager->create($type);
-        if (isset($options['difficulty'])) $captcha->setDifficulty($options['difficulty']);
+        // 难度：选项优先，其次 captcha.default_difficulty（此前只认选项，配置项是死配置）
+        $difficulty = $options['difficulty'] ?? PosterConfig::get('captcha.default_difficulty');
+        if ($difficulty !== null) $captcha->setDifficulty($difficulty);
         if (isset($options['background'])) $captcha->setBackground($options['background']);
         return $captcha->generate();
     }

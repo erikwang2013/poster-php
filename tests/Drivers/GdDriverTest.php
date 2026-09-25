@@ -73,14 +73,16 @@ class GdDriverTest extends TestCase
         $this->assertSame(127, (imagecolorat($d->getResource(), 0, 0) >> 24) & 0x7F);
     }
 
-    /** 验证 circle 生成直径见方图像，角落透明、中心不透明。 */
+    /** 验证 circle 生成直径见方图像，角落透明、中心保留原像素（原为不透明底）。 */
     public function testCircleMasksCornersTransparent(): void
     {
         $d = new GdDriver();
-        $d->create(20, 20)->circle(16);
+        // 先铺不透明底色：circle 只擦圆外像素，圆内像素（含 alpha）应原样保留
+        $d->create(20, 20)->rectangle(0, 0, 20, 20, ['color' => '#3366CC'])->circle(16);
         $this->assertSame(['width' => 16, 'height' => 16], $d->getSize());
         $this->assertSame(127, (imagecolorat($d->getResource(), 0, 0) >> 24) & 0x7F);
         $this->assertSame(0, (imagecolorat($d->getResource(), 8, 8) >> 24) & 0x7F);
+        $this->assertSame(0x3366CC, imagecolorat($d->getResource(), 8, 8) & 0xFFFFFF);
     }
 
     /** 验证 crop 改变尺寸并保留区域像素。 */
@@ -296,16 +298,17 @@ class GdDriverTest extends TestCase
         }
     }
 
-    /** 验证 output 各格式返回可解码的 data URL 且尺寸正确。 */
+    /** 验证 output 各格式返回可解码的 data URL 且尺寸正确（jpg/jpeg 的 MIME 都是 image/jpeg）。 */
     public function testOutputFormatsReturnValidDataUrls(): void
     {
         $d = (new GdDriver())->create(12, 7);
-        foreach (['jpg', 'png', 'gif', 'webp'] as $fmt) {
+        $mimes = ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'gif' => 'image/gif', 'webp' => 'image/webp'];
+        foreach ($mimes as $fmt => $mime) {
             if ($fmt === 'webp' && !(gd_info()['WebP Support'] ?? false)) {
                 continue;
             }
             $out = $d->output($fmt);
-            $this->assertStringStartsWith("data:image/$fmt;base64,", $out);
+            $this->assertStringStartsWith("data:$mime;base64,", $out, $fmt);
             $info = getimagesizefromstring(base64_decode(substr($out, strpos($out, ',') + 1)));
             $this->assertSame([12, 7], [$info[0], $info[1]]);
         }

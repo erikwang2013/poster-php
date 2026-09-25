@@ -76,4 +76,55 @@ class TableElementTest extends TestCase
             'rows' => [['only-one']],
         ]))->render($canvas);
     }
+
+    /** 验证 README 示例（camelCase：header/columns/headerBg/rowBg/fontSize/cellPadding）可正常绘制 */
+    public function testReadmeStyleCamelCaseOptionsRender(): void
+    {
+        $canvas = $this->createMock(ImageDriverInterface::class);
+        $canvas->expects($this->exactly(4))->method('rectangle'); // 表头 + 3 行
+        $canvas->expects($this->exactly(12))->method('text')->willReturnSelf();
+        $canvas->expects($this->exactly(3))->method('line');
+        (new TableElement([
+            'x' => 50, 'y' => 800, 'width' => 650, 'columns' => [150, 350, 150],
+            'header' => ['序号', '项目', '价格'],
+            'rows' => [['1', '商品A', '¥99'], ['2', '商品B', '¥199'], ['3', '商品C', '¥299']],
+            'headerBg' => '#333333', 'headerColor' => '#FFFFFF',
+            'rowBg' => ['#FFFFFF', '#F5F5F5'], 'rowColor' => '#333333',
+            'fontSize' => 24, 'cellPadding' => 10,
+        ]))->render($canvas);
+    }
+
+    /** 验证 rows 存在时 header 与 headers 两种写法等价（历史兼容） */
+    public function testHeaderKeyAcceptsBothSpellings(): void
+    {
+        foreach (['header', 'headers'] as $key) {
+            $canvas = $this->createMock(ImageDriverInterface::class);
+            $canvas->expects($this->exactly(2))->method('rectangle');
+            $canvas->expects($this->exactly(4))->method('text')->willReturnSelf();
+            (new TableElement([$key => ['A', 'B'], 'rows' => [['1', '2']]]))->render($canvas);
+        }
+    }
+
+    /** 验证单元格文本基线落在行内（imagettftext 按基线绘制，不能把 y 当顶部） */
+    public function testCellBaselineStaysInsideRow(): void
+    {
+        $canvas = $this->createMock(ImageDriverInterface::class);
+        $baselines = [];
+        $canvas->expects($this->exactly(2))->method('text')->with(
+            $this->anything(), $this->anything(), $this->callback(function ($y) use (&$baselines) {
+                $baselines[] = $y;
+                return true;
+            }),
+            $this->anything()
+        )->willReturnSelf();
+        (new TableElement([
+            'x' => 0, 'y' => 100, 'header' => ['H'], 'rows' => [['R']],
+            'headerHeight' => 40, 'rowHeight' => 35, 'fontSize' => 20,
+        ]))->render($canvas);
+        // 表头 100~140 内、数据行 140~175 内，且位于各自单元格下半部
+        $this->assertGreaterThan(110, $baselines[0]);
+        $this->assertLessThan(140, $baselines[0]);
+        $this->assertGreaterThan(150, $baselines[1]);
+        $this->assertLessThan(175, $baselines[1]);
+    }
 }

@@ -6,6 +6,7 @@
 
 namespace Erikwang2013\Poster\Drivers;
 
+use Erikwang2013\Poster\PosterConfig;
 use InvalidArgumentException;
 use RuntimeException;
 
@@ -158,7 +159,8 @@ class GdDriver implements ImageDriverInterface
 
     public function text(string $text, int $x, int $y, array $options = []): static
     {
-        $fontFile = $options['font'] ?? null;
+        // 未显式传 font 时用配置的默认字体（image.font）；显式传 null 可退回 GD 内置位图字体
+        $fontFile = array_key_exists('font', $options) ? $options['font'] : PosterConfig::get('image.font');
         $size     = $options['size'] ?? 16;
         $color    = $options['color'] ?? '#000000';
         $rgb      = $this->hexToRgb($color);

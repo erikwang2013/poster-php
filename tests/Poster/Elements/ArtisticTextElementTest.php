@@ -47,12 +47,12 @@ class ArtisticTextElementTest extends TestCase
         (new ArtisticTextElement(['text' => 'X', 'style' => 'neon']))->render($canvas);
     }
 
-    /** 验证 gradient 样式无字体文件时回退为单次普通 text */
+    /** 验证 gradient 样式不可用字体（显式 font=null）时回退为单次普通 text */
     public function testGradientWithoutFontFallsBackToPlainText(): void
     {
         $canvas = $this->createMock(ImageDriverInterface::class);
         $canvas->expects($this->once())->method('text');
-        (new ArtisticTextElement(['text' => 'X', 'style' => 'gradient']))->render($canvas);
+        (new ArtisticTextElement(['text' => 'X', 'style' => 'gradient', 'font' => null]))->render($canvas);
     }
 
     /** 验证 gradient 样式带真实字体时走位图遮罩合成（image 一次、text 不调用） */

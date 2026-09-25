@@ -54,12 +54,12 @@ class DriverFactoryTest extends TestCase
     }
 
     /** 验证未安装 imagick 时显式指定 imagick 会抛出 Error（类无法解析），而不是静默降级。 */
-    public function testCreateImagickWithoutExtensionThrowsError(): void
+    public function testCreateImagickWithoutExtensionThrows(): void
     {
         if (DriverFactory::isImagickAvailable()) {
             $this->markTestSkipped('本环境已安装 imagick，无法验证缺失分支');
         }
-        $this->expectException(\Error::class);
+        $this->expectException(\RuntimeException::class);
         DriverFactory::create('imagick');
     }
 

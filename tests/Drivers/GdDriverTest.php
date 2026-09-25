@@ -8,6 +8,7 @@
 namespace Erikwang2013\Poster\Tests\Drivers;
 
 use Erikwang2013\Poster\Drivers\GdDriver;
+use Erikwang2013\Poster\PosterConfig;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
@@ -91,11 +92,22 @@ class GdDriverTest extends TestCase
         $this->assertSame(0xFF0000, imagecolorat($d->getResource(), 10, 10) & 0xFFFFFF);
     }
 
-    /** 验证内置字体 text 实际绘制出前景色像素。 */
-    public function testTextBuiltinFontDrawsPixels(): void
+    /** 验证未传 font 时使用配置的默认字体（image.font），而非内置位图字体。 */
+    public function testTextUsesConfiguredDefaultFont(): void
+    {
+        if (!is_file(PosterConfig::get('image.font'))) {
+            $this->markTestSkipped('系统无 TTF 字体可用');
+        }
+        $d = new GdDriver();
+        $d->create(120, 40)->text('TTF', 0, 24, ['size' => 20, 'color' => '#FF0000']);
+        $this->assertTrue($this->hasColorNear($d->getResource(), 255, 0, 0, 69, 39));
+    }
+
+    /** 验证显式传 font=null 时退回内置位图字体。 */
+    public function testTextNullFontDrawsWithBuiltinFont(): void
     {
         $d = new GdDriver();
-        $d->create(30, 20)->text('W', 0, 0, ['color' => '#FF0000']);
+        $d->create(30, 20)->text('W', 0, 0, ['font' => null, 'color' => '#FF0000']);
         $this->assertTrue($this->hasColorNear($d->getResource(), 255, 0, 0, 9, 15));
     }
 

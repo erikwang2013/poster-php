@@ -49,7 +49,7 @@ class QrcodeElement extends AbstractElement
             $canvas->text($this->options['label'], $x, $y + $size + 20, [
                 'size'  => intval($this->options['label_size'] ?? 14),
                 'color' => $this->options['label_color'] ?? '#999999',
-                'font'  => $this->options['font'] ?? null,
+                'font'  => $this->font(),
                 'align' => 'center',
             ]);
         }

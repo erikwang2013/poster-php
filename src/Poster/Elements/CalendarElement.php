@@ -18,7 +18,7 @@ class CalendarElement extends AbstractElement
         $y        = intval($this->options['y'] ?? 0);
         $cellSize = intval($this->options['cellSize'] ?? 60);
         $startDay = intval($this->options['startDay'] ?? 0); // 0=Sun, 1=Mon
-        $font     = $this->options['font'] ?? null;
+        $font     = $this->font();
         $highlights = $this->options['highlights'] ?? [];
 
         $headerBg   = $this->options['headerBg'] ?? '#333333';

@@ -6,6 +6,7 @@
 
 namespace Erikwang2013\Poster\Drivers;
 
+use Erikwang2013\Poster\PosterConfig;
 use Imagick;
 use ImagickDraw;
 use ImagickPixel;
@@ -24,6 +25,10 @@ class ImagickDriver implements ImageDriverInterface
 
     public function __construct()
     {
+        // 缺少扩展时立即失败，避免构造出空壳驱动、延后到首次调用才报 "Class Imagick not found"
+        if (!extension_loaded('imagick') || !class_exists(Imagick::class)) {
+            throw new RuntimeException('ImagickDriver requires the imagick extension; use GdDriver or image.driver=gd instead');
+        }
         if (defined('Imagick::RESOURCETYPE_MEMORY')) {
             Imagick::setResourceLimit(Imagick::RESOURCETYPE_MEMORY, self::MEMORY_LIMIT);
         }
@@ -96,7 +101,8 @@ class ImagickDriver implements ImageDriverInterface
 
     public function text(string $text, int $x, int $y, array $options = []): static
     {
-        $fontFile   = $options['font'] ?? null;
+        // 未显式传 font 时用配置的默认字体（image.font）；显式传 null 可退回 Imagick 默认字体
+        $fontFile   = array_key_exists('font', $options) ? $options['font'] : PosterConfig::get('image.font');
         $size       = $options['size'] ?? 16;
         $color      = $options['color'] ?? '#000000';
         $maxWidth   = $options['maxWidth'] ?? 0;

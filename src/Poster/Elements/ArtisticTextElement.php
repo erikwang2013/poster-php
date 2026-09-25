@@ -19,7 +19,7 @@ class ArtisticTextElement extends AbstractElement
         $x     = intval($this->options['x'] ?? 0);
         $y     = intval($this->options['y'] ?? 0);
         $size  = intval($this->options['size'] ?? 48);
-        $font  = $this->options['font'] ?? null;
+        $font  = $this->font();
         $style = $this->options['style'] ?? 'stroke';
 
         $angle    = intval($this->options['angle'] ?? 0);

@@ -12,23 +12,27 @@ class TableElement extends AbstractElement
 {
     public function render(ImageDriverInterface $canvas): void
     {
-        $headers = $this->options['headers'] ?? [];
+        // 选项键同时接受文档中的 camelCase（header / columns / headerBg …）
+        // 与历史 snake_case（headers / col_widths / header_bg …）
+        $headers = $this->options['header'] ?? $this->options['headers'] ?? [];
         $rows = $this->options['rows'] ?? [];
         if (empty($headers) || empty($rows)) return;
 
         $x = intval($this->options['x'] ?? 0);
         $y = intval($this->options['y'] ?? 0);
-        $colWidths = $this->options['col_widths'] ?? [];
-        $headerHeight = intval($this->options['header_height'] ?? 40);
-        $rowHeight = intval($this->options['row_height'] ?? 35);
-        $headerBg = $this->options['header_bg'] ?? '#F5F5F5';
-        $evenBg = $this->options['even_bg'] ?? '#FAFAFA';
-        $oddBg = $this->options['odd_bg'] ?? '#FFFFFF';
-        $fontSize = intval($this->options['font_size'] ?? 14);
-        $font = $this->options['font'] ?? null;
-        $headerColor = $this->options['header_color'] ?? '#333333';
-        $rowColor = $this->options['row_color'] ?? '#666666';
-        $borderColor = $this->options['border_color'] ?? '#EEEEEE';
+        $colWidths = $this->options['columns'] ?? $this->options['col_widths'] ?? [];
+        $headerHeight = intval($this->options['headerHeight'] ?? $this->options['header_height'] ?? 40);
+        $rowHeight = intval($this->options['rowHeight'] ?? $this->options['row_height'] ?? 35);
+        $pad = intval($this->options['cellPadding'] ?? $this->options['cell_padding'] ?? 10);
+        $headerBg = $this->options['headerBg'] ?? $this->options['header_bg'] ?? '#F5F5F5';
+        $rowBg = $this->options['rowBg'] ?? [];   // 文档写法：['#FFFFFF', '#F5F5F5'] 对应第一行 / 第二行
+        $evenBg = $rowBg[0] ?? $this->options['even_bg'] ?? '#FAFAFA';
+        $oddBg = $rowBg[1] ?? $this->options['odd_bg'] ?? '#FFFFFF';
+        $fontSize = intval($this->options['fontSize'] ?? $this->options['font_size'] ?? 14);
+        $font = $this->font();
+        $headerColor = $this->options['headerColor'] ?? $this->options['header_color'] ?? '#333333';
+        $rowColor = $this->options['rowColor'] ?? $this->options['row_color'] ?? '#666666';
+        $borderColor = $this->options['borderColor'] ?? $this->options['border_color'] ?? '#EEEEEE';
         $alignments = $this->options['alignments'] ?? [];
 
         if (empty($colWidths)) {
@@ -52,10 +56,10 @@ class TableElement extends AbstractElement
             $align = $alignments[$i] ?? 'left';
             $cx = match ($align) {
                 'center' => $colXs[$i] + intval($colWidths[$i] / 2),
-                'right'  => $colXs[$i] + $colWidths[$i] - 10,
-                default  => $colXs[$i] + 10,
+                'right'  => $colXs[$i] + $colWidths[$i] - $pad,
+                default  => $colXs[$i] + $pad,
             };
-            $canvas->text((string)$header, $cx, $y + intval(($headerHeight - $fontSize) / 2), [
+            $canvas->text((string)$header, $cx, $this->baseline($y, $headerHeight, $fontSize), [
                 'size' => $fontSize, 'color' => $headerColor, 'font' => $font, 'align' => $align,
             ]);
         }
@@ -71,10 +75,10 @@ class TableElement extends AbstractElement
                 $align = $alignments[$ci] ?? 'left';
                 $cx = match ($align) {
                     'center' => $colXs[$ci] + intval($colWidths[$ci] / 2),
-                    'right'  => $colXs[$ci] + $colWidths[$ci] - 10,
-                    default  => $colXs[$ci] + 10,
+                    'right'  => $colXs[$ci] + $colWidths[$ci] - $pad,
+                    default  => $colXs[$ci] + $pad,
                 };
-                $canvas->text((string)$cell, $cx, $currentY + intval(($rowHeight - $fontSize) / 2), [
+                $canvas->text((string)$cell, $cx, $this->baseline($currentY, $rowHeight, $fontSize), [
                     'size' => $fontSize, 'color' => $rowColor, 'font' => $font, 'align' => $align,
                 ]);
             }
@@ -84,5 +88,11 @@ class TableElement extends AbstractElement
 
             $currentY += $rowHeight;
         }
+    }
+
+    /** 文本基线：imagettftext 按基线绘制，需下移半个字高才是视觉居中 */
+    private function baseline(int $top, int $height, int $fontSize): int
+    {
+        return $top + intval(($height + $fontSize * 0.72) / 2);
     }
 }

@@ -82,7 +82,7 @@
     "elementCount": "%d tipos",
     "elementGroups": [
       ["Texto", "Texto", "Artístico", "Emoji", "Ícone", "Kaomoji"],
-      ["Imagem", "Imagem", "Avatar", "QR Code", "Forma", "Divisor"],
+      ["Figuras", "Imagem", "Avatar", "QR Code", "Forma", "Divisor"],
       ["Dados", "Tabela", "Gráfico barra/linha/pizza", "Calendário"],
       ["Overlay", "Marca d'água: mosaico / ângulo / espaço"]
     ],

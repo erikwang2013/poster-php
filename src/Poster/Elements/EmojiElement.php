@@ -40,6 +40,7 @@ class EmojiElement extends AbstractElement
         if ($emojiFont === null || !is_file($emojiFont)) {
             $emojiFont = $this->findEmojiFont();
         }
+        $color = $this->options['color'] ?? '#000000';
         if ($emojiFont === null) {
             // Fallback: render as plain text
             $canvas->text($char, $x, $y, [
@@ -48,12 +49,19 @@ class EmojiElement extends AbstractElement
             return;
         }
 
-        // Render emoji using the color font
-        $canvas->text($char, $x, $y, [
-            'size'  => $size,
-            'color' => $this->options['color'] ?? '#000000',
-            'font'  => $emojiFont,
-        ]);
+        // 系统里最先命中的 emoji 字体可能本身不可渲染（如 NotoColorEmoji 这类 CBDT 位图字体，
+        // GD 的 FreeType 通道与 ImageMagick 都会失败）。此时退回普通字体，不让装饰元素炸掉整张海报。
+        try {
+            $canvas->text($char, $x, $y, [
+                'size'  => $size,
+                'color' => $color,
+                'font'  => $emojiFont,
+            ]);
+        } catch (\Throwable $e) {
+            $canvas->text($char, $x, $y, [
+                'size' => $size, 'color' => $color,
+            ]);
+        }
     }
 
     private static ?string $emojiFont = null;

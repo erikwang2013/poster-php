@@ -9,6 +9,7 @@ namespace Erikwang2013\Poster\Tests\Poster\Elements;
 use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 use Erikwang2013\Poster\Poster\Elements\EmojiElement;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 class EmojiElementTest extends TestCase
 {
@@ -62,6 +63,28 @@ class EmojiElementTest extends TestCase
         $canvas = $this->createMock(ImageDriverInterface::class);
         $canvas->expects($this->once())->method('text')->with('😀', 10, 20, $this->anything());
         (new EmojiElement(['emoji' => '😀', 'x' => 10, 'y' => 20]))->render($canvas);
+    }
+
+    /** 验证 emoji 字体不可渲染（驱动抛错）时回退为不带 font 的普通文本，不向外抛异常 */
+    public function testUnrenderableEmojiFontFallsBackToPlainText(): void
+    {
+        $font = sys_get_temp_dir() . '/emoji-el-' . uniqid() . '.ttf';
+        file_put_contents($font, 'not-a-real-font');
+        try {
+            $canvas = $this->createMock(ImageDriverInterface::class);
+            $canvas->expects($this->exactly(2))->method('text')->willReturnCallback(
+                function (string $char, int $x, int $y, array $opts) use ($canvas) {
+                    if (isset($opts['font'])) {
+                        throw new RuntimeException('unable to read font');   // 模拟 CBDT 位图字体
+                    }
+                    return $canvas;
+                }
+            );
+            (new EmojiElement(['emoji' => '😀', 'x' => 1, 'y' => 2, 'size' => 32, 'font' => $font]))
+                ->render($canvas);
+        } finally {
+            unlink($font);
+        }
     }
 
     /** 验证 resolve() 替换 emoji 占位符 */

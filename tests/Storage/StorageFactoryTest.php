@@ -41,8 +41,13 @@ class StorageFactoryTest extends TestCase
     /** 测试 create('redis') 返回 RedisStorage；本机无 Redis 服务时跳过 */
     public function testRedisDriver(): void
     {
-        $probe = new Redis();
-        if (!$probe->connect('127.0.0.1', 6379, 0.5)) {
+        // 新版 phpredis 连接失败会抛 RedisException（而非返回 false），未装扩展时 new Redis() 直接 Error
+        try {
+            $probe = new Redis();
+            if (!$probe->connect('127.0.0.1', 6379, 0.5)) {
+                $this->markTestSkipped('本地无 Redis 服务，跳过真实连接测试');
+            }
+        } catch (\Throwable $e) {
             $this->markTestSkipped('本地无 Redis 服务，跳过真实连接测试');
         }
         $this->assertInstanceOf(RedisStorage::class, StorageFactory::create('redis'));

@@ -8,6 +8,7 @@ namespace Erikwang2013\Poster\Tests\Captcha;
 
 use Erikwang2013\Poster\Captcha\CaptchaManager;
 use Erikwang2013\Poster\Drivers\GdDriver;
+use Erikwang2013\Poster\PosterConfig;
 use Erikwang2013\Poster\Storage\FileStorage;
 use PHPUnit\Framework\TestCase;
 
@@ -28,8 +29,9 @@ class CaptchaTest extends TestCase
 
     protected function tearDown(): void
     {
-        array_map('unlink', glob($this->tempDir . '/*.json'));
+        array_map('unlink', glob($this->tempDir . '/*.{png,json}', GLOB_BRACE));
         rmdir($this->tempDir);
+        PosterConfig::reset();
     }
 
     private function getStoredTargets(string $key): array
@@ -172,7 +174,8 @@ class CaptchaTest extends TestCase
 
     public function testCaptchaBackgroundRespectsCustomPathViaSetBackground(): void
     {
-        $testImg = imagecreatetruecolor(100, 80);
+        // 画布尺寸取自背景图，故用足以容纳 3 个点击目标的图（小图会被明确拒绝，见 ClickCaptchaTest）
+        $testImg = imagecreatetruecolor(320, 240);
         imagefill($testImg, 0, 0, imagecolorallocate($testImg, 200, 100, 50));
         $testPath = $this->tempDir . '/test-bg.png';
         imagepng($testImg, $testPath);
@@ -215,16 +218,79 @@ class CaptchaTest extends TestCase
         $this->assertLessThanOrEqual(90, $stored['angle']);
     }
 
-    public function testSliderCaptchaWorksWithSmallBackground(): void
+    /** 测试：达到最小尺寸（200x100）的背景图可正常出题；小于最小尺寸见 SliderCaptchaTest */
+    public function testSliderCaptchaWorksWithMinimumCanvasBackground(): void
     {
-        $testImg = imagecreatetruecolor(100, 80);
+        $testImg = imagecreatetruecolor(200, 100);
         imagefill($testImg, 0, 0, imagecolorallocate($testImg, 200, 100, 50));
-        $testPath = $this->tempDir . '/test-bg-small.png';
+        $testPath = $this->tempDir . '/test-bg-min.png';
         imagepng($testImg, $testPath);
         imagedestroy($testImg);
 
         $result = $this->manager->create('slider')->setBackground($testPath)->generate();
         $this->assertNotEmpty($result['key']);
         unlink($testPath);
+    }
+
+    /** 测试：跨 key 盲猜被会话级限流挡住——每次先领新 key 再猜，第 3 次连正确答案也被拒 */
+    public function testRateLimitBlocksCrossKeyGuessing(): void
+    {
+        \Erikwang2013\Poster\PosterConfig::merge(['captcha' => ['rate_limit' => ['max' => 2, 'window' => 60]]]);
+
+        for ($i = 0; $i < 2; $i++) {
+            $result = $this->manager->create('slider')->generate();
+            $x = $this->getStoredSliderX($result['key']);
+            $this->assertTrue($this->manager->verify($result['key'], ['type' => 'slider', 'data' => $x]));
+        }
+
+        $result = $this->manager->create('slider')->generate();
+        $x = $this->getStoredSliderX($result['key']);
+        $this->assertFalse($this->manager->verify($result['key'], ['type' => 'slider', 'data' => $x]));
+        // 被限流时 key 保留（不是被误判为答错而消耗 attempts）
+        $this->assertNotNull($this->storage->get($result['key']));
+        \Erikwang2013\Poster\PosterConfig::reset();
+    }
+
+    /** 测试：限流身份可由构造函数注入（多实例部署用 uid 之类稳定身份，不受会话 ID 轮换影响） */
+    public function testRateLimitIdentityResolverInjection(): void
+    {
+        \Erikwang2013\Poster\PosterConfig::merge(['captcha' => ['rate_limit' => ['max' => 1, 'window' => 60]]]);
+        $identity = 'user-42';
+        $manager = new \Erikwang2013\Poster\Captcha\CaptchaManager(
+            new GdDriver(),
+            $this->storage,
+            function () use (&$identity) {
+                return $identity;
+            }
+        );
+
+        $first = $manager->create('slider')->generate();
+        $this->assertTrue($manager->verify($first['key'], ['type' => 'slider', 'data' => $this->getStoredSliderX($first['key'])]));
+
+        $second = $manager->create('slider')->generate();
+        $this->assertFalse($manager->verify($second['key'], ['type' => 'slider', 'data' => $this->getStoredSliderX($second['key'])]));
+
+        // 换身份即可重新计数
+        $identity = 'user-43';
+        $third = $manager->create('slider')->generate();
+        $this->assertTrue($manager->verify($third['key'], ['type' => 'slider', 'data' => $this->getStoredSliderX($third['key'])]));
+        \Erikwang2013\Poster\PosterConfig::reset();
+    }
+
+    /** 测试：captcha.default_difficulty 生效（此前只认 options['difficulty']，配置是死配置） */
+    public function testHelperAppliesDefaultDifficultyFromConfig(): void
+    {
+        \Erikwang2013\Poster\PosterConfig::merge(['captcha' => [
+            'default_difficulty' => 'hard',
+            'storage'            => 'file',
+            'file'               => ['path' => $this->tempDir],
+        ]]);
+
+        $result = captcha_create('click');
+        $this->assertCount(4, $result['extra']['texts']);
+
+        // 显式选项优先于配置
+        $this->assertCount(2, captcha_create('click', ['difficulty' => 'easy'])['extra']['texts']);
+        \Erikwang2013\Poster\PosterConfig::reset();
     }
 }

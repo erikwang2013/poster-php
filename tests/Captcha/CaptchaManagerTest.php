@@ -7,6 +7,7 @@
 namespace Erikwang2013\Poster\Tests\Captcha;
 
 use Erikwang2013\Poster\Captcha\CaptchaManager;
+use Erikwang2013\Poster\Captcha\RateLimiter;
 use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 use Erikwang2013\Poster\PosterConfig;
 use Erikwang2013\Poster\Storage\StorageInterface;
@@ -22,12 +23,24 @@ class CaptchaManagerTest extends TestCase
         PosterConfig::reset();
     }
 
-    /** 构造一个 get 返回指定存储内容的 Manager，返回 [manager, storageMock] */
+    /**
+     * 本次 verify 时 mock 存储的原子自增返回值（0 = 自增不可用，各存储实现均以此表示）。
+     * 用可变量而非固定 willReturn：PHPUnit 以「先注册的期望优先」，各用例需要在调用前改这个值。
+     */
+    private int $attemptCount = 1;
+
+    /**
+     * 构造一个 get 返回指定存储内容的 Manager，返回 [manager, storageMock]。
+     * 本文件断言的是单次校验逻辑，故关掉跨 key 限流（否则 mock 会多收到 rate: 键的计数调用）；
+     * 限流本身由 testRateLimit* 与 RateLimiterTest 覆盖。
+     */
     private function managerWith(?array $stored): array
     {
+        PosterConfig::merge(['captcha' => ['rate_limit' => ['max' => 0]]]);
         $driver = $this->createMock(ImageDriverInterface::class);
         $storage = $this->createMock(StorageInterface::class);
         $storage->method('get')->willReturn($stored);
+        $storage->method('incrementAttempts')->willReturnCallback(fn(): int => $this->attemptCount);
         return [new CaptchaManager($driver, $storage), $storage];
     }
 
@@ -120,13 +133,48 @@ class CaptchaManagerTest extends TestCase
         $this->assertFalse($manager->verify('k', ['type' => 'captcha', 'data' => []]));
     }
 
-    /** 测试：达到最大尝试次数后直接失败并删除 key，不再执行校验 */
-    public function testVerifyBlocksAtMaxAttemptsAndDeletesKey(): void
+    /** 测试：原子自增返回值超过上限时失败并删除 key（判定基于存储自增，不再依赖读到的旧快照） */
+    public function testVerifyBlocksWhenAtomicCounterExceedsMaxAttempts(): void
     {
-        [$manager, $storage] = $this->managerWith(['type' => 'click', 'attempts' => 3, 'targets' => [['x' => 100, 'y' => 100]]]);
+        [$manager, $storage] = $this->managerWith($this->storedClick());
+        $storage->expects($this->once())->method('incrementAttempts')->with('k');
         $storage->expects($this->once())->method('del')->with('k');
-        $storage->expects($this->never())->method('incrementAttempts');
+        $this->attemptCount = 4;
         $this->assertFalse($manager->verify('k', ['type' => 'click', 'data' => [[100, 100]]]));
+    }
+
+    /**
+     * 测试：原子自增不可用（返回 0，各存储实现均以此表示键不存在/读失败/内容损坏）时失败关闭。
+     * 若退回读取到的快照计数，并发提交就又能各自读到旧值而放大放行次数（见 40 进程并发验证）。
+     */
+    public function testVerifyFailsClosedWhenAtomicCounterUnavailable(): void
+    {
+        [$manager, $storage] = $this->managerWith(['type' => 'click', 'attempts' => 0, 'targets' => [['x' => 100, 'y' => 100]]]);
+        $this->attemptCount = 0;
+        // 拿不到序号就不校验，也不动这个键（清理交给 TTL）
+        $storage->expects($this->never())->method('del');
+        $this->assertFalse($manager->verify('k', ['type' => 'click', 'data' => [[100, 100]]]));
+    }
+
+    /** 测试：先自增后校验——低于上限时正确答案照常通过 */
+    public function testVerifyUsesIncrementResultAsAttemptNumber(): void
+    {
+        [$manager, $storage] = $this->managerWith($this->storedClick());
+        $storage->expects($this->once())->method('incrementAttempts')->with('k');
+        $storage->expects($this->once())->method('del')->with('k');
+        $this->attemptCount = 3;
+        $this->assertTrue($manager->verify('k', ['type' => 'click', 'data' => [[100, 100], [200, 200]]]));
+    }
+
+    /** 测试：畸形嵌套坐标（非标量）直接判失败，不触发 TypeError */
+    public function testVerifyClickWithNonScalarCoordsFails(): void
+    {
+        [$manager, $storage] = $this->managerWith($this->storedClick());
+        $storage->expects($this->once())->method('incrementAttempts');
+        $this->assertFalse($manager->verify('k', ['type' => 'click', 'data' => [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]]));
+
+        [$manager2] = $this->managerWith($this->storedClick());
+        $this->assertFalse($manager2->verify('k', ['type' => 'click', 'data' => [[100, 100], null]]));
     }
 
     /** 测试：未达最大次数时仍执行校验，正确数据可通过 */
@@ -202,5 +250,71 @@ class CaptchaManagerTest extends TestCase
     {
         [$manager] = $this->managerWith(['type' => 'click', 'attempts' => 0, 'targets' => []]);
         $this->assertFalse($manager->verify('k', ['type' => 'click', 'data' => []]));
+    }
+
+    /** 测试：slider 新形态（['x'=>.., 'trail'=>.., 'duration'=>..]）在轨迹校验关闭时同样可用 */
+    public function testSliderAcceptsNewPayloadShapeWhenTrajectoryDisabled(): void
+    {
+        [$manager] = $this->managerWith($this->storedSlider(100));
+        $this->assertTrue($manager->verify('k', ['type' => 'slider', 'data' => ['x' => 102, 'duration' => 900]]));
+    }
+
+    /** 测试：开启轨迹校验后，只传数值的旧前端被拒（缺轨迹无法证明是人） */
+    public function testSliderRejectsLegacyPayloadWhenTrajectoryEnabled(): void
+    {
+        PosterConfig::merge(['captcha' => ['trajectory' => ['enabled' => true]]]);
+        [$manager] = $this->managerWith($this->storedSlider(100));
+        $this->assertFalse($manager->verify('k', ['type' => 'slider', 'data' => 100]));
+    }
+
+    /** 测试：开启轨迹校验后，带人手轨迹的新前端可通过；脚本式直线轨迹被拒 */
+    public function testSliderTrajectoryHumanPassesAndScriptFails(): void
+    {
+        PosterConfig::merge(['captcha' => ['trajectory' => ['enabled' => true]]]);
+
+        [$manager] = $this->managerWith($this->storedSlider(100));
+        $this->assertTrue($manager->verify('k', ['type' => 'slider', 'data' => [
+            'x'        => 102,
+            'duration' => 900,
+            'trail'    => [[0, 0, 0], [4, 2, 150], [18, 5, 300], [45, 9, 450], [76, 12, 600], [94, 13, 750], [100, 14, 900]],
+        ]]));
+
+        [$manager2] = $this->managerWith($this->storedSlider(100));
+        $this->assertFalse($manager2->verify('k', ['type' => 'slider', 'data' => [
+            'x'        => 100,
+            'duration' => 800,
+            'trail'    => [[0, 0, 0], [25, 0, 200], [50, 0, 400], [75, 0, 600], [100, 0, 800]],
+        ]]));
+    }
+
+    /** 测试：rotate 同样支持新形态与轨迹校验 */
+    public function testRotateTrajectoryEnabled(): void
+    {
+        PosterConfig::merge(['captcha' => ['trajectory' => ['enabled' => true]]]);
+        [$manager] = $this->managerWith($this->storedRotate(30));
+        $this->assertTrue($manager->verify('k', ['type' => 'rotate', 'data' => [
+            'angle'    => 32,
+            'duration' => 1000,
+            'trail'    => [[0, 0, 0], [5, 1, 200], [9, 2, 400], [40, 6, 600], [85, 9, 800], [100, 10, 1000]],
+        ]]));
+
+        [$manager2] = $this->managerWith($this->storedRotate(30));
+        $this->assertFalse($manager2->verify('k', ['type' => 'rotate', 'data' => ['angle' => 30, 'duration' => 1000]]));
+    }
+
+    /** 测试：限流触发时直接返回 false，不抛异常也不消耗 key 的 attempts */
+    public function testVerifyReturnsFalseWhenRateLimited(): void
+    {
+        PosterConfig::merge(['captcha' => ['rate_limit' => ['max' => 1, 'window' => 60]]]);
+        $storage = $this->createMock(StorageInterface::class);
+        $storage->method('get')->willReturn($this->storedClick());
+        // 限流计数自增返回 5 > max=1；captcha key 一次都不该被自增
+        $storage->method('incrementAttempts')->willReturnCallback(
+            fn(string $key) => str_starts_with($key, RateLimiter::KEY_PREFIX) ? 5 : 0
+        );
+        $storage->expects($this->never())->method('del');
+
+        $manager = new CaptchaManager($this->createMock(ImageDriverInterface::class), $storage);
+        $this->assertFalse($manager->verify('k', ['type' => 'click', 'data' => [[100, 100], [200, 200]]]));
     }
 }

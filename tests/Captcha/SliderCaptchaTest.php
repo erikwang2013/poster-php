@@ -10,6 +10,7 @@ use Erikwang2013\Poster\Captcha\CaptchaManager;
 use Erikwang2013\Poster\Drivers\GdDriver;
 use Erikwang2013\Poster\PosterConfig;
 use Erikwang2013\Poster\Storage\FileStorage;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class SliderCaptchaTest extends TestCase
@@ -50,8 +51,8 @@ class SliderCaptchaTest extends TestCase
         $this->assertSame(40, $result['extra']['puzzle_h']);
     }
 
-    /** 测试：小背景（100x80）下拼图 x/y 被钳制到最小合法值 50/20（确定性） */
-    public function testSmallBackgroundClampsPuzzlePosition(): void
+    /** 测试：小背景（100x80）无法容纳拼图 + 边距时明确拒绝（旧实现把 x 钳成唯一值 50，盲猜必中） */
+    public function testSmallBackgroundIsRejected(): void
     {
         $img = imagecreatetruecolor(100, 80);
         imagefill($img, 0, 0, imagecolorallocate($img, 200, 100, 50));
@@ -59,11 +60,56 @@ class SliderCaptchaTest extends TestCase
         imagepng($img, $path);
         imagedestroy($img);
 
-        $result = $this->manager->create('slider')->setBackground($path)->generate();
-        $stored = $this->storage->get($result['key']);
-        $this->assertSame(50, $stored['x']);
-        $this->assertSame(20, $stored['y']);
+        try {
+            $this->manager->create('slider')->setBackground($path)->generate();
+            $this->fail('100×80 画布应抛 InvalidArgumentException');
+        } catch (InvalidArgumentException $e) {
+            $this->assertStringContainsString('too small', $e->getMessage());
+            $this->assertStringContainsString('200x100', $e->getMessage());
+        }
         unlink($path);
+    }
+
+    /** 测试：刚好达到最小尺寸（200x100）的画布可以出题，缺口仍有多个可能位置 */
+    public function testMinimumCanvasStillGenerates(): void
+    {
+        $img = imagecreatetruecolor(200, 100);
+        imagefill($img, 0, 0, imagecolorallocate($img, 200, 100, 50));
+        $path = $this->tempDir . '/min.png';
+        imagepng($img, $path);
+        imagedestroy($img);
+
+        $positions = [];
+        for ($i = 0; $i < 10; $i++) {
+            $stored = $this->storage->get($this->manager->create('slider')->setBackground($path)->generate()['key']);
+            $this->assertGreaterThanOrEqual(50, $stored['x']);
+            $this->assertLessThanOrEqual(100, $stored['x']);
+            $positions[$stored['x']] = true;
+        }
+        $this->assertGreaterThan(2, count($positions), '最小尺寸下缺口仍有多个可能位置');
+        unlink($path);
+    }
+
+    /** 测试：默认 300×200 下缺口位置仍在旧的取值区间（x∈[50,200] y∈[20,130]），行为不变 */
+    public function testDefaultCanvasKeepsLegacyPositionRange(): void
+    {
+        for ($i = 0; $i < 8; $i++) {
+            $stored = $this->storage->get($this->manager->create('slider')->generate()['key']);
+            $this->assertGreaterThanOrEqual(50, $stored['x']);
+            $this->assertLessThanOrEqual(200, $stored['x']);
+            $this->assertGreaterThanOrEqual(20, $stored['y']);
+            $this->assertLessThanOrEqual(130, $stored['y']);
+        }
+    }
+
+    /** 测试：缺口位置确有随机性（钳制退化的回归防线：固定值会被盲猜命中） */
+    public function testGapPositionHasEntropy(): void
+    {
+        $positions = [];
+        for ($i = 0; $i < 20; $i++) {
+            $positions[$this->storage->get($this->manager->create('slider')->generate()['key'])['x']] = true;
+        }
+        $this->assertGreaterThan(5, count($positions));
     }
 
     /** 测试：真实 x 及 ±4 像素边界可通过，±5 像素失败 */

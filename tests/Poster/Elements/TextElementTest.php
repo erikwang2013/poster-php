@@ -53,8 +53,8 @@ class TextElementTest extends TestCase
     {
         $el = new TextElement(['text' => 'Hi {{name}}', 'x' => 5]);
         $this->assertSame($el, $el->resolve(['name' => 'Bob']));
-        $this->assertSame('Hi Bob', $el->toArray()['options']['text']);
-        $this->assertSame(5, $el->toArray()['options']['x']);
+        $this->assertSame('Hi Bob', $el->toArray()['text']);
+        $this->assertSame(5, $el->toArray()['x']);
     }
 
     /** 验证 resolve() 在无 text 键时替换 content 键，未提供变量则保留原样 */
@@ -62,6 +62,6 @@ class TextElementTest extends TestCase
     {
         $el = new TextElement(['content' => '{{a}}-{{b}}']);
         $el->resolve(['a' => '1']);
-        $this->assertSame('1-{{b}}', $el->toArray()['options']['content']);
+        $this->assertSame('1-{{b}}', $el->toArray()['content']);
     }
 }

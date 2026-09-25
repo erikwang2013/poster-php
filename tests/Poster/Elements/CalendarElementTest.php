@@ -62,4 +62,58 @@ class CalendarElementTest extends TestCase
             'todayBg' => '#00FF00', 'textColor' => '#000000',
         ]))->render($canvas);
     }
+
+    /** 验证空白格用 dimColor 而非 cellBg（2026-05：5 个前置空格 + 6 个后置空格 = 11） */
+    public function testEmptyCellsUseDimColor(): void
+    {
+        $counts = $this->rectangleColors([
+            'year' => 2026, 'month' => 5, 'startDay' => 0,
+            'cellBg' => '#FFFFFF', 'dimColor' => '#00FF00',
+        ]);
+        $this->assertSame(11, $counts['#00FF00'] ?? 0, '空白格应使用 dimColor');
+        $this->assertSame(31, $counts['#FFFFFF'] ?? 0, '有值格应保持 cellBg');
+    }
+
+    /** 验证 dimColor 缺省为 #CCCCCC，自定义值同样生效 */
+    public function testDimColorIsConfigurable(): void
+    {
+        $default = $this->rectangleColors(['year' => 2026, 'month' => 5, 'startDay' => 0]);
+        $this->assertSame(11, $default['#CCCCCC'] ?? 0);
+
+        $custom = $this->rectangleColors([
+            'year' => 2026, 'month' => 5, 'startDay' => 0, 'dimColor' => '#123456',
+        ]);
+        $this->assertSame(11, $custom['#123456'] ?? 0);
+    }
+
+    /** 验证 resolve() 替换 title 与 highlights 文案占位符 */
+    public function testResolveReplacesTitleAndHighlights(): void
+    {
+        $el = new CalendarElement([
+            'year' => 2026, 'month' => 5,
+            'title' => '{{who}}的月历',
+            'highlights' => ['2026-05-16' => '{{event}}'],
+        ]);
+        $el->resolve(['who' => '小明', 'event' => '生日']);
+        $arr = $el->toArray();
+        $this->assertSame('小明的月历', $arr['title']);
+        $this->assertSame('生日', $arr['highlights']['2026-05-16']);
+        $this->assertArrayHasKey('2026-05-16', $arr['highlights']); // 日期键不被替换
+    }
+
+    /** 按颜色统计 rectangle 调用次数 */
+    private function rectangleColors(array $options): array
+    {
+        $counts = [];
+        $canvas = $this->createMock(ImageDriverInterface::class);
+        $canvas->expects($this->atLeastOnce())->method('rectangle')->with(
+            $this->anything(), $this->anything(), $this->anything(), $this->anything(),
+            $this->callback(function (array $o) use (&$counts) {
+                $counts[$o['color']] = ($counts[$o['color']] ?? 0) + 1;
+                return true;
+            })
+        );
+        (new CalendarElement($options))->render($canvas);
+        return $counts;
+    }
 }

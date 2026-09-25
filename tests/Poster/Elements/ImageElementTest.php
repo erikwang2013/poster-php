@@ -47,7 +47,7 @@ class ImageElementTest extends TestCase
     {
         $el = new ImageElement(['src' => '/img/{{id}}.png']);
         $el->resolve(['id' => '42']);
-        $this->assertSame('/img/42.png', $el->toArray()['options']['src']);
+        $this->assertSame('/img/42.png', $el->toArray()['src']);
     }
 
     /** 验证配置占位图后，缺失的 src 回退到占位图，并沿用原尺寸选项 */

@@ -16,7 +16,16 @@ class ImageElement extends AbstractElement
     {
         $img = $this->loadImage($this->options['src'] ?? '');
         if ($img === null) return;
-        $canvas->image($img, intval($this->options['x'] ?? 0), intval($this->options['y'] ?? 0), $this->options);
+
+        // 尺寸兜底：<=0 的 width/height 会让 imagecopyresampled 静默什么都不画
+        $options = $this->options;
+        foreach (['width', 'height'] as $key) {
+            if (array_key_exists($key, $options)) {
+                $options[$key] = $this->positive(intval($options[$key]), $key);
+            }
+        }
+
+        $canvas->image($img, intval($this->options['x'] ?? 0), intval($this->options['y'] ?? 0), $options);
         $img->destroy();
     }
 

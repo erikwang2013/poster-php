@@ -7,17 +7,56 @@
 namespace Erikwang2013\Poster\Poster\Elements;
 
 use Erikwang2013\Poster\Drivers\ImageDriverInterface;
+use InvalidArgumentException;
 
 class ChartElement extends AbstractElement
 {
+    protected array $resolveKeys = ['data'];
+
+    /** 支持的图表类型（严格小写，写错不再静默画成柱状图） */
+    public const TYPES = ['bar', 'pie', 'line'];
+
+    /** 默认调色板：colors 缺省 / 空数组 / 非数组时使用，避免 count() 为 0 的除零 */
+    private const DEFAULT_COLORS = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
+
+    /** 图表子类型存在 'chart' 键，避免与模板里的元素类型键 'type' 冲突 */
+    public function toArray(): array
+    {
+        $options = $this->options;
+        unset($options['type']);
+        $subtype = $this->chartType();
+
+        return array_merge(
+            ['type' => 'chart', 'chart' => is_string($subtype) ? $subtype : 'bar'],
+            $options
+        );
+    }
+
+    /**
+     * 图表类型优先取 'chart'（toArray() 往返用），其次 'type'。
+     * 模板定义里的 'type' 是元素类型名，等于 'chart' 时按缺省 bar 处理。
+     */
+    private function chartType(): mixed
+    {
+        $type = $this->options['chart'] ?? $this->options['type'] ?? 'bar';
+        return $type === 'chart' ? 'bar' : $type;
+    }
+
     public function render(ImageDriverInterface $canvas): void
     {
-        $type  = $this->options['type'] ?? 'bar';
+        $type = $this->chartType();
+        if (!is_string($type) || !in_array($type, self::TYPES, true)) {
+            throw new InvalidArgumentException(sprintf(
+                'Unknown chart type "%s". Known types: %s',
+                is_string($type) ? $type : get_debug_type($type),
+                implode(', ', self::TYPES)
+            ));
+        }
         $data  = $this->options['data'] ?? [];
         $x     = intval($this->options['x'] ?? 0);
         $y     = intval($this->options['y'] ?? 0);
-        $w     = intval($this->options['width'] ?? 600);
-        $h     = intval($this->options['height'] ?? 400);
+        $w     = $this->positive(intval($this->options['width'] ?? 600), 'width');
+        $h     = $this->positive(intval($this->options['height'] ?? 400), 'height');
 
         match ($type) {
             'pie'  => $this->drawPie($canvas, $data, $x, $y, $w, $h),
@@ -26,9 +65,16 @@ class ChartElement extends AbstractElement
         };
     }
 
+    /** 调色板：空数组 / 非法值回落默认，保证下面取模的除数恒 > 0 */
+    private function palette(): array
+    {
+        $colors = $this->options['colors'] ?? null;
+        return is_array($colors) && $colors !== [] ? array_values($colors) : self::DEFAULT_COLORS;
+    }
+
     private function drawBar(ImageDriverInterface $canvas, array $data, int $x, int $y, int $w, int $h): void
     {
-        $colors  = $this->options['colors'] ?? ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
+        $colors  = $this->palette();
         $padding = intval($this->options['padding'] ?? 40);
         $count   = count($data);
         if ($count === 0) return;
@@ -69,7 +115,7 @@ class ChartElement extends AbstractElement
 
     private function drawLineChart(ImageDriverInterface $canvas, array $data, int $x, int $y, int $w, int $h): void
     {
-        $colors  = $this->options['colors'] ?? ['#FF6B6B'];
+        $colors  = $this->palette();
         $lineColor = $colors[0];
         $padding = intval($this->options['padding'] ?? 40);
         $count   = count($data);
@@ -118,7 +164,7 @@ class ChartElement extends AbstractElement
 
     private function drawPie(ImageDriverInterface $canvas, array $data, int $x, int $y, int $w, int $h): void
     {
-        $colors = $this->options['colors'] ?? ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
+        $colors = $this->palette();
         $total  = array_sum(array_map(fn($v) => $this->value($v), $data));
         if ($total <= 0) return;
 

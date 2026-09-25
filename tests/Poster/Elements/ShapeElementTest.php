@@ -55,4 +55,65 @@ class ShapeElementTest extends TestCase
         $canvas->expects($this->once())->method('ellipse')->with(5, 6, 3, 3, $this->anything());
         (new ShapeElement(['shape' => 'circle', 'x' => 5, 'y' => 6, 'radius' => 3]))->render($canvas);
     }
+
+    /** 验证 circle 未给 radius/size 时按文档以 width/height 作为外接框（半径 = width/2） */
+    public function testCircleFallsBackToHalfWidth(): void
+    {
+        $canvas = $this->createMock(ImageDriverInterface::class);
+        $canvas->expects($this->once())->method('ellipse')->with(100, 100, 40, 40, $this->anything());
+        (new ShapeElement([
+            'shape' => 'circle', 'x' => 100, 'y' => 100, 'width' => 80, 'height' => 80,
+        ]))->render($canvas);
+    }
+
+    /** 验证 radius 优先级高于 width/2 */
+    public function testRadiusWinsOverWidth(): void
+    {
+        $canvas = $this->createMock(ImageDriverInterface::class);
+        $canvas->expects($this->once())->method('ellipse')->with(0, 0, 7, 7, $this->anything());
+        (new ShapeElement(['shape' => 'circle', 'width' => 80, 'radius' => 7]))->render($canvas);
+    }
+
+    /** 验证 opacity 选项原样传给 ellipse（驱动层消费，元素层不吞参数） */
+    public function testCirclePassesOpacityToDriver(): void
+    {
+        $canvas = $this->createMock(ImageDriverInterface::class);
+        $canvas->expects($this->once())->method('ellipse')->with(
+            0, 0, 50, 50,
+            $this->callback(fn(array $o) => $o['opacity'] === 0.5 && $o['color'] === '#4ECDC4')
+        );
+        (new ShapeElement(['shape' => 'circle', 'opacity' => 0.5, 'color' => '#4ECDC4']))->render($canvas);
+    }
+
+    /** 验证非法尺寸（radius/size/width <= 0）抛 InvalidArgumentException */
+    public function testInvalidCircleDimensionsThrow(): void
+    {
+        foreach ([['radius' => 0], ['size' => -3], ['width' => 0]] as $bad) {
+            $canvas = $this->createMock(ImageDriverInterface::class);
+            $canvas->expects($this->never())->method('ellipse');
+            try {
+                (new ShapeElement(['shape' => 'circle'] + $bad))->render($canvas);
+                $this->fail('非法半径应抛异常：' . json_encode($bad));
+            } catch (\InvalidArgumentException $e) {
+                $this->assertStringContainsString('must be greater than 0', $e->getMessage());
+            }
+        }
+    }
+
+    /** 验证矩形非法宽高抛 InvalidArgumentException */
+    public function testInvalidRectDimensionsThrow(): void
+    {
+        $canvas = $this->createMock(ImageDriverInterface::class);
+        $canvas->expects($this->never())->method('rectangle');
+        $this->expectException(\InvalidArgumentException::class);
+        (new ShapeElement(['shape' => 'rect', 'width' => 0, 'height' => 100]))->render($canvas);
+    }
+
+    /** 验证 resolve() 替换 color 占位符 */
+    public function testResolveReplacesColorPlaceholder(): void
+    {
+        $el = new ShapeElement(['shape' => 'rect', 'color' => '{{brand}}']);
+        $el->resolve(['brand' => '#FF6B6B']);
+        $this->assertSame('#FF6B6B', $el->toArray()['color']);
+    }
 }

@@ -10,6 +10,8 @@ use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 
 class LineElement extends AbstractElement
 {
+    protected array $resolveKeys = ['color'];
+
     public function render(ImageDriverInterface $canvas): void
     {
         $x1 = intval($this->options['x1'] ?? 0);

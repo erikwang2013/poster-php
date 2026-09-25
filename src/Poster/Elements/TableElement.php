@@ -10,6 +10,9 @@ use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 
 class TableElement extends AbstractElement
 {
+    /** rows 为二维数组，递归替换到每个单元格 */
+    protected array $resolveKeys = ['header', 'headers', 'rows'];
+
     public function render(ImageDriverInterface $canvas): void
     {
         // 选项键同时接受文档中的 camelCase（header / columns / headerBg …）

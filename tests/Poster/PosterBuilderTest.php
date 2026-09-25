@@ -9,6 +9,7 @@ namespace Erikwang2013\Poster\Tests\Poster;
 use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 use Erikwang2013\Poster\Poster\PosterBuilder;
 use Erikwang2013\Poster\Poster\PosterTemplate;
+use Erikwang2013\Poster\PosterConfig;
 use PHPUnit\Framework\TestCase;
 
 class PosterBuilderTest extends TestCase
@@ -196,6 +197,129 @@ class PosterBuilderTest extends TestCase
         $builder = new PosterBuilder($driver);
         $builder->width(10)->height(10);
         $this->assertTrue($builder->save('/tmp/any.jpg', 75));
+    }
+
+    /** 验证 save() 按扩展名推断格式（此前恒写 jpg），未知扩展名回落 jpg */
+    public function testSaveInfersFormatFromExtension(): void
+    {
+        $cases = [
+            '/tmp/a.jpg'    => 'jpg',
+            '/tmp/a.jpeg'   => 'jpeg',
+            '/tmp/a.PNG'    => 'png',
+            '/tmp/a.webp'   => 'webp',
+            '/tmp/a.gif'    => 'gif',
+            '/tmp/a'        => 'jpg',
+            '/tmp/a.bmp'    => 'jpg',
+        ];
+        foreach ($cases as $path => $expected) {
+            $driver = $this->mockDriver();
+            $driver->expects($this->once())->method('save')->with($path, $expected, 90)->willReturn(true);
+            $builder = new PosterBuilder($driver);
+            $builder->width(10)->height(10);
+            $this->assertTrue($builder->save($path), "save($path) 应返回 true");
+        }
+    }
+
+    /** 验证 save() 未传 quality 时读配置 poster.jpeg_quality（此前硬编码 90） */
+    public function testSaveUsesConfiguredJpegQuality(): void
+    {
+        PosterConfig::merge(['poster' => ['jpeg_quality' => 55]]);
+        try {
+            $driver = $this->mockDriver();
+            $driver->expects($this->once())->method('save')->with($this->anything(), 'jpg', 55)->willReturn(true);
+            (new PosterBuilder($driver))->width(10)->height(10)->save('/tmp/q.jpg');
+        } finally {
+            PosterConfig::reset();
+        }
+    }
+
+    /** 验证 add() 走注册表，未知类型抛 InvalidArgumentException */
+    public function testAddUsesRegistryAndRejectsUnknownType(): void
+    {
+        $driver = $this->mockDriver();
+        $driver->expects($this->once())->method('text')->with('via add', 0, 0, $this->anything());
+        $builder = new PosterBuilder($driver);
+        $this->assertSame($builder, $builder->add('text', ['text' => 'via add']));
+        $builder->width(10)->height(10)->output('png');
+
+        $this->expectException(\InvalidArgumentException::class);
+        (new PosterBuilder($this->mockDriver()))->add('nope');
+    }
+
+    /** 验证 toArray() 导出模板结构，fromConfig() 往返一致 */
+    public function testToArrayRoundTripsThroughTemplate(): void
+    {
+        $builder = new PosterBuilder($this->mockDriver());
+        $builder->width(320)->height(480)
+            ->addText('标题', ['x' => 10, 'y' => 20])
+            ->addShape('rect', ['width' => 100, 'height' => 50, 'color' => '#FF6B6B'])
+            ->addChart('pie', [['label' => 'A', 'value' => 1]], ['x' => 1])
+            ->add('line', ['x1' => 0, 'y1' => 0, 'x2' => 5, 'y2' => 5]);
+
+        $exported = $builder->toArray();
+        $this->assertSame(320, $exported['width']);
+        $this->assertSame(480, $exported['height']);
+        $this->assertSame(
+            ['text', 'shape', 'chart', 'line'],
+            array_column($exported['elements'], 'type')
+        );
+
+        $template = PosterTemplate::fromConfig($exported);
+        $this->assertSame(320, $template->getWidth());
+        $this->assertSame(480, $template->getHeight());
+        $this->assertSame($exported, $template->toArray());
+
+        // 还原出的元素再导出，结构保持一致（真正的往返）
+        $again = [];
+        foreach ($template->build() as $el) {
+            $again[] = $el->toArray();
+        }
+        $this->assertSame($exported['elements'], $again);
+    }
+
+    /** 验证模板下的 toArray() 导出模板元素（未渲染时也能导出） */
+    public function testToArrayWithTemplateExportsTemplateElements(): void
+    {
+        $template = new PosterTemplate(500, 600, [['type' => 'text', 'text' => 'T']]);
+        $builder = new PosterBuilder($this->mockDriver());
+        $builder->useTemplate($template);
+        $exported = $builder->toArray();
+        $this->assertSame(500, $exported['width']);
+        $this->assertSame(600, $exported['height']);
+        $this->assertSame([['type' => 'text', 'text' => 'T']], $exported['elements']);
+    }
+
+    /** 验证 replaceElements(false) 为追加语义：手写元素 + 模板元素都渲染 */
+    public function testReplaceElementsFalseKeepsHandWrittenElements(): void
+    {
+        $texts = [];
+        $driver = $this->mockDriver();
+        $driver->expects($this->exactly(2))->method('text')->willReturnCallback(
+            function (string $text, int $x, int $y, array $o) use (&$texts, $driver) {
+                $texts[] = $text;
+                return $driver;
+            }
+        );
+        $template = new PosterTemplate(100, 100, [['type' => 'text', 'text' => 'from-template']]);
+        (new PosterBuilder($driver))
+            ->useTemplate($template)
+            ->replaceElements(false)
+            ->addText('hand-written')
+            ->output('png');
+
+        $this->assertSame(['hand-written', 'from-template'], $texts);
+    }
+
+    /** 验证缺省（替换语义）仍然吞掉手写元素，保持既有行为 */
+    public function testTemplateReplacesHandWrittenElementsByDefault(): void
+    {
+        $driver = $this->mockDriver();
+        $driver->expects($this->once())->method('text')->with('from-template', 0, 0, $this->anything());
+        $template = new PosterTemplate(100, 100, [['type' => 'text', 'text' => 'from-template']]);
+        (new PosterBuilder($driver))
+            ->useTemplate($template)
+            ->addText('hand-written')
+            ->output('png');
     }
 
     /** 验证 addLine 的 x/y 简写会落到 x2/y2 默认值 */

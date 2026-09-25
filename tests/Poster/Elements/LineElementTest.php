@@ -39,4 +39,12 @@ class LineElementTest extends TestCase
         (new LineElement(['x1' => '1', 'y1' => '2', 'x2' => '3.9', 'y2' => '-4', 'color' => '#FF0000', 'width' => 2]))
             ->render($canvas);
     }
+
+    /** 验证 resolve() 替换 color 占位符 */
+    public function testResolveReplacesColorPlaceholder(): void
+    {
+        $el = new LineElement(['x1' => 0, 'y1' => 0, 'x2' => 10, 'y2' => 0, 'color' => '{{line}}']);
+        $el->resolve(['line' => '#EEEEEE']);
+        $this->assertSame('#EEEEEE', $el->toArray()['color']);
+    }
 }

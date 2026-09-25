@@ -67,4 +67,15 @@ class IconElementTest extends TestCase
                 ->render($canvas);
         }
     }
+
+    /** 验证 resolve() 替换 icon / codepoint / color 占位符 */
+    public function testResolveReplacesIconPlaceholders(): void
+    {
+        $el = new IconElement(['icon' => '{{ic}}', 'codepoint' => '{{cp}}', 'color' => '{{clr}}']);
+        $el->resolve(['ic' => 'star', 'cp' => 'U+F005', 'clr' => '#E74C3C']);
+        $arr = $el->toArray();
+        $this->assertSame('star', $arr['icon']);
+        $this->assertSame('U+F005', $arr['codepoint']);
+        $this->assertSame('#E74C3C', $arr['color']);
+    }
 }

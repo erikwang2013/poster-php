@@ -6,8 +6,8 @@
   <text x="520" y="42" font-size="23" fill="#2D3436" font-weight="700" text-anchor="middle">Архитектура системы poster-php</text>
   <text x="520" y="66" font-size="13" fill="#7F8C8D" text-anchor="middle">Ядро без привязки к фреймворку + 4 адаптера · каждый слой зависит только от интерфейсов ниже</text>
   <rect x="40" y="88" width="960" height="92" rx="16" fill="#FFF6F6" stroke="#FF6B6B" stroke-width="1.5"/>
-  <rect x="60" y="73" width="108.65" height="30" rx="15" fill="#FF6B6B"/>
-  <text x="114.33" y="93" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">Уровень API</text>
+  <rect x="60" y="73" width="115.02" height="30" rx="15" fill="#FF6B6B"/>
+  <text x="117.51" y="93" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">Уровень API</text>
   <rect x="64" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="64" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
   <text x="148" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">helpers.php</text>
@@ -29,41 +29,41 @@
   <text x="892" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">Hyperf</text>
   <text x="892" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">ConfigProvider</text>
   <rect x="40" y="236" width="960" height="140" rx="16" fill="#F2FBF9" stroke="#4ECDC4" stroke-width="1.5"/>
-  <rect x="60" y="221" width="180.15" height="30" rx="15" fill="#4ECDC4"/>
-  <text x="150.08" y="241" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">Уровень бизнес-логики</text>
+  <rect x="60" y="221" width="197.44" height="30" rx="15" fill="#4ECDC4"/>
+  <text x="158.72" y="241" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">Уровень бизнес-логики</text>
   <rect x="64" y="264" width="447" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="64" y="274" width="4" height="76" rx="2" fill="#4ECDC4"/>
   <text x="82" y="286" font-size="14" fill="#2D3436" font-weight="600">Модуль капчи</text>
   <text x="82" y="304" font-size="12" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">CaptchaManager → CaptchaFactory</text>
-  <rect x="82" y="316" width="45.3" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
-  <text x="104.65" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Клик</text>
-  <rect x="135.3" y="316" width="64.28" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
-  <text x="167.44" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Поворот</text>
-  <rect x="207.58" y="316" width="64.28" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
-  <text x="239.71" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Слайдер</text>
-  <rect x="279.85" y="316" width="70.6" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
-  <text x="315.15" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Случайно</text>
+  <rect x="82" y="316" width="48.52" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="106.26" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Клик</text>
+  <rect x="138.52" y="316" width="69.91" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="173.48" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Поворот</text>
+  <rect x="216.43" y="316" width="69.91" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="251.39" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Слайдер</text>
+  <rect x="294.34" y="316" width="77.04" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="332.86" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Случайно</text>
   <rect x="529" y="264" width="447" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="529" y="274" width="4" height="76" rx="2" fill="#4ECDC4"/>
   <text x="547" y="286" font-size="14" fill="#2D3436" font-weight="600">Модуль постеров</text>
   <text x="547" y="304" font-size="12" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">PosterBuilder → 14 элементов → PosterTemplate</text>
-  <rect x="547" y="316" width="64.28" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
-  <text x="579.14" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Текст 5</text>
-  <rect x="619.28" y="316" width="83.25" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
-  <text x="660.9" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Картинка 5</text>
-  <rect x="710.53" y="316" width="70.6" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
-  <text x="745.83" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Данные 3</text>
-  <rect x="789.13" y="316" width="76.93" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
-  <text x="827.59" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Оверлей 1</text>
+  <rect x="547" y="316" width="68.3" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="581.15" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Текст 5</text>
+  <rect x="623.3" y="316" width="89.69" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="668.15" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Картинка 5</text>
+  <rect x="720.99" y="316" width="75.43" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="758.71" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Данные 3</text>
+  <rect x="804.42" y="316" width="82.56" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="845.7" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Оверлей 1</text>
   <rect x="40" y="404" width="960" height="140" rx="16" fill="#F4FAFD" stroke="#45B7D1" stroke-width="1.5"/>
-  <rect x="60" y="389" width="115.8" height="30" rx="15" fill="#45B7D1"/>
-  <text x="117.9" y="409" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">Уровень ядра</text>
+  <rect x="60" y="389" width="125.81" height="30" rx="15" fill="#45B7D1"/>
+  <text x="122.91" y="409" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">Уровень ядра</text>
   <rect x="64" y="432" width="219" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="64" y="442" width="4" height="76" rx="2" fill="#45B7D1"/>
   <text x="82" y="454" font-size="13" fill="#2D3436" font-weight="600">Драйвер изображений</text>
   <text x="82" y="471" font-size="10" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">ImageDriverInterface</text>
   <text x="82" y="490" font-size="11" fill="#7F8C8D">· GdDriver · ImagickDriver</text>
-  <text x="82" y="505" font-size="11" fill="#7F8C8D">· автоопределение, откат к GD</text>
+  <text x="82" y="505" font-size="10.79" fill="#7F8C8D">· автоопределение, откат к GD</text>
   <text x="82" y="520" font-size="11" fill="#7F8C8D">· свой драйвер</text>
   <rect x="295" y="432" width="219" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="295" y="442" width="4" height="76" rx="2" fill="#45B7D1"/>
@@ -87,8 +87,8 @@
   <text x="775" y="505" font-size="11" fill="#7F8C8D">· читает конфиг фреймворка</text>
   <text x="775" y="520" font-size="11" fill="#7F8C8D">· безопасные умолчания</text>
   <rect x="40" y="572" width="960" height="80" rx="16" fill="#F5FBF7" stroke="#96CEB4" stroke-width="1.5"/>
-  <rect x="60" y="557" width="72.9" height="30" rx="15" fill="#96CEB4"/>
-  <text x="96.45" y="577" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">Основа</text>
+  <rect x="60" y="557" width="78.36" height="30" rx="15" fill="#96CEB4"/>
+  <text x="99.18" y="577" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">Основа</text>
   <rect x="64" y="598" width="95.5" height="34" rx="17" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
   <text x="111.75" y="619.5" font-size="12.5" fill="#2D3436" font-weight="600" text-anchor="middle">PHP ≥ 8.0</text>
   <rect x="171.5" y="598" width="69.25" height="34" rx="17" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
@@ -96,10 +96,10 @@
   <rect x="252.75" y="598" width="110.5" height="34" rx="17" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
   <text x="308" y="619.5" font-size="12.5" fill="#2D3436" font-weight="600" text-anchor="middle">ext-mbstring</text>
   <text x="383.25" y="620" font-size="11" fill="#7F8C8D">обязательно</text>
-  <rect x="459.25" y="598" width="186.13" height="34" rx="17" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
-  <text x="552.31" y="619.5" font-size="12.5" fill="#7F8C8D" text-anchor="middle">ext-imagick опционально</text>
-  <rect x="657.38" y="598" width="172.38" height="34" rx="17" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
-  <text x="743.56" y="619.5" font-size="12.5" fill="#7F8C8D" text-anchor="middle">ext-redis опционально</text>
+  <rect x="459.25" y="598" width="195.75" height="34" rx="17" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <text x="557.13" y="619.5" font-size="12.5" fill="#7F8C8D" text-anchor="middle">ext-imagick опционально</text>
+  <rect x="667" y="598" width="182" height="34" rx="17" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <text x="758" y="619.5" font-size="12.5" fill="#7F8C8D" text-anchor="middle">ext-redis опционально</text>
   <line x1="520" y1="184" x2="520" y2="232" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
   <text x="532" y="213" font-size="11.5" fill="#7F8C8D">Вызов</text>
   <line x1="520" y1="380" x2="520" y2="400" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>

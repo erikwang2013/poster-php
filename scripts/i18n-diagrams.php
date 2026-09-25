@@ -51,7 +51,11 @@ function textWidth(string $s, float $size, string $weight = '400'): float
     $len = mb_strlen($s, 'UTF-8');
     for ($i = 0; $i < $len; $i++) {
         $cp = mb_ord(mb_substr($s, $i, 1, 'UTF-8'), 'UTF-8');
-        $w += $size * ($cp > 0x2000 ? 1.0 : 0.55);
+        $w += $size * match (true) {
+            $cp > 0x2000 => 1.0,                        // CJK / 全角标点 / 箭头
+            $cp >= 0x0400 && $cp <= 0x04FF => 0.62,     // 西里尔（实测约 0.62em）
+            default => 0.55,
+        };
     }
     return $w * ($weight === '400' ? 1.0 : 1.06);
 }
@@ -311,7 +315,7 @@ function drawFeatures(array $L, array $EN, string $font, string $out): void
         rect($RX, $y + 10, 4, 44, 2, $c);
         text($RX + 20, $y + 28, $grp[0] ?? '', fitSize($grp[0] ?? '', 120, 14, 'grp-title'), INK, 'start', '600');
         $count = count($grp) - 1;
-        text($RX + 26 + textWidth($grp[0] ?? '', 14, '600'), $y + 28, sprintf(t($L, $EN, 'features.elementCount'), $count), 11, $c, 'start', '700');
+        text($RX + 26 + textWidth($grp[0] ?? '', 14, '600') + 6, $y + 28, sprintf(t($L, $EN, 'features.elementCount'), $count), 11, $c, 'start', '700');
         $x = $RX + 20;
         foreach (array_slice($grp, 1) as $tag) {
             $x += chip($x, $y + 34, $tag, 11, '#FFFFFF', INK, $c, 9, 24) + 6;

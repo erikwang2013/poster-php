@@ -64,7 +64,7 @@
   <rect x="530" y="154" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="530" y="164" width="4" height="44" rx="2" fill="#4ECDC4"/>
   <text x="550" y="182" font-size="14" fill="#2D3436" font-weight="600">Text &amp; Layout</text>
-  <text x="662.11" y="182" font-size="11" fill="#4ECDC4" font-weight="700">5 Typen</text>
+  <text x="668.11" y="182" font-size="11" fill="#4ECDC4" font-weight="700">5 Typen</text>
   <rect x="550" y="188" width="42.2" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
   <text x="571.1" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Text</text>
   <rect x="598.2" y="188" width="90.6" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
@@ -78,7 +78,7 @@
   <rect x="530" y="230" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="530" y="240" width="4" height="44" rx="2" fill="#45B7D1"/>
   <text x="550" y="258" font-size="14" fill="#2D3436" font-weight="600">Bild &amp; Form</text>
-  <text x="645.78" y="258" font-size="11" fill="#45B7D1" font-weight="700">5 Typen</text>
+  <text x="651.78" y="258" font-size="11" fill="#45B7D1" font-weight="700">5 Typen</text>
   <rect x="550" y="264" width="42.2" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
   <text x="571.1" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Bild</text>
   <rect x="598.2" y="264" width="54.3" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
@@ -92,7 +92,7 @@
   <rect x="530" y="306" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="530" y="316" width="4" height="44" rx="2" fill="#FF8E53"/>
   <text x="550" y="334" font-size="14" fill="#2D3436" font-weight="600">Datenanzeige</text>
-  <text x="653.94" y="334" font-size="11" fill="#FF8E53" font-weight="700">3 Typen</text>
+  <text x="659.94" y="334" font-size="11" fill="#FF8E53" font-weight="700">3 Typen</text>
   <rect x="550" y="340" width="60.35" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
   <text x="580.18" y="355.96" font-size="11" fill="#2D3436" text-anchor="middle">Tabelle</text>
   <rect x="616.35" y="340" width="181.35" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
@@ -102,7 +102,7 @@
   <rect x="530" y="382" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="530" y="392" width="4" height="44" rx="2" fill="#96CEB4"/>
   <text x="550" y="410" font-size="14" fill="#2D3436" font-weight="600">Overlay</text>
-  <text x="613.13" y="410" font-size="11" fill="#96CEB4" font-weight="700">1 Typen</text>
+  <text x="619.13" y="410" font-size="11" fill="#96CEB4" font-weight="700">1 Typen</text>
   <rect x="550" y="416" width="272.1" height="24" rx="12" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
   <text x="686.05" y="431.96" font-size="11" fill="#2D3436" text-anchor="middle">Wasserzeichen gekachelt / Winkel / Abstand</text>
   <rect x="530" y="458" width="470" height="122" rx="12" fill="#F2FBF9" stroke="#4ECDC4" stroke-width="1.5"/>

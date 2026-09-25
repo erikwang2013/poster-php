@@ -20,7 +20,7 @@
   <circle cx="74" cy="186" r="14" fill="#FFF0F0" stroke="#FF6B6B" stroke-width="1.5"/>
   <text x="74" y="191" font-size="13" fill="#FF6B6B" font-weight="700" text-anchor="middle">1</text>
   <text x="100" y="182" font-size="14" fill="#2D3436" font-weight="600">Клик</text>
-  <text x="138.65" y="182" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">click</text>
+  <text x="142.8" y="182" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">click</text>
   <text x="100" y="202" font-size="11.5" fill="#7F8C8D">Нажмите на символы по порядку</text>
   <text x="490" y="186" font-size="11" fill="#7F8C8D" text-anchor="end">2-4 цели · ±18px</text>
   <rect x="40" y="230" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
@@ -28,7 +28,7 @@
   <circle cx="74" cy="262" r="14" fill="#FFF0F0" stroke="#FF6B6B" stroke-width="1.5"/>
   <text x="74" y="267" font-size="13" fill="#FF6B6B" font-weight="700" text-anchor="middle">2</text>
   <text x="100" y="258" font-size="14" fill="#2D3436" font-weight="600">Поворот</text>
-  <text x="163.13" y="258" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">rotate</text>
+  <text x="170.41" y="258" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">rotate</text>
   <text x="100" y="278" font-size="11.5" fill="#7F8C8D">Ползунком верните картинку в норму</text>
   <text x="490" y="262" font-size="11" fill="#7F8C8D" text-anchor="end">30°-330° · ±5°</text>
   <rect x="40" y="306" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
@@ -36,7 +36,7 @@
   <circle cx="74" cy="338" r="14" fill="#FFF0F0" stroke="#FF6B6B" stroke-width="1.5"/>
   <text x="74" y="343" font-size="13" fill="#FF6B6B" font-weight="700" text-anchor="middle">3</text>
   <text x="100" y="334" font-size="14" fill="#2D3436" font-weight="600">Слайдер</text>
-  <text x="163.13" y="334" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">slider</text>
+  <text x="170.41" y="334" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">slider</text>
   <text x="100" y="354" font-size="11.5" fill="#7F8C8D">Вставьте пазл в нужное место</text>
   <text x="490" y="338" font-size="11" fill="#7F8C8D" text-anchor="end">±4px · свой размер</text>
   <rect x="40" y="382" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
@@ -44,75 +44,75 @@
   <circle cx="74" cy="414" r="14" fill="#FFF0F0" stroke="#FF6B6B" stroke-width="1.5"/>
   <text x="74" y="419" font-size="13" fill="#FF6B6B" font-weight="700" text-anchor="middle">4</text>
   <text x="100" y="410" font-size="14" fill="#2D3436" font-weight="600">Случайный</text>
-  <text x="179.46" y="410" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">random</text>
+  <text x="188.81" y="410" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">random</text>
   <text x="100" y="430" font-size="11.5" fill="#7F8C8D">Случайно выбирает один из трёх</text>
   <text x="490" y="414" font-size="11" fill="#7F8C8D" text-anchor="end">сложнее обойти</text>
   <rect x="40" y="458" width="470" height="122" rx="12" fill="#FFF6F6" stroke="#FF6B6B" stroke-width="1.5"/>
   <text x="60" y="486" font-size="14" fill="#2D3436" font-weight="700">Безопасность и хранение</text>
-  <rect x="60" y="500" width="121.2" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
-  <text x="120.6" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Одноразовый ключ</text>
-  <rect x="189.2" y="500" width="133.85" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
-  <text x="256.13" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Максимум 3 попытки</text>
-  <rect x="331.05" y="500" width="76.93" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
-  <text x="369.51" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">TTL 300 с</text>
-  <rect x="60" y="538" width="108.55" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
-  <text x="114.28" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">3 уровня фонов</text>
-  <rect x="176.55" y="538" width="127.53" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
-  <text x="240.31" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Настройка допуска</text>
-  <rect x="312.08" y="538" width="133.85" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
-  <text x="379" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">File/Session/Redis</text>
+  <rect x="60" y="500" width="133.28" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="126.64" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Одноразовый ключ</text>
+  <rect x="201.28" y="500" width="145.93" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="274.24" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Максимум 3 попытки</text>
+  <rect x="355.2" y="500" width="77.73" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="394.07" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">TTL 300 с</text>
+  <rect x="60" y="538" width="117.41" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="118.7" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">3 уровня фонов</text>
+  <rect x="185.41" y="538" width="140.41" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="255.61" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Настройка допуска</text>
+  <rect x="333.81" y="538" width="133.85" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="400.74" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">File/Session/Redis</text>
   <rect x="530" y="154" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="530" y="164" width="4" height="44" rx="2" fill="#4ECDC4"/>
   <text x="550" y="182" font-size="14" fill="#2D3436" font-weight="600">Текст</text>
-  <text x="596.81" y="182" font-size="11" fill="#4ECDC4" font-weight="700">5 типов</text>
-  <rect x="550" y="188" width="48.25" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
-  <text x="574.13" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Текст</text>
-  <rect x="604.25" y="188" width="72.45" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
-  <text x="640.48" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Арт-текст</text>
-  <rect x="682.7" y="188" width="54.3" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
-  <text x="709.85" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Эмодзи</text>
-  <rect x="743" y="188" width="54.3" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
-  <text x="770.15" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Иконки</text>
-  <rect x="803.3" y="188" width="66.4" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
-  <text x="836.5" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Каомодзи</text>
+  <text x="608" y="182" font-size="11" fill="#4ECDC4" font-weight="700">5 типов</text>
+  <rect x="550" y="188" width="52.1" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="576.05" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Текст</text>
+  <rect x="608.1" y="188" width="78.61" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="647.41" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Арт-текст</text>
+  <rect x="692.71" y="188" width="58.92" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="722.17" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Эмодзи</text>
+  <rect x="757.63" y="188" width="58.92" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="787.09" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Иконки</text>
+  <rect x="822.55" y="188" width="72.56" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="858.83" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Каомодзи</text>
   <rect x="530" y="230" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="530" y="240" width="4" height="44" rx="2" fill="#45B7D1"/>
   <text x="550" y="258" font-size="14" fill="#2D3436" font-weight="600">Графика</text>
-  <text x="613.13" y="258" font-size="11" fill="#45B7D1" font-weight="700">5 типов</text>
-  <rect x="550" y="264" width="66.4" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
-  <text x="583.2" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Картинка</text>
-  <rect x="622.4" y="264" width="54.3" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
-  <text x="649.55" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Аватар</text>
-  <rect x="682.7" y="264" width="54.3" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
-  <text x="709.85" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">QR-код</text>
-  <rect x="743" y="264" width="54.3" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
-  <text x="770.15" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Фигуры</text>
-  <rect x="803.3" y="264" width="48.25" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
-  <text x="827.43" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Линия</text>
+  <text x="626.41" y="258" font-size="11" fill="#45B7D1" font-weight="700">5 типов</text>
+  <rect x="550" y="264" width="72.56" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="586.28" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Картинка</text>
+  <rect x="628.56" y="264" width="58.92" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="658.02" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Аватар</text>
+  <rect x="693.48" y="264" width="56.61" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="721.79" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">QR-код</text>
+  <rect x="756.09" y="264" width="58.92" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="785.55" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Фигуры</text>
+  <rect x="821.01" y="264" width="52.1" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="847.06" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Линия</text>
   <rect x="530" y="306" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="530" y="316" width="4" height="44" rx="2" fill="#FF8E53"/>
   <text x="550" y="334" font-size="14" fill="#2D3436" font-weight="600">Данные</text>
-  <text x="604.97" y="334" font-size="11" fill="#FF8E53" font-weight="700">3 типов</text>
-  <rect x="550" y="340" width="60.35" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
-  <text x="580.18" y="355.96" font-size="11" fill="#2D3436" text-anchor="middle">Таблица</text>
-  <rect x="616.35" y="340" width="217.65" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
-  <text x="725.18" y="355.96" font-size="11" fill="#2D3436" text-anchor="middle">Диаграмма: столбцы / линии / круг</text>
-  <rect x="840" y="340" width="72.45" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
-  <text x="876.23" y="355.96" font-size="11" fill="#2D3436" text-anchor="middle">Календарь</text>
+  <text x="617.2" y="334" font-size="11" fill="#FF8E53" font-weight="700">3 типов</text>
+  <rect x="550" y="340" width="65.74" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
+  <text x="582.87" y="355.96" font-size="11" fill="#2D3436" text-anchor="middle">Таблица</text>
+  <rect x="621.74" y="340" width="236.9" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
+  <text x="740.19" y="355.96" font-size="11" fill="#2D3436" text-anchor="middle">Диаграмма: столбцы / линии / круг</text>
+  <rect x="864.64" y="340" width="79.38" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
+  <text x="904.33" y="355.96" font-size="11" fill="#2D3436" text-anchor="middle">Календарь</text>
   <rect x="530" y="382" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="530" y="392" width="4" height="44" rx="2" fill="#96CEB4"/>
   <text x="550" y="410" font-size="14" fill="#2D3436" font-weight="600">Наложение</text>
-  <text x="629.46" y="410" font-size="11" fill="#96CEB4" font-weight="700">1 типов</text>
-  <rect x="550" y="416" width="223.7" height="24" rx="12" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
-  <text x="661.85" y="431.96" font-size="11" fill="#2D3436" text-anchor="middle">Водяной знак: мозаика / угол / шаг</text>
+  <text x="644.81" y="410" font-size="11" fill="#96CEB4" font-weight="700">1 типов</text>
+  <rect x="550" y="416" width="242.95" height="24" rx="12" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
+  <text x="671.48" y="431.96" font-size="11" fill="#2D3436" text-anchor="middle">Водяной знак: мозаика / угол / шаг</text>
   <rect x="530" y="458" width="470" height="122" rx="12" fill="#F2FBF9" stroke="#4ECDC4" stroke-width="1.5"/>
   <text x="550" y="486" font-size="14" fill="#2D3436" font-weight="700">Система шаблонов</text>
-  <rect x="550" y="500" width="102.23" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
-  <text x="601.11" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">JSON-описание</text>
-  <rect x="660.23" y="500" width="171.8" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
-  <text x="746.13" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">подстановка {{variable}}</text>
-  <rect x="840.03" y="500" width="114.88" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
-  <text x="897.46" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">задать один раз</text>
+  <rect x="550" y="500" width="108.5" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="604.25" y="518.13" font-size="11.48" fill="#2D3436" text-anchor="middle">JSON-описание</text>
+  <rect x="666.5" y="500" width="180.36" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="756.68" y="518.13" font-size="11.48" fill="#2D3436" text-anchor="middle">подстановка {{variable}}</text>
+  <rect x="854.86" y="500" width="125.14" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="917.43" y="518.13" font-size="11.48" fill="#2D3436" text-anchor="middle">задать один раз</text>
   <rect x="550" y="538" width="64.28" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
   <text x="582.14" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Laravel</text>
   <rect x="622.28" y="538" width="70.6" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>

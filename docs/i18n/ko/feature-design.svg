@@ -64,7 +64,7 @@
   <rect x="530" y="154" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="530" y="164" width="4" height="44" rx="2" fill="#4ECDC4"/>
   <text x="550" y="182" font-size="14" fill="#2D3436" font-weight="600">텍스트·레이아웃</text>
-  <text x="668.04" y="182" font-size="11" fill="#4ECDC4" font-weight="700">5종</text>
+  <text x="674.04" y="182" font-size="11" fill="#4ECDC4" font-weight="700">5종</text>
   <rect x="550" y="188" width="51" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
   <text x="575.5" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">텍스트</text>
   <rect x="607" y="188" width="79.05" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
@@ -78,7 +78,7 @@
   <rect x="530" y="230" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="530" y="240" width="4" height="44" rx="2" fill="#45B7D1"/>
   <text x="550" y="258" font-size="14" fill="#2D3436" font-weight="600">이미지·도형</text>
-  <text x="638.36" y="258" font-size="11" fill="#45B7D1" font-weight="700">5종</text>
+  <text x="644.36" y="258" font-size="11" fill="#45B7D1" font-weight="700">5종</text>
   <rect x="550" y="264" width="51" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
   <text x="575.5" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">이미지</text>
   <rect x="607" y="264" width="51" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
@@ -92,7 +92,7 @@
   <rect x="530" y="306" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="530" y="316" width="4" height="44" rx="2" fill="#FF8E53"/>
   <text x="550" y="334" font-size="14" fill="#2D3436" font-weight="600">데이터 표시</text>
-  <text x="638.36" y="334" font-size="11" fill="#FF8E53" font-weight="700">3종</text>
+  <text x="644.36" y="334" font-size="11" fill="#FF8E53" font-weight="700">3종</text>
   <rect x="550" y="340" width="29" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
   <text x="564.5" y="355.96" font-size="11" fill="#2D3436" text-anchor="middle">표</text>
   <rect x="585" y="340" width="113.15" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
@@ -102,7 +102,7 @@
   <rect x="530" y="382" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="530" y="392" width="4" height="44" rx="2" fill="#96CEB4"/>
   <text x="550" y="410" font-size="14" fill="#2D3436" font-weight="600">오버레이</text>
-  <text x="615.36" y="410" font-size="11" fill="#96CEB4" font-weight="700">1종</text>
+  <text x="621.36" y="410" font-size="11" fill="#96CEB4" font-weight="700">1종</text>
   <rect x="550" y="416" width="146.15" height="24" rx="12" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
   <text x="623.08" y="431.96" font-size="11" fill="#2D3436" text-anchor="middle">워터마크 타일/각도/간격</text>
   <rect x="530" y="458" width="470" height="122" rx="12" fill="#F2FBF9" stroke="#4ECDC4" stroke-width="1.5"/>

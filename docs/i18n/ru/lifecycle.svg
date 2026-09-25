@@ -6,8 +6,8 @@
   <text x="520" y="42" font-size="23" fill="#2D3436" font-weight="700" text-anchor="middle">Жизненный цикл poster-php</text>
   <text x="520" y="66" font-size="13" fill="#7F8C8D" text-anchor="middle">Один цикл капчи и одна сборка постера: от создания до истечения / от инициализации до вывода</text>
   <rect x="40" y="118" width="465" height="638" rx="16" fill="#FFF6F6" stroke="#FF6B6B" stroke-width="1.5"/>
-  <rect x="60" y="103" width="193.15" height="30" rx="15" fill="#FF6B6B"/>
-  <text x="156.58" y="123" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">① Жизненный цикл капчи</text>
+  <rect x="60" y="103" width="209.53" height="30" rx="15" fill="#FF6B6B"/>
+  <text x="164.77" y="123" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">① Жизненный цикл капчи</text>
   <text x="60" y="144" font-size="11.5" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">создание → генерация → проверка → истечение</text>
   <rect x="60" y="160" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <circle cx="88" cy="189" r="15" fill="#FF6B6B"/>
@@ -19,7 +19,7 @@
   <circle cx="88" cy="265" r="15" fill="#FF6B6B"/>
   <text x="88" y="270" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">2</text>
   <text x="114" y="261" font-size="14" fill="#2D3436" font-weight="700">Генерация</text>
-  <text x="114" y="280" font-size="11" fill="#7F8C8D">generate() — ключ, фон и цели (координаты / угол / зазор)</text>
+  <text x="114" y="280" font-size="11" fill="#7F8C8D">generate() — ключ, фон и цели (координаты/угол/зазор)</text>
   <line x1="272.5" y1="298" x2="272.5" y2="308" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
   <rect x="60" y="312" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <circle cx="88" cy="341" r="15" fill="#FF6B6B"/>
@@ -43,21 +43,21 @@
   <circle cx="88" cy="569" r="15" fill="#FF6B6B"/>
   <text x="88" y="574" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">6</text>
   <text x="114" y="565" font-size="14" fill="#2D3436" font-weight="700">Решение</text>
-  <text x="114" y="584" font-size="11" fill="#7F8C8D">в допуске → успех; вне допуска → провал; нет ключа → истёк</text>
+  <text x="114" y="584" font-size="11" fill="#7F8C8D">в допуске → успех; вне — провал; нет ключа — истёк</text>
   <text x="60" y="630" font-size="12" fill="#2D3436" font-weight="700">Исходы</text>
   <rect x="60" y="642" width="425" height="92" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <circle cx="80" cy="658" r="4.5" fill="#96CEB4"/>
   <text x="94" y="662" font-size="12.5" fill="#96CEB4" font-weight="700">Успех</text>
-  <text x="140.44" y="662" font-size="10.5" fill="#7F8C8D">del(key) — тот же ключ больше нельзя использовать</text>
+  <text x="145.08" y="662" font-size="10.5" fill="#7F8C8D">del(key) — тот же ключ больше нельзя использовать</text>
   <circle cx="80" cy="684" r="4.5" fill="#FF8E53"/>
   <text x="94" y="688" font-size="12.5" fill="#FF8E53" font-weight="700">Провал</text>
-  <text x="147.73" y="688" font-size="10.5" fill="#7F8C8D">attempts+1, до 3 попыток, затем аннулирование</text>
+  <text x="153.29" y="688" font-size="10.5" fill="#7F8C8D">attempts+1, до 3 попыток, затем аннулирование</text>
   <circle cx="80" cy="710" r="4.5" fill="#7F8C8D"/>
   <text x="94" y="714" font-size="12.5" fill="#7F8C8D" font-weight="700">Истёк</text>
-  <text x="140.44" y="714" font-size="10.5" fill="#7F8C8D">истёк TTL или неизвестный ключ — создайте новый</text>
+  <text x="145.08" y="714" font-size="10.5" fill="#7F8C8D">истёк TTL или неизвестный ключ — создайте новый</text>
   <rect x="535" y="118" width="465" height="638" rx="16" fill="#F2FBF9" stroke="#4ECDC4" stroke-width="1.5"/>
-  <rect x="555" y="103" width="207.45" height="30" rx="15" fill="#4ECDC4"/>
-  <text x="658.73" y="123" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">② Жизненный цикл постера</text>
+  <rect x="555" y="103" width="225.65" height="30" rx="15" fill="#4ECDC4"/>
+  <text x="667.83" y="123" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">② Жизненный цикл постера</text>
   <text x="555" y="144" font-size="11.5" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">new → фон → addXxx → рендер → сохранение</text>
   <rect x="555" y="160" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <circle cx="583" cy="189" r="15" fill="#4ECDC4"/>
@@ -98,11 +98,11 @@
   <rect x="555" y="642" width="425" height="92" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <circle cx="575" cy="658" r="4.5" fill="#45B7D1"/>
   <text x="589" y="662" font-size="12.5" fill="#45B7D1" font-weight="700">Файл</text>
-  <text x="628.15" y="662" font-size="10.5" fill="#7F8C8D">save() пишет на диск для CDN / объектного хранилища</text>
+  <text x="631.86" y="662" font-size="10.5" fill="#7F8C8D">save() пишет на диск для CDN / объектного хранилища</text>
   <circle cx="575" cy="684" r="4.5" fill="#FF6B6B"/>
   <text x="589" y="688" font-size="12.5" fill="#FF6B6B" font-weight="700">Ответ API</text>
-  <text x="664.59" y="688" font-size="10.5" fill="#7F8C8D">output() отдаёт base64, готовый для фронтенда</text>
+  <text x="669.23" y="688" font-size="10.5" fill="#7F8C8D">output() отдаёт base64, готовый для фронтенда</text>
   <circle cx="575" cy="710" r="4.5" fill="#4ECDC4"/>
   <text x="589" y="714" font-size="12.5" fill="#4ECDC4" font-weight="700">Шаблон</text>
-  <text x="642.73" y="714" font-size="10.5" fill="#7F8C8D">тот же шаблон, новые переменные — пакетный вывод</text>
+  <text x="648.29" y="714" font-size="10.5" fill="#7F8C8D">тот же шаблон, новые переменные — пакетный вывод</text>
 </svg>

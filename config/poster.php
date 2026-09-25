@@ -103,6 +103,12 @@ return [
             'enabled' => false,
             'path'    => '/captcha',
         ],
+        // ⚠ 词表请只用「单一字形逐字绘制」的文字（中文/日文/韩文/拉丁/西里尔）。
+        // 阿拉伯文、印地文、孟加拉文等需要字形整形（连写/字簇重排），而 GD 的 imagettftext
+        // 不做整形，直接把码点逐字画出来 —— 结果是断开的乱码。这类文字请改用图标目标
+        // （setTargetType('icon')）或自备已整形的图片素材。
+        // ⚠ Keep this pool to scripts that render one glyph per codepoint (CJK, Latin, Cyrillic).
+        // Arabic / Devanagari / Bengali need shaping, which GD's imagettftext does not do.
         'click_words' => [
             '合',
             '家',

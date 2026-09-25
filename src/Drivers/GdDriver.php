@@ -663,31 +663,60 @@ class GdDriver implements ImageDriverInterface
         $pad = $blur * 2;
         $sw = $w + $pad;
         $sh = $h + $pad;
-
-        $shadowImg = imagecreatetruecolor($sw, $sh);
-        imagealphablending($shadowImg, false);
-        imagesavealpha($shadowImg, true);
-        $transparent = imagecolorallocatealpha($shadowImg, 0, 0, 0, 127);
-        imagefill($shadowImg, 0, 0, $transparent);
-
-        // 半透明阴影/8 位色阴影（README 的水印、霓虹、阴影写法）在这里生效
-        $sAlloc = $this->allocColorOn($shadowImg, $sColor, self::shadowOpacityToAlpha($shadow['opacity'] ?? null));
-        imagefilledrectangle($shadowImg, $blur, $blur, $blur + $w - 1, $blur + $h - 1, $sAlloc);
-
-        // Blur on a 1/4-scale copy, then upscale: gaussian blur dominates cost, result is visually equivalent
         $sw2 = max(1, intdiv($sw, 4));
         $sh2 = max(1, intdiv($sh, 4));
+
+        // GD 的 IMG_FILTER_GAUSSIAN_BLUR 只作用于 RGB、完全不动 alpha 通道，
+        // 而阴影的形状恰好全在 alpha 上——直接模糊带 alpha 的图形边缘不会变软（旧实现因此 blur 无效，
+        // 永远是一块硬边实心方块）。这里改为在不透明的黑白掩膜上模糊，再把亮度映射成 alpha。
+        $mask = imagecreatetruecolor($sw2, $sh2);
+        imagefill($mask, 0, 0, imagecolorallocate($mask, 0, 0, 0));
+        $b2 = max(1, intdiv($blur, 4));
+        $w2 = max(1, intdiv($w, 4));
+        $h2 = max(1, intdiv($h, 4));
+        imagefilledrectangle(
+            $mask, $b2, $b2, $b2 + $w2 - 1, $b2 + $h2 - 1,
+            imagecolorallocate($mask, 255, 255, 255)
+        );
+        for ($i = 0, $passes = max(1, min(8, intdiv($blur, 2))); $i < $passes; $i++) {
+            imagefilter($mask, IMG_FILTER_GAUSSIAN_BLUR);
+        }
+
+        // 亮度 → alpha（在 1/4 尺度上逐像素，成本可忽略）
+        $rgb = $this->hexToRgb($sColor);
+        $hexColor = ltrim($sColor, '#');
+        if (strlen($hexColor) === 8) {
+            $baseAlpha = 127 - intval(hexdec(substr($hexColor, 6, 2)) / 2);   // #RRGGBBAA
+        } elseif (array_key_exists('opacity', $shadow)) {
+            $baseAlpha = self::shadowOpacityToAlpha($shadow['opacity']);
+        } else {
+            $baseAlpha = self::shadowOpacityToAlpha(null);
+        }
+        $baseAlpha = max(0, min(127, $baseAlpha));
+
         $small = imagecreatetruecolor($sw2, $sh2);
         imagealphablending($small, false);
         imagesavealpha($small, true);
-        imagecopyresampled($small, $shadowImg, 0, 0, 0, 0, $sw2, $sh2, $sw, $sh);
-        imagedestroy($shadowImg);
-        for ($i = 0; $i < min(max(3, intdiv($blur, 2)), 8); $i++) {
-            imagefilter($small, IMG_FILTER_GAUSSIAN_BLUR);
+        imagefill($small, 0, 0, imagecolorallocatealpha($small, 0, 0, 0, 127));
+        for ($px = 0; $px < $sw2; $px++) {
+            for ($py = 0; $py < $sh2; $py++) {
+                $lum = (imagecolorat($mask, $px, $py) >> 16) & 0xFF;   // 形状内为白(255)
+                if ($lum === 0) {
+                    continue;
+                }
+                $alpha = intval(round(127 - ($lum / 255) * (127 - $baseAlpha)));
+                imagesetpixel($small, $px, $py, imagecolorallocatealpha(
+                    $small, $rgb[0], $rgb[1], $rgb[2], max(0, min(127, $alpha))
+                ));
+            }
         }
+        imagedestroy($mask);
+
+        // 放大回原尺寸：软边由 1/4 → 原尺寸的重采样给出
         $final = imagecreatetruecolor($sw, $sh);
         imagealphablending($final, false);
         imagesavealpha($final, true);
+        imagefill($final, 0, 0, imagecolorallocatealpha($final, 0, 0, 0, 127));
         imagecopyresampled($final, $small, 0, 0, 0, 0, $sw, $sh, $sw2, $sh2);
         imagedestroy($small);
 
@@ -698,4 +727,5 @@ class GdDriver implements ImageDriverInterface
         );
         imagedestroy($final);
     }
+
 }

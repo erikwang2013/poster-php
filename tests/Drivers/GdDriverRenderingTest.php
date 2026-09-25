@@ -189,6 +189,31 @@ class GdDriverRenderingTest extends TestCase
         $this->assertSame(63, $this->shadowAlpha(['opacity' => 50]), '0-100 百分比写法等价于 0.5');
     }
 
+    /** 阴影边缘必须是渐变（软边）：GD 的 GAUSSIAN_BLUR 不动 alpha，旧实现因此 blur 完全无效、永远是硬边。 */
+    public function testShadowEdgeIsSoftWhenBlurred(): void
+    {
+        $canvas = (new GdDriver())->create(200, 120);
+        $overlay = (new GdDriver())->create(60, 60)->rectangle(0, 0, 60, 60, ['color' => '#FF0000']);
+        $canvas->image($overlay, 40, 40, ['shadow' => [
+            'color' => '#000000', 'opacity' => 1, 'offsetX' => 10, 'offsetY' => 10, 'blur' => 20,
+        ]]);
+
+        // 沿阴影右缘横向扫描，统计中间灰阶（既非全透明也非全不透明）的像素数
+        $resource = $canvas->getResource();
+        $gradient = 0;
+        for ($x = 100; $x < 145; $x++) {
+            $c = imagecolorat($resource, $x, 80);
+            $alpha = ($c >> 24) & 0x7F;
+            if ($alpha > 5 && $alpha < 122) {
+                $gradient++;
+            }
+        }
+        $this->assertGreaterThanOrEqual(4, $gradient, 'blur>0 时阴影边缘应出现多级 alpha 过渡（软边）');
+
+        $canvas->destroy();
+        $overlay->destroy();
+    }
+
     /** 换行契约（两驱动共用 TextTrait）：每行宽度不超 maxWidth，且不丢字符。 */
     public function testWrapTextKeepsLinesWithinMaxWidth(): void
     {
@@ -279,9 +304,12 @@ class GdDriverRenderingTest extends TestCase
         $canvas = (new GdDriver())->create(200, 200);
         $overlay = (new GdDriver())->create(60, 60)->rectangle(0, 0, 60, 60, ['color' => '#FF0000']);
         $canvas->image($overlay, 40, 40, ['shadow' => $shadow + [
-            'color' => '#000000', 'offsetX' => 10, 'offsetY' => 10, 'blur' => 4,
+            'color' => '#000000', 'offsetX' => 30, 'offsetY' => 30, 'blur' => 4,
         ]]);
-        $alpha = self::alphaAt($canvas->getResource(), 105, 105);
+        // 采样「只有阴影、没有覆盖层」的区域：覆盖层 40..100，阴影 70..130，
+        // 取 (115,115) 距两边边缘都 ≥15px，落在这块纯阴影区；
+        // 该处 alpha 只由 opacity 决定，不受模糊渐变影响（边缘像素不能用来断言）。
+        $alpha = self::alphaAt($canvas->getResource(), 115, 115);
         $canvas->destroy();
         $overlay->destroy();
         return $alpha;

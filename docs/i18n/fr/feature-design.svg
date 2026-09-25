@@ -91,8 +91,8 @@
   <text x="824.4" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Séparateur</text>
   <rect x="530" y="306" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="530" y="316" width="4" height="44" rx="2" fill="#FF8E53"/>
-  <text x="550" y="334" font-size="14" fill="#2D3436" font-weight="600">Données</text>
-  <text x="619.13" y="334" font-size="11" fill="#FF8E53" font-weight="700">3 types</text>
+  <text x="550" y="334" font-size="14" fill="#2D3436" font-weight="600">Données </text>
+  <text x="627.3" y="334" font-size="11" fill="#FF8E53" font-weight="700">3 types</text>
   <rect x="550" y="340" width="60.35" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
   <text x="580.18" y="355.96" font-size="11" fill="#2D3436" text-anchor="middle">Tableau</text>
   <rect x="616.35" y="340" width="217.65" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>

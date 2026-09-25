@@ -104,5 +104,5 @@
   <text x="693.74" y="688" font-size="10.5" fill="#7F8C8D">output() base64 देता है, फ़्रंटएंड हेतु तैयार</text>
   <circle cx="575" cy="710" r="4.5" fill="#4ECDC4"/>
   <text x="589" y="714" font-size="12.5" fill="#4ECDC4" font-weight="700">टेम्पलेट पुनः उपयोग</text>
-  <text x="737.46" y="714" font-size="10.16" fill="#7F8C8D">एक ही टेम्पलेट, नए वेरिएबल — बैच आउटपुट</text>
+  <text x="737.46" y="714" font-size="10.5" fill="#7F8C8D">वही टेम्पलेट, नए वेरिएबल — बैच आउटपुट</text>
 </svg>

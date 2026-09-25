@@ -69,7 +69,7 @@
         "StorageInterface",
         [
           "FileStorage · Session",
-          "RedisStorage distributed",
+          "RedisStorage · PSR-16",
           "ttl / attempts aware"
         ]
       ],
@@ -155,11 +155,11 @@
       "chips1": [
         "One-shot key",
         "Max 3 attempts",
-        "TTL 300s"
+        "Session rate limit"
       ],
       "chips2": [
         "3-tier backgrounds",
-        "Custom tolerance",
+        "Trajectory (opt.)",
         "File/Session/Redis"
       ]
     },

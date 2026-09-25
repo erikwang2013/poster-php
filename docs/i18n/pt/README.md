@@ -8,7 +8,7 @@
 
 Kit PHP de captcha de imagem e geração de pôsteres — núcleo agnóstico de framework + adaptadores Laravel / ThinkPHP / Webman / Hyperf.
 
-[Documentação em inglês](../../../README_EN.md) | [Documentação de arquitetura](../../../docs/architecture.md)
+[Documentação em inglês](../../../README_EN.md) | [Documentação de arquitetura](../../../docs/architecture.md) | [Todos os idiomas](../README.md)
 
 ## Visão geral do projeto
 
@@ -745,6 +745,20 @@ $result = Captcha::create('click')->generate();
 Poster::width(750)->height(1334)->background('#FFF')->save('poster.jpg');
 ```
 
+```php
+// Depois de definir captcha.route.enabled = true em config/poster.php, o adaptador registra o endpoint da imagem:
+//   GET /captcha/{key} → devolve o PNG diretamente (Content-Type: image/png, Cache-Control: no-store)
+// O frontend pode usar a URL e não precisa mais receber base64 (33% menor, além de poder ser cacheado pelo navegador/CDN)
+$result = Captcha::create('click')->generate();
+// $result['image'] continua sendo um data URI; $result['url'] é o endereço que pode ir direto no <img src>
+
+// Validação de formulário: o nome da regra é captcha e o parâmetro é a image key
+$request->validate([
+    'captcha_key'  => 'required|string',
+    'captcha_code' => 'required|captcha:captcha_key',
+]);
+```
+
 ```bash
 php artisan vendor:publish --tag=poster-config
 ```
@@ -790,6 +804,10 @@ Principais opções de configuração:
 | `captcha.tolerance` | `{click:18,rotate:5,slider:4}` | Tolerância de cada tipo |
 | `image.driver` | `auto` | Driver de imagem: `auto` / `gd` / `imagick` |
 | `poster.placeholder` | `null` | Caminho da imagem de espaço reservado para imagens ausentes; `null` pula o desenho; apontando para o mascote, o Posty é desenhado nos locais sem imagem |
+| `captcha.rate_limit` | `{max:30,window:60}` | Limite de janela por sessão/conta; a identidade usa o session_id por padrão e, sem sessão, o IP do cliente |
+| `captcha.trajectory` | `{enabled:false,…}` | Validação de trajetória de comportamento (desligada por padrão) |
+| `captcha.cache.pool` | `null` | Objeto de pool PSR-16 (usado quando `storage=cache`); também pode ser definido em tempo de execução com `StorageFactory::setPsr16Pool()` |
+| `captcha.route` | `{enabled:false,path:'/captcha'}` | Adaptador Laravel: registra o endpoint de imagem `GET {path}/{key}` que devolve o PNG diretamente |
 
 ## Manter código aberto não é fácil — seu apoio é bem-vindo
 

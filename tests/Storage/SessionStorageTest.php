@@ -31,10 +31,19 @@ class SessionStorageTest extends TestCase
         if (session_status() === PHP_SESSION_ACTIVE) {
             return;
         }
-        ini_set('session.cache_limiter', '');
-        ini_set('session.use_cookies', '0');
-        ini_set('session.save_path', sys_get_temp_dir());
-        if (!@session_start()) {
+        // session.* 只能在有输出之前修改：PHPUnit 在部分 PHP 版本（如 8.0 配 PHPUnit 9）
+        // 下已经写入了进度输出，此时 ini_set 会报 "headers have already been sent"。
+        // 因此这里降级为「尽力设置」：设不上就用现有 ini 启动，失败才跳过。
+        if (!headers_sent()) {
+            ini_set('session.cache_limiter', '');
+            ini_set('session.use_cookies', '0');
+            ini_set('session.save_path', sys_get_temp_dir());
+        } else {
+            @ini_set('session.use_cookies', '0');   // 关不掉也继续，@ 只是抑制告警
+            @ini_set('session.save_path', sys_get_temp_dir());
+        }
+        @session_start();
+        if (session_status() !== PHP_SESSION_ACTIVE) {
             $this->markTestSkipped('当前环境无法启动会话，跳过 SessionStorage 行为测试');
         }
     }

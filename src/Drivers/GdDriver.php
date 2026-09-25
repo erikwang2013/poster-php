@@ -14,6 +14,7 @@ class GdDriver implements ImageDriverInterface
 {
     use TextTrait;
 
+    /** memory_limit 不可解析（-1/0）时使用的历史像素阈值 */
     private const MAX_PIXELS = 40000000;
 
     private $resource;
@@ -25,12 +26,13 @@ class GdDriver implements ImageDriverInterface
         if (!is_file($path)) {
             throw new InvalidArgumentException("File not found: $path");
         }
-        $info = getimagesize($path);
+        // 非图片文件 getimagesize 会先打 Notice，这里静默后统一转成异常
+        $info = @getimagesize($path);
         if ($info === false) {
             throw new RuntimeException("Cannot read image: $path");
         }
-        if ($info[0] * $info[1] > self::MAX_PIXELS) {
-            throw new RuntimeException("Image too large: {$info[0]}x{$info[1]} (max " . self::MAX_PIXELS . ' pixels)');
+        if ($info[0] * $info[1] > self::maxPixels()) {
+            throw new RuntimeException("Image too large: {$info[0]}x{$info[1]} (max " . self::maxPixels() . ' pixels)');
         }
         $this->resource = match ($info[2]) {
             IMAGETYPE_JPEG => @imagecreatefromjpeg($path),
@@ -49,9 +51,7 @@ class GdDriver implements ImageDriverInterface
 
     public function create(int $width, int $height): static
     {
-        if ($width <= 0 || $height <= 0) {
-            throw new InvalidArgumentException("Width and height must be greater than 0, got {$width}x{$height}");
-        }
+        $this->guardSize($width, $height);
         $this->resource = imagecreatetruecolor($width, $height);
         imagealphablending($this->resource, true);
         imagesavealpha($this->resource, true);
@@ -64,6 +64,8 @@ class GdDriver implements ImageDriverInterface
 
     public function resize(int $width, int $height): static
     {
+        $this->requireImage();
+        $this->guardSize($width, $height);
         $new = imagecreatetruecolor($width, $height);
         imagealphablending($new, true);
         imagesavealpha($new, true);
@@ -79,11 +81,11 @@ class GdDriver implements ImageDriverInterface
 
     public function rotate(float $angle, string $bgColor = '#000000'): static
     {
+        $this->requireImage();
         if ($bgColor === 'transparent') {
             $bg = imagecolorallocatealpha($this->resource, 0, 0, 0, 127);
         } else {
-            $rgb = $this->hexToRgb($bgColor);
-            $bg = imagecolorallocatealpha($this->resource, $rgb[0], $rgb[1], $rgb[2], 0);
+            $bg = $this->allocColor($bgColor);
         }
         imagealphablending($this->resource, false);
         $rotated = imagerotate($this->resource, -$angle, $bg);
@@ -101,49 +103,23 @@ class GdDriver implements ImageDriverInterface
 
     public function circle(int $diameter): static
     {
+        $this->guardSize($diameter, $diameter);
+        $this->requireImage();
         $this->resize($diameter, $diameter);
 
-        // Supersampled antialiased circle mask
-        $scale = 4;
-        $superSize = $diameter * $scale;
-        $super = imagecreatetruecolor($superSize, $superSize);
-        imagealphablending($super, false);
-        imagesavealpha($super, true);
-        imagefill($super, 0, 0, imagecolorallocatealpha($super, 0, 0, 0, 127));
-        imagefilledellipse($super, $superSize / 2, $superSize / 2, $superSize, $superSize,
-            imagecolorallocatealpha($super, 255, 255, 255, 0));
-        $mask = imagecreatetruecolor($diameter, $diameter);
-        imagealphablending($mask, false);
-        imagesavealpha($mask, true);
-        imagefill($mask, 0, 0, imagecolorallocatealpha($mask, 0, 0, 0, 127));
-        imagecopyresampled($mask, $super, 0, 0, 0, 0, $diameter, $diameter, $superSize, $superSize);
-        imagedestroy($super);
-
-        $result = imagecreatetruecolor($diameter, $diameter);
-        imagealphablending($result, false);
-        imagesavealpha($result, true);
-        imagefill($result, 0, 0, imagecolorallocatealpha($result, 0, 0, 0, 127));
-
-        for ($x = 0; $x < $diameter; $x++) {
-            for ($y = 0; $y < $diameter; $y++) {
-                $maskAlpha = (imagecolorat($mask, $x, $y) >> 24) & 0x7F;
-                if ($maskAlpha < 127) {
-                    $src = imagecolorat($this->resource, $x, $y);
-                    imagesetpixel($result, $x, $y, ($src & 0xFFFFFF) | ($maskAlpha << 24));
-                }
-            }
+        // 真圆 = 四角半径取半边长，直接复用圆角路径（旧实现额外要一张 4 倍超采样画布 + 整幅逐像素回写）
+        if ($diameter > 1) {
+            $rounded = $this->roundCornersGD($this->resource, intdiv($diameter, 2));
+            imagedestroy($this->resource);
+            $this->resource = $rounded;
         }
-
-        imagedestroy($mask);
-        imagedestroy($this->resource);
-        $this->resource = $result;
-        $this->width = $diameter;
-        $this->height = $diameter;
         return $this;
     }
 
     public function crop(int $x, int $y, int $width, int $height): static
     {
+        $this->requireImage();
+        $this->guardSize($width, $height);
         $new = imagecreatetruecolor($width, $height);
         imagealphablending($new, true);
         imagesavealpha($new, true);
@@ -159,20 +135,25 @@ class GdDriver implements ImageDriverInterface
 
     public function text(string $text, int $x, int $y, array $options = []): static
     {
+        $this->requireImage();
         // 未显式传 font 时用配置的默认字体（image.font）；显式传 null 可退回 GD 内置位图字体
         $fontFile = array_key_exists('font', $options) ? $options['font'] : PosterConfig::get('image.font');
         $size     = $options['size'] ?? 16;
         $color    = $options['color'] ?? '#000000';
-        $rgb      = $this->hexToRgb($color);
         $angle    = $options['angle'] ?? 0;
         $maxWidth = $options['maxWidth'] ?? 0;
         $align    = $options['align'] ?? 'left';
         $lineHeight = $options['lineHeight'] ?? intval($size * 1.5);
 
-        $alloc = imagecolorallocate($this->resource, $rgb[0], $rgb[1], $rgb[2]);
+        // 与形状路径同一套取色：8 位色（#RRGGBBAA）的 alpha 在文字上同样生效
+        $alloc = $this->allocColor($color);
 
         if ($fontFile && is_file($fontFile)) {
-            $lines = ($maxWidth > 0) ? $this->wrapTextTtf($text, $fontFile, $size, $maxWidth) : explode("\n", $text);
+            $measure = function (string $token) use ($size, $fontFile) {
+                $bbox = @imagettfbbox($size, 0, $fontFile, $token);
+                return $bbox === false ? null : $bbox[2] - $bbox[0];
+            };
+            $lines = ($maxWidth > 0) ? $this->wrapText($text, intval($maxWidth), $measure) : explode("\n", $text);
             foreach ($lines as $i => $line) {
                 $bbox = @imagettfbbox($size, $angle, $fontFile, $line);
                 if ($bbox === false) {
@@ -203,6 +184,7 @@ class GdDriver implements ImageDriverInterface
 
     public function image(ImageDriverInterface $overlay, int $x, int $y, array $options = []): static
     {
+        $this->requireImage();
         $ov = $overlay->getResource();
         $owned = false;
         if ($ov instanceof \Imagick) {
@@ -212,11 +194,33 @@ class GdDriver implements ImageDriverInterface
             }
             $owned = true;
         }
+        if (!$ov instanceof \GdImage) {
+            throw new RuntimeException('Unsupported overlay resource: expected GdImage or Imagick');
+        }
         $ovW = imagesx($ov);
         $ovH = imagesy($ov);
 
-        $destW = $options['width'] ?? $ovW;
-        $destH = $options['height'] ?? $ovH;
+        $destW = intval($options['width'] ?? $ovW);
+        $destH = intval($options['height'] ?? $ovH);
+        $this->guardSize($destW, $destH);
+
+        // 先缩到目标尺寸再做圆角/阴影：代价按目标像素算，而不是源分辨率
+        // （源图可以是目标的 10-40 倍，旧实现在源分辨率上整幅逐像素回写）
+        // radius 语义因此统一为「目标像素」，与 ImagickDriver 一致
+        if ($destW !== $ovW || $destH !== $ovH) {
+            $scaled = imagecreatetruecolor($destW, $destH);
+            imagealphablending($scaled, true);
+            imagesavealpha($scaled, true);
+            imagefill($scaled, 0, 0, imagecolorallocatealpha($scaled, 0, 0, 0, 127));
+            imagecopyresampled($scaled, $ov, 0, 0, 0, 0, $destW, $destH, $ovW, $ovH);
+            if ($owned) {
+                imagedestroy($ov);
+            }
+            $ov = $scaled;
+            $owned = true;
+            $ovW = $destW;
+            $ovH = $destH;
+        }
 
         if (($options['radius'] ?? 0) > 0) {
             $rounded = $this->roundCornersGD($ov, intval($options['radius']));
@@ -240,12 +244,13 @@ class GdDriver implements ImageDriverInterface
 
     public function rectangle(int $x, int $y, int $width, int $height, array $options = []): static
     {
+        $this->requireImage();
         $color  = $options['color'] ?? '#FFFFFF';
         $radius = intval($options['radius'] ?? 0);
         $filled = $options['filled'] ?? true;
 
-        $alpha = isset($options['opacity']) ? intval((1 - $options['opacity']) * 127) : 0;
-        $alloc = $this->allocColor($color, $alpha);
+        // opacity 越界夹到 [0,1]（兼容 0-100 写法），不再抛 GD ValueError
+        $alloc = $this->allocColor($color, self::opacityToAlpha($options['opacity'] ?? null));
 
         if ($radius > 0) {
             $this->roundedRectGD($x, $y, $x + $width - 1, $y + $height - 1, $radius, $alloc, $filled);
@@ -260,6 +265,7 @@ class GdDriver implements ImageDriverInterface
 
     public function ellipse(int $cx, int $cy, int $rx, int $ry, array $options = []): static
     {
+        $this->requireImage();
         $color  = $options['color'] ?? '#FFFFFF';
         $filled = $options['filled'] ?? true;
         $alloc  = $this->allocColor($color);
@@ -275,6 +281,7 @@ class GdDriver implements ImageDriverInterface
 
     public function filledArc(int $cx, int $cy, int $w, int $h, int $startAngle, int $endAngle, array $options = []): static
     {
+        $this->requireImage();
         $color = $options['color'] ?? '#FFFFFF';
         $alloc = $this->allocColor($color);
         imagefilledarc($this->resource, $cx, $cy, $w, $h, $startAngle, $endAngle, $alloc, IMG_ARC_PIE);
@@ -283,6 +290,7 @@ class GdDriver implements ImageDriverInterface
 
     public function line(int $x1, int $y1, int $x2, int $y2, array $options = []): static
     {
+        $this->requireImage();
         $color = $options['color'] ?? '#000000';
         $alloc = $this->allocColor($color);
         imagesetthickness($this->resource, max(1, intval($options['width'] ?? 1)));
@@ -293,14 +301,39 @@ class GdDriver implements ImageDriverInterface
 
     public function blur(int $radius = 1): static
     {
-        for ($i = 0; $i < min($radius, 10); $i++) {
-            imagefilter($this->resource, IMG_FILTER_GAUSSIAN_BLUR);
+        $this->requireImage();
+        if ($radius < 1) {
+            return $this;
         }
+        if ($radius <= 2) {
+            for ($i = 0; $i < $radius; $i++) {
+                imagefilter($this->resource, IMG_FILTER_GAUSSIAN_BLUR);
+            }
+            return $this;
+        }
+
+        // 大半径：1/4 缩放 → 模糊 → 放大（同 drawShadowGD），全幅高斯代价降到约 1/16
+        $w = imagesx($this->resource);
+        $h = imagesy($this->resource);
+        $sw = max(1, intdiv($w, 4));
+        $sh = max(1, intdiv($h, 4));
+        $small = imagecreatetruecolor($sw, $sh);
+        imagealphablending($small, false);
+        imagesavealpha($small, true);
+        imagecopyresampled($small, $this->resource, 0, 0, 0, 0, $sw, $sh, $w, $h);
+        for ($i = 0, $passes = min(8, max(1, intdiv($radius, 2))); $i < $passes; $i++) {
+            imagefilter($small, IMG_FILTER_GAUSSIAN_BLUR);
+        }
+        imagealphablending($this->resource, false);
+        imagecopyresampled($this->resource, $small, 0, 0, 0, 0, $w, $h, $sw, $sh);
+        imagealphablending($this->resource, true);
+        imagedestroy($small);
         return $this;
     }
 
     public function sharpen(float $amount = 1.0): static
     {
+        $this->requireImage();
         $a = max(0, min(3, $amount));
         $center = $a * 4 + 1;
         $edge = -$a;
@@ -314,40 +347,51 @@ class GdDriver implements ImageDriverInterface
 
     public function pixelate(int $blockSize = 3): static
     {
+        $this->requireImage();
         imagefilter($this->resource, IMG_FILTER_PIXELATE, max(1, $blockSize), true);
         return $this;
     }
 
     public function save(string $path, string $format = 'jpg', int $quality = 90): bool
     {
+        $this->requireImage();
         $dir = dirname($path);
         if (!is_dir($dir)) {
             mkdir($dir, 0755, true);
         }
 
-        return match (strtolower($format)) {
-            'png'  => imagepng($this->resource, $path, intval(9 - min(9, max(0, intval($quality / 10))))),
+        $format = strtolower($format);
+        // 未显式传 quality（第三个参数）时按配置取默认值：PNG 用 poster.png_compression，其余用 image.quality
+        $encoded = self::encodeParam($format, $quality, func_num_args() >= 3);
+
+        return match ($format) {
+            'png'  => imagepng($this->resource, $path, $encoded),
             'gif'  => imagegif($this->resource, $path),
-            'webp' => imagewebp($this->resource, $path, $quality),
-            default => imagejpeg($this->resource, $path, $quality),
+            'webp' => imagewebp($this->resource, $path, $encoded),
+            default => imagejpeg($this->resource, $path, $encoded),
         };
     }
 
     public function output(string $format = 'jpg', int $quality = 90): string
     {
+        $this->requireImage();
+        $format = strtolower($format);
+        $encoded = self::encodeParam($format, $quality, func_num_args() >= 3);
+
         ob_start();
-        match (strtolower($format)) {
-            'png'  => imagepng($this->resource, null, intval(9 - min(9, max(0, intval($quality / 10))))),
+        match ($format) {
+            'png'  => imagepng($this->resource, null, $encoded),
             'gif'  => imagegif($this->resource),
-            'webp' => imagewebp($this->resource, null, $quality),
-            default => imagejpeg($this->resource, null, $quality),
+            'webp' => imagewebp($this->resource, null, $encoded),
+            default => imagejpeg($this->resource, null, $encoded),
         };
         $data = ob_get_clean();
-        return 'data:image/' . strtolower($format) . ';base64,' . base64_encode($data);
+        return 'data:' . self::mimeType($format) . ';base64,' . base64_encode($data);
     }
 
     public function getSize(): array
     {
+        $this->requireImage();
         return ['width' => $this->width, 'height' => $this->height];
     }
 
@@ -380,6 +424,8 @@ class GdDriver implements ImageDriverInterface
             imagedestroy($this->resource);
             $this->resource = null;
         }
+        $this->width = 0;
+        $this->height = 0;
     }
 
     public function __destruct()
@@ -387,18 +433,128 @@ class GdDriver implements ImageDriverInterface
         $this->destroy();
     }
 
+    /**
+     * 像素守卫：尺寸必须为正，且不超过 memory_limit 能装下的像素数。
+     * 入口覆盖 create/resize/crop/circle 与 image() 的目标尺寸，避免不可 catch 的致命 OOM。
+     */
+    private function guardSize(int $width, int $height): void
+    {
+        if ($width <= 0 || $height <= 0) {
+            throw new InvalidArgumentException("Width and height must be greater than 0, got {$width}x{$height}");
+        }
+        if ($width * $height > self::maxPixels()) {
+            throw new InvalidArgumentException(
+                "Image too large: {$width}x{$height} exceeds the pixel budget of " . self::maxPixels()
+                . " pixels (memory_limit / 4 bytes per pixel)"
+            );
+        }
+    }
+
+    /** 像素预算：按 memory_limit / 4（每像素 4 字节 RGBA）估算；memory_limit 不限时退回历史阈值 40M。 */
+    private static function maxPixels(): int
+    {
+        $limit = self::memoryLimitBytes();
+        return $limit > 0 ? intdiv($limit, 4) : self::MAX_PIXELS;
+    }
+
+    private static function memoryLimitBytes(): int
+    {
+        $value = trim((string) ini_get('memory_limit'));
+        if ($value === '' || $value === '-1') {
+            return -1;
+        }
+        $bytes = intval($value);
+        return match (strtolower(substr($value, -1))) {
+            'g'     => $bytes * 1024 * 1024 * 1024,
+            'm'     => $bytes * 1024 * 1024,
+            'k'     => $bytes * 1024,
+            default => $bytes,
+        };
+    }
+
+    /** destroy() 后所有操作给出明确异常，而不是让 GD 抛 TypeError/返回 null 尺寸。 */
+    private function requireImage(): \GdImage
+    {
+        if (!$this->resource instanceof \GdImage) {
+            throw new RuntimeException('No image resource: call load() or create() first (the resource was destroyed)');
+        }
+        return $this->resource;
+    }
+
+    /**
+     * save()/output() 的编码参数：
+     * - PNG：0-9 压缩级别。未显式传 quality 时读 poster.png_compression（默认 6）；
+     *   显式传的 quality 仍是 0-100，按「质量越高压缩越少」映射到级别。
+     * - 其余（jpeg/webp）：quality 0-100，未显式传时读 image.quality（默认 90）。
+     */
+    private static function encodeParam(string $format, int $quality, bool $explicit): int
+    {
+        if ($format === 'png') {
+            return $explicit
+                ? max(0, min(9, (int) round((100 - max(0, min(100, $quality))) * 9 / 100)))
+                : max(0, min(9, intval(PosterConfig::get('poster.png_compression', 6))));
+        }
+        $quality = $explicit ? max(0, min(100, $quality)) : intval(PosterConfig::get('image.quality', 90));
+        return max(0, min(100, $quality));
+    }
+
+    /** 输出 data URI 的 MIME：jpg/jpeg 以及回落到 JPEG 编码的未知格式都是 image/jpeg。 */
+    private static function mimeType(string $format): string
+    {
+        return match ($format) {
+            'png'   => 'image/png',
+            'gif'   => 'image/gif',
+            'webp'  => 'image/webp',
+            default => 'image/jpeg',
+        };
+    }
+
+    /** opacity 越界夹到 [0,1] 后转 GD alpha(0 不透明 / 127 全透明)；未给时按不透明。 */
+    private static function opacityToAlpha($opacity): int
+    {
+        if ($opacity === null) {
+            return 0;
+        }
+        return intval((1 - max(0.0, min(1.0, floatval($opacity)))) * 127);
+    }
+
+    /** shadow.opacity 在 Imagick 侧是 0-100（shadowImage 约定），这里 0-1 与 0-100 都接受。 */
+    private static function shadowOpacityToAlpha($opacity): int
+    {
+        if ($opacity === null) {
+            return 0;
+        }
+        $value = floatval($opacity);
+        if ($value > 1) {
+            $value /= 100;
+        }
+        return intval((1 - max(0.0, min(1.0, $value))) * 127);
+    }
+
     private function allocColor(string $color, int $alpha = 0): int
+    {
+        return $this->allocColorOn($this->resource, $color, $alpha);
+    }
+
+    /** 在指定画布上取色；8 位色（#RRGGBBAA）自带 alpha，优先于传入的 $alpha。 */
+    private function allocColorOn(\GdImage $image, string $color, int $alpha = 0): int
     {
         $rgb = $this->hexToRgb($color);
         if (strlen(ltrim($color, '#')) === 8) {
             $alpha = 127 - intval(hexdec(substr(ltrim($color, '#'), 6, 2)) / 2);
         }
-        return imagecolorallocatealpha($this->resource, $rgb[0], $rgb[1], $rgb[2], $alpha);
+        return imagecolorallocatealpha($image, $rgb[0], $rgb[1], $rgb[2], max(0, min(127, $alpha)));
     }
 
-    private function hexToRgb(string $hex): array
+    /** 颜色只接受 #RGB / #RRGGBB / #RRGGBBAA，其它形式一律报错（旧实现静默变纯黑）。 */
+    private function hexToRgb(string $color): array
     {
-        $hex = ltrim($hex, '#');
+        $hex = ltrim($color, '#');
+        if (!preg_match('/^([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/', $hex)) {
+            throw new InvalidArgumentException(
+                "Invalid color: '$color' (expected #RGB, #RRGGBB or #RRGGBBAA)"
+            );
+        }
         if (strlen($hex) === 3) {
             $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
         }
@@ -407,33 +563,6 @@ class GdDriver implements ImageDriverInterface
             hexdec(substr($hex, 2, 2)),
             hexdec(substr($hex, 4, 2)),
         ];
-    }
-
-    private function wrapTextTtf(string $text, string $fontFile, int $size, int $maxWidth): array
-    {
-        $lines = [];
-        foreach (explode("\n", $text) as $paragraph) {
-            $chars = $this->splitText($paragraph);
-            $current = '';
-            foreach ($chars as $char) {
-                $test = $current . $char;
-                $bbox = @imagettfbbox($size, 0, $fontFile, $test);
-                if ($bbox === false) {
-                    continue 2; // skip character that can't be rendered
-                }
-                $w = $bbox[2] - $bbox[0];
-                if ($w > $maxWidth && $current !== '') {
-                    $lines[] = $current;
-                    $current = $char;
-                } else {
-                    $current = $test;
-                }
-            }
-            if ($current !== '') {
-                $lines[] = $current;
-            }
-        }
-        return $lines ?: explode("\n", $text);
     }
 
     private function wrapTextBuiltin(string $text, int $maxWidth): array
@@ -452,36 +581,59 @@ class GdDriver implements ImageDriverInterface
         return $lines ?: [$text];
     }
 
+    /**
+     * 圆角：只处理 4 个 radius×radius 的角箱，箱外整幅 imagecopy（C 级）。
+     * 角箱内用与旧实现同一段角弧掩码，按掩码 alpha 擦除为透明。
+     * 旧实现按源分辨率做整幅双重循环（1200×1600 源 = 192 万次 imagecolorat+imagesetpixel）。
+     */
     private function roundCornersGD($image, int $radius)
     {
         $w = imagesx($image);
         $h = imagesy($image);
-        $mask = imagecreatetruecolor($w, $h);
-        imagealphablending($mask, false);
-        imagesavealpha($mask, true);
-        $transparent = imagecolorallocatealpha($mask, 0, 0, 0, 127);
-        imagefill($mask, 0, 0, $transparent);
-        $color = imagecolorallocatealpha($mask, 0, 0, 0, 0);
-
-        imagefilledarc($mask, $radius - 1, $radius - 1, $radius * 2, $radius * 2, 180, 270, $color, IMG_ARC_PIE);
-        imagefilledarc($mask, $w - $radius, $radius - 1, $radius * 2, $radius * 2, 270, 360, $color, IMG_ARC_PIE);
-        imagefilledarc($mask, $radius - 1, $h - $radius, $radius * 2, $radius * 2, 90, 180, $color, IMG_ARC_PIE);
-        imagefilledarc($mask, $w - $radius, $h - $radius, $radius * 2, $radius * 2, 0, 90, $color, IMG_ARC_PIE);
-        imagefilledrectangle($mask, $radius, 0, $w - $radius - 1, $h - 1, $color);
-        imagefilledrectangle($mask, 0, $radius, $w - 1, $h - $radius - 1, $color);
+        // 半径上限为短边一半：4 个角箱互不重叠，同时把循环限制在有意义的范围内
+        $radius = min($radius, intdiv(min($w, $h), 2));
 
         $result = imagecreatetruecolor($w, $h);
         imagealphablending($result, false);
         imagesavealpha($result, true);
+        $transparent = imagecolorallocatealpha($result, 0, 0, 0, 127);
         imagefill($result, 0, 0, $transparent);
+        imagecopy($result, $image, 0, 0, 0, 0, $w, $h);
 
-        for ($x = 0; $x < $w; $x++) {
-            for ($y = 0; $y < $h; $y++) {
-                $alpha = ((imagecolorat($mask, $x, $y) >> 24) & 0x7F);
-                if ($alpha < 64) {
-                    imagesetpixel($result, $x, $y, imagecolorat($image, $x, $y));
+        if ($radius < 1) {
+            return $result;
+        }
+
+        // 角箱掩码 = 旧全幅掩码的左上角弧（圆心 (r-1,r-1)、180°-270°）画在 r×r 画布上
+        $mask = imagecreatetruecolor($radius, $radius);
+        imagealphablending($mask, false);
+        imagesavealpha($mask, true);
+        imagefill($mask, 0, 0, $transparent);
+        $opaque = imagecolorallocatealpha($mask, 0, 0, 0, 0);
+        imagefilledarc($mask, $radius - 1, $radius - 1, $radius * 2, $radius * 2, 180, 270, $opaque, IMG_ARC_PIE);
+
+        // 逐行擦除：圆外区域在行内是「连续前缀」，二分出第一个圆内像素后整段矩形擦除。
+        // 旧实现逐像素 imagecolorat + 最多 4 次 imagesetpixel，是 O(r²) 次 PHP 调用（r=300 时约 37 万次、370ms）。
+        for ($y = 0; $y < $radius; $y++) {
+            $lo = 0;
+            $hi = $radius;
+            while ($lo < $hi) {
+                $mid = ($lo + $hi) >> 1;
+                if (((imagecolorat($mask, $mid, $y) >> 24) & 0x7F) >= 64) {
+                    $lo = $mid + 1;
+                } else {
+                    $hi = $mid;
                 }
             }
+            if ($lo < 1) {
+                continue;
+            }
+            $x2 = $w - $lo;
+            $y2 = $h - 1 - $y;
+            imagefilledrectangle($result, 0, $y, $lo - 1, $y, $transparent);
+            imagefilledrectangle($result, $x2, $y, $w - 1, $y, $transparent);
+            imagefilledrectangle($result, 0, $y2, $lo - 1, $y2, $transparent);
+            imagefilledrectangle($result, $x2, $y2, $w - 1, $y2, $transparent);
         }
         imagedestroy($mask);
         return $result;
@@ -506,8 +658,7 @@ class GdDriver implements ImageDriverInterface
         $sColor  = $shadow['color'] ?? '#00000033';
         $offsetX = intval($shadow['offsetX'] ?? 4);
         $offsetY = intval($shadow['offsetY'] ?? 4);
-        $blur    = intval($shadow['blur'] ?? 8);
-        $rgb     = $this->hexToRgb($sColor);
+        $blur    = max(0, intval($shadow['blur'] ?? 8));
 
         $pad = $blur * 2;
         $sw = $w + $pad;
@@ -519,7 +670,8 @@ class GdDriver implements ImageDriverInterface
         $transparent = imagecolorallocatealpha($shadowImg, 0, 0, 0, 127);
         imagefill($shadowImg, 0, 0, $transparent);
 
-        $sAlloc = imagecolorallocatealpha($shadowImg, $rgb[0], $rgb[1], $rgb[2], 0);
+        // 半透明阴影/8 位色阴影（README 的水印、霓虹、阴影写法）在这里生效
+        $sAlloc = $this->allocColorOn($shadowImg, $sColor, self::shadowOpacityToAlpha($shadow['opacity'] ?? null));
         imagefilledrectangle($shadowImg, $blur, $blur, $blur + $w - 1, $blur + $h - 1, $sAlloc);
 
         // Blur on a 1/4-scale copy, then upscale: gaussian blur dominates cost, result is visually equivalent

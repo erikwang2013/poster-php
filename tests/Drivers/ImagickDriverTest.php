@@ -159,4 +159,99 @@ class ImagickDriverTest extends TestCase
         $this->assertSame(['width' => 20, 'height' => 20], $c->getSize());
         $this->assertStringStartsWith('data:image/png;base64,', $c->output('png'));
     }
+
+    /** 验证 jpg/jpeg 的 data URL MIME 都是 image/jpeg（与 GdDriver 一致）。 */
+    public function testOutputJpegMimeTypeIsImageJpeg(): void
+    {
+        $d = (new ImagickDriver())->create(12, 7);
+        foreach (['jpg', 'jpeg'] as $format) {
+            $this->assertStringStartsWith('data:image/jpeg;base64,', $d->output($format), $format);
+        }
+        $this->assertStringStartsWith('data:image/png;base64,', $d->output('png'));
+    }
+
+    /** 验证 destroy() 后所有操作抛 RuntimeException，getSize 不再返回旧尺寸（旧实现用已废弃的 destroy() 且不置空）。 */
+    public function testOperationsThrowAfterDestroy(): void
+    {
+        $d = (new ImagickDriver())->create(20, 20);
+        $overlay = (new ImagickDriver())->create(4, 4);
+        $d->destroy();
+        $this->assertNull($d->getResource());
+
+        $calls = [
+            'getSize' => function () use ($d) { return $d->getSize(); },
+            'resize' => function () use ($d) { return $d->resize(5, 5); },
+            'crop' => function () use ($d) { return $d->crop(0, 0, 5, 5); },
+            'circle' => function () use ($d) { return $d->circle(5); },
+            'text' => function () use ($d) { return $d->text('x', 0, 0); },
+            'image' => function () use ($d, $overlay) { return $d->image($overlay, 0, 0); },
+            'blur' => function () use ($d) { return $d->blur(1); },
+            'output' => function () use ($d) { return $d->output('png'); },
+            'save' => function () use ($d) { return $d->save(sys_get_temp_dir() . '/poster-imagick-destroyed.png', 'png'); },
+        ];
+        foreach ($calls as $label => $call) {
+            try {
+                $call();
+                $this->fail("destroy() 后 $label 应抛 RuntimeException");
+            } catch (\RuntimeException $e) {
+                $this->assertStringContainsString('No image resource', $e->getMessage(), $label);
+            }
+        }
+        $overlay->destroy();
+    }
+
+    /** 验证非法尺寸与超预算尺寸抛 InvalidArgumentException（与 GdDriver 的守卫一致）。 */
+    public function testInvalidDimensionsThrow(): void
+    {
+        $d = (new ImagickDriver())->create(20, 20);
+        foreach ([
+            'create' => function () { (new ImagickDriver())->create(0, 0); },
+            'resize' => function () use ($d) { $d->resize(-5, 5); },
+            'crop' => function () use ($d) { $d->crop(0, 0, 0, 0); },
+            'circle' => function () use ($d) { $d->circle(0); },
+            'oversized' => function () { (new ImagickDriver())->create(7000, 7000); },
+        ] as $label => $call) {
+            try {
+                $call();
+                $this->fail("$label 应抛 InvalidArgumentException");
+            } catch (\InvalidArgumentException $e) {
+                $this->assertNotSame('', $e->getMessage(), $label);
+            }
+        }
+    }
+
+    /** 验证 circle 保留圆内 alpha（DSTIN 合成；旧实现用 COPYOPACITY 会把圆内 alpha 抹平）。 */
+    public function testCircleKeepsInteriorAlpha(): void
+    {
+        $d = (new ImagickDriver())->create(40, 40)->circle(40);
+        $this->assertSame(['width' => 40, 'height' => 40], $d->getSize());
+        $png = base64_decode(substr($d->output('png'), strpos($d->output('png'), ',') + 1));
+        $decoded = imagecreatefromstring($png);
+        $this->assertNotFalse($decoded);
+        $this->assertGreaterThan(64, (imagecolorat($decoded, 20, 20) >> 24) & 0x7F, '圆内应保持透明');
+        $this->assertGreaterThan(64, (imagecolorat($decoded, 0, 0) >> 24) & 0x7F, '圆角外应透明');
+    }
+
+    /** 验证 text 的 8 位色 alpha 生效（ImagickPixel 原生支持 #RRGGBBAA）。 */
+    public function testTextEightDigitColorKeepsAlpha(): void
+    {
+        $font = \Erikwang2013\Poster\PosterConfig::get('image.font');
+        if (!$font || !is_file($font)) {
+            $this->markTestSkipped('系统无 TTF 字体可用');
+        }
+        $d = (new ImagickDriver())->create(200, 80);
+        $d->text('W', 10, 60, ['size' => 48, 'color' => '#FF000080']);
+        $png = base64_decode(substr($d->output('png'), strpos($d->output('png'), ',') + 1));
+        $decoded = imagecreatefromstring($png);
+        $semi = 0;
+        for ($y = 0; $y < 80; $y++) {
+            for ($x = 0; $x < 200; $x++) {
+                $alpha = (imagecolorat($decoded, $x, $y) >> 24) & 0x7F;
+                if ($alpha > 0 && $alpha < 127) {
+                    $semi++;
+                }
+            }
+        }
+        $this->assertGreaterThan(0, $semi, '文字应有半透明像素（alpha 未生效说明 8 位色被丢弃）');
+    }
 }

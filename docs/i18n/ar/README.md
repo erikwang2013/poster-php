@@ -28,14 +28,15 @@ poster-php مجموعة أدوات PHP للصور تفعل شيئين فقط، �
 
 ```
 poster-php/
-├── src/                        # الكود الأساسي: 56 ملف PHP / نحو 4250 سطرًا
+├── src/                        # الكود الأساسي: 64 ملف PHP / نحو 6093 سطرًا
 │   ├── Captcha/                # وحدة التحقق: واجهة + صنف أساسي مجرّد + 3 تطبيقات + مصنع + مدير
-│   ├── Poster/                 # وحدة الملصق
+│   │                           #   + RateLimiter (تحديد المعدل) / TrajectoryVerifier (التحقق من المسار)
+│   ├── Poster/                 # وحدة الملصق (Elements/ElementRegistry.php سجل التسجيل الموحّد للعناصر)
 │   │   ├── PosterBuilder.php   # باني متسلسل مع 14 دالة addXxx()
 │   │   ├── PosterTemplate.php  # قالب JSON ← استبدال {{variable}}
 │   │   └── Elements/           # 14 عارضًا للعناصر + ElementInterface + صنف أساسي مجرّد
 │   ├── Drivers/                # مشغّلات الصور: ImageDriverInterface / GdDriver / ImagickDriver
-│   ├── Storage/                # تخزين بيانات التحقق: File / Session / Redis
+│   ├── Storage/                # تخزين بيانات التحقق: File / Session / Redis / ذاكرة PSR-16
 │   ├── Qrcode/                 # مولّد رموز QR بـ PHP خالص (Model 2، v1-40، بلا إضافات)
 │   ├── Adapters/               # محوّلات الأطر: Laravel / ThinkPHP / Webman / Hyperf
 │   ├── PosterConfig.php        # قراءة الإعدادات (قيم افتراضية + دمج إعدادات الإطار)
@@ -48,7 +49,7 @@ poster-php/
 │   └── pet.png                 # مُشتق من pet.svg: يُستخدم في addPet() وكصورة بديلة
 ├── helpers.php                 # دوال عامة: captcha_create / captcha_verify / poster_create
 ├── native.php                  # مدخل PHP الأصلي — يكفي require بدون Composer
-├── tests/                      # اختبارات PHPUnit، 41 ملفًا، وبنية الأدلة تحاكي src/
+├── tests/                      # اختبارات PHPUnit، 53 ملفًا، وبنية الأدلة تحاكي src/
 ├── examples/                   # أمثلة قابلة للتشغيل مباشرة
 ├── docs/                       # وثيقة المعمارية ومخططات التصميم ودورة الحياة (SVG) ورموز التبرع
 └── composer.json               # PSR-4: Erikwang2013\Poster\ ← src/
@@ -183,6 +184,9 @@ $pass = $manager->verify($result['key'], [
 ]);
 ```
 
+يستبدل `setTargetType('icon')` النصوص الهدف بأشكال متجهية تُولَّد برمجيًا (11 شكلًا تُرسم بعناصر GD، دون أي ملفات صور):
+ويُضاف إلى كل عنصر في `extra['texts']` حقل `thumb` (صورة مصغّرة base64 للشكل) لتعرضه الواجهة الأمامية كتلميح للنقر؛ أما التحقق فيبقى مقارنة إحداثيات.
+
 #### 2. التحقق بالتدوير (RotateCaptcha)
 
 يقوم النظام بتدوير الصورة عشوائيًا بين 30° و330°، وعلى المستخدم سحب المؤشر لإعادة الصورة إلى وضعها الصحيح.
@@ -263,8 +267,33 @@ $pass = $manager->verify($captcha['key'], [
 | لمرة واحدة | يُحذف المفتاح بعد نجاح التحقق أو تجاوز الحد الأقصى للمحاولات |
 | مقاومة التخمين | 3 محاولات كحد أقصى افتراضيًا (قابل للضبط) |
 | الصلاحية | 300 ثانية افتراضيًا (قابلة للضبط) |
-| العشوائية | لون الخلفية والتشويش ومواضع الأهداف عشوائية عند كل توليد |
+| العشوائية | لون الخلفية والتشويش ومواضع الأهداف عشوائية عند كل توليد؛ وتُختار صبغة ودوران كل هدف من أهداف النقر على حدة عشوائيًا |
+| تحديد المعدل على مستوى الجلسة | تحديد نافذة زمنية يعمل عبر المفاتيح (افتراضيًا 30 محاولة خلال 60 ثانية)، لسدّ التخمين بـ «توليد مفتاح جديد وتجربته» |
+| مسار السلوك | اختياري (مغلق افتراضيًا): يتحقق من عدد نقاط مسار السحب ومدته واستقامته، فيُرفض إرسال الجواب مباشرة عبر POST |
 | تجميل الخلفية | خلفية متدرجة برمجية بثلاثة أنماط (بسيط/حيوي/طبيعي) تُختار عشوائيًا، مع إمكانية ضبط دليل صور الخلفية الافتراضي |
+| الحد الأدنى للوحة | إن كانت الخلفية أصغر من الحد يُرفض الطلب بخطأ بدل التدهور (التحقق بالنقر 120×120 كحد أدنى، والسحب يحتاج مساحة تستوعب قطعة أحجية 4×2) |
+
+#### التحقق من مسار السلوك (اختياري)
+
+مغلق افتراضيًا (لتجنّب الإضرار بالأجهزة اللمسية وأجهزة الوصول). وعند تفعيله يحتاج `slider` / `rotate` إلى إرسال مسار السحب من الواجهة الأمامية، ليتحقق الخادم من عدد النقاط والمدة والاستقامة:
+
+```php
+// config/poster.php
+'captcha' => [
+    'trajectory' => [
+        'enabled'      => true,
+        'min_points'   => 4,      // أقل عدد نقاط مُقاسة
+        'min_duration' => 300,    // أقل مدة (بالمللي ثانية)
+        'max_duration' => 5000,   // أقصى مدة (بالمللي ثانية)
+        'max_linearity' => 0.99,  // الاستقامة الأعلى من هذه القيمة تُعدّ آلة (سحب السكربت خط مستقيم)
+    ],
+],
+
+// إرسال الواجهة الأمامية: الصيغة القديمة بقيمة عددية ما زالت مدعومة
+captcha_verify($key, 'slider', 173);
+// بعد تفعيل التحقق من المسار يجب إرسال المسار مع الطلب
+captcha_verify($key, 'slider', ['x' => 173, 'trail' => [[12, 3, 0], [40, 9, 22], /* … */], 'duration' => 1200]);
+```
 
 #### إعداد صور الخلفية
 
@@ -322,6 +351,8 @@ $builder->backgroundGradient('#FF6B6B', '#FF8E53', 'vertical'); // خلفية م
 
 // الإخراج
 $builder->save('/output/poster.jpg', 90);  // الحفظ إلى ملف (المسار، الجودة 0-100)
+                                           // الصيغة تُستنتج من الامتداد: jpg/jpeg/png/webp/gif
+                                           // عند عدم تمرير الجودة يقرأ JPEG قيمة poster.jpeg_quality ويقرأ PNG قيمة poster.png_compression
 $dataUrl = $builder->output('png', 90);    // الحصول على base64 data URL
 ```
 
@@ -384,6 +415,8 @@ $builder->addQrcode('https://example.com/page/123', [
     'label_color' => '#999999',
 ]);
 ```
+
+عند تجاوز السعة الحدَّ الأقصى لهذه النسخة (مثلًا ما يزيد على نحو 1273 بايت عند مستوى H) يُطرح `InvalidArgumentException`، بدل إنتاج رمز يتعذّر مسحه بصمت.
 
 #### الأشكال `addShape()`
 
@@ -684,6 +717,21 @@ $builder->useTemplate($template)->with([
 //                      chart, calendar, artistic-text, emoji, icon, emoticon
 ```
 
+تستبدل `useTemplate()` افتراضيًا عناصر `addXxx()` السابقة (مع الحفاظ على الدلالة الأصلية)؛ وللاستفادة من «قالب كأساس + عناصر مكتوبة يدويًا فوقه» استخدم المعامل الثاني:
+
+```php
+$builder->replaceElements(false)->useTemplate($template)->with($vars)->addPet(['x' => 20, 'y' => 20, 'width' => 80]);
+
+// التصدير العكسي: حوّل الـ builder الحالي (أو عنصرًا واحدًا) إلى بنية قالب، تُغذّى مرة أخرى إلى fromConfig()
+$config = $builder->toArray();          // ['width'=>…, 'height'=>…, 'elements'=>[…]]
+$template2 = PosterTemplate::fromConfig($config);   // تصدير ← إعادة استيراد، بنية متطابقة
+
+// يكفي تسجيل نوع عنصر جديد مرة واحدة في ElementRegistry ليعمل في الـ Builder والقالب معًا
+$builder->add('text', ['text' => 'hello', 'x' => 10, 'y' => 30, 'size' => 20]);
+```
+
+> تنبيه: تُعيد `AbstractElement::toArray()` منذ هذا الإصدار «اسم نوع مختصر + خيارات مسطّحة» (وكانت سابقًا `['type' => اسم الصنف, 'options' => [...]]`)، وذلك لتتوافق بنيتها مع القالب في الاتجاهين.
+
 ## التكامل مع الأطر
 
 ### Laravel
@@ -694,6 +742,20 @@ use Erikwang2013\Poster\Adapters\Laravel\Facades\Poster;
 
 $result = Captcha::create('click')->generate();
 Poster::width(750)->height(1334)->background('#FFF')->save('poster.jpg');
+```
+
+```php
+// بعد ضبط captcha.route.enabled = true في config/poster.php يسجّل المحوّل نقطة نهاية للصورة:
+//   GET /captcha/{key} ← يعيد PNG مباشرة (Content-Type: image/png، Cache-Control: no-store)
+// تكفي الواجهة الأمامية بالرابط دون تمرير base64 (أصغر بنسبة 33% وقابل للتخزين المؤقت في المتصفح/CDN)
+$result = Captcha::create('click')->generate();
+// $result['image'] ما زال data URI؛ أما $result['url'] فعنوان يصلح مباشرة في <img src>
+
+// التحقق من النموذج: اسم القاعدة captcha ومعاملها مفتاح الصورة
+$request->validate([
+    'captcha_key'  => 'required|string',
+    'captcha_code' => 'required|captcha:captcha_key',
+]);
 ```
 
 ```bash
@@ -741,6 +803,10 @@ return [
 | `captcha.tolerance` | `{click:18,rotate:5,slider:4}` | التفاوت لكل نوع |
 | `image.driver` | `auto` | مشغّل الصور: `auto` / `gd` / `imagick` |
 | `poster.placeholder` | `null` | مسار الصورة البديلة للصور المفقودة، و`null` يعني التجاوز دون رسم؛ وجّهه إلى مسار التميمة لرسم Posty في موضع الصورة المفقودة |
+| `captcha.rate_limit` | `{max:30,window:60}` | تحديد معدل على مستوى الجلسة/الحساب في نافذة زمنية؛ والهوية تُؤخذ من session_id افتراضيًا، وعند غياب الجلسة من عنوان IP للعميل |
+| `captcha.trajectory` | `{enabled:false,…}` | التحقق من مسار السلوك (مغلق افتراضيًا) |
+| `captcha.cache.pool` | `null` | كائن مخزن PSR-16 (يُستخدم عند `storage=cache`)، ويمكن ضبطه وقت التشغيل عبر `StorageFactory::setPsr16Pool()` |
+| `captcha.route` | `{enabled:false,path:'/captcha'}` | محوّل Laravel: يسجّل نقطة نهاية للصورة `GET {path}/{key}` تعيد PNG مباشرة |
 
 ## المصدر المفتوح ليس سهلًا، ودعمكم مرحّب به
 

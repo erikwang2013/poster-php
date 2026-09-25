@@ -717,6 +717,21 @@ $builder->useTemplate($template)->with([
 //                      chart, calendar, artistic-text, emoji, icon, emoticon
 ```
 
+`useTemplate()` por defecto **reemplaza** los elementos `addXxx()` anteriores (mantiene la semántica original); para «usar la plantilla como base y superponer elementos escritos a mano» usa el segundo parámetro:
+
+```php
+$builder->replaceElements(false)->useTemplate($template)->with($vars)->addPet(['x' => 20, 'y' => 20, 'width' => 80]);
+
+// exportación inversa: convierte el builder actual (o un solo elemento) en una estructura de plantilla que se puede volver a pasar a fromConfig()
+$config = $builder->toArray();          // ['width'=>…, 'height'=>…, 'elements'=>[…]]
+$template2 = PosterTemplate::fromConfig($config);   // exportar → importar de nuevo, misma estructura
+
+// para añadir un tipo de elemento basta con registrarlo una vez en ElementRegistry, y surte efecto tanto en el Builder como en la plantilla
+$builder->add('text', ['text' => 'hello', 'x' => 10, 'y' => 30, 'size' => 20]);
+```
+
+> Nota: desde esta versión, `AbstractElement::toArray()` devuelve «nombre corto del tipo + opciones aplanadas» (antes era `['type' => nombre de clase, 'options' => [...]]`), para que el ida y vuelta con la estructura de plantilla sea consistente.
+
 ## Integración con frameworks
 
 ### Laravel

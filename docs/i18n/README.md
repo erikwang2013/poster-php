@@ -26,3 +26,4 @@
 1. 改中文 `README.md`（权威版本）与 `README_EN.md`。
 2. 同步各语言 `docs/i18n/{locale}/README.md`：**代码块保持与源文件一致**（只翻译注释），标题层级、表格、代码块数量不要增减。
 3. 图表文案在 `scripts/i18n/{locale}.json`，改完执行 `php scripts/i18n-diagrams.php {locale}` 重新生成（`en.json` 是基准，缺键自动回退）。
+   中文图表也走同一管线：文案在 `scripts/i18n/zh.json`，`php scripts/i18n-diagrams.php zh` 会输出到 `docs/`（其余语言输出到 `docs/i18n/{locale}/`）。

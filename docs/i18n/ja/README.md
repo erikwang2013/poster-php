@@ -28,14 +28,15 @@ poster-php は PHP の画像ツールキットです。やることは 2 つだ�
 
 ```
 poster-php/
-├── src/                        # コアコード：56 個の PHP ファイル / 約 4250 行
+├── src/                        # コアコード：64 個の PHP ファイル / 約 6093 行
 │   ├── Captcha/                # CAPTCHA モジュール：インターフェース + 抽象基底クラス + 3 実装 + ファクトリ + マネージャ
-│   ├── Poster/                 # ポスターモジュール
+│   │                           #   + RateLimiter（レート制限）/ TrajectoryVerifier（軌跡検証）
+│   ├── Poster/                 # ポスターモジュール（Elements/ElementRegistry.php が要素の単一登録先）
 │   │   ├── PosterBuilder.php   # チェーン式 Builder、14 個の addXxx() メソッド
 │   │   ├── PosterTemplate.php  # JSON テンプレート → {{変数}} 置換
 │   │   └── Elements/           # 14 種類の要素レンダラ + ElementInterface + 抽象基底クラス
 │   ├── Drivers/                # 画像ドライバ：ImageDriverInterface / GdDriver / ImagickDriver
-│   ├── Storage/                # 検証データのストレージ：File / Session / Redis
+│   ├── Storage/                # 検証データのストレージ：File / Session / Redis / PSR-16 キャッシュ
 │   ├── Qrcode/                 # 純 PHP の QR コード生成器（Model 2、v1-40、拡張機能への依存ゼロ）
 │   ├── Adapters/               # フレームワークアダプタ：Laravel / ThinkPHP / Webman / Hyperf
 │   ├── PosterConfig.php        # 設定の読み込み（デフォルト値でのフォールバック + フレームワーク設定のマージ）
@@ -48,7 +49,7 @@ poster-php/
 │   └── pet.png                 # pet.svg をラスタライズ：addPet() と画像欠損プレースホルダーで使用
 ├── helpers.php                 # グローバル関数：captcha_create / captcha_verify / poster_create
 ├── native.php                  # ネイティブ PHP の入口：Composer 不要、require するだけ
-├── tests/                      # PHPUnit テスト、41 ファイル、ディレクトリ構成は src/ とミラー
+├── tests/                      # PHPUnit テスト、53 ファイル、ディレクトリ構成は src/ とミラー
 ├── examples/                   # そのまま実行できるサンプルスクリプト
 ├── docs/                       # アーキテクチャ文書、設計・ライフサイクル図（SVG）、支援 QR コード
 └── composer.json               # PSR-4：Erikwang2013\Poster\ → src/
@@ -183,6 +184,9 @@ $pass = $manager->verify($result['key'], [
 ]);
 ```
 
+`setTargetType('icon')` を使うと、目標の文字をプログラム生成のベクター図形に差し替えられます（11 種類、GD の描画プリミティブで描くので画像素材は不要）：
+`extra['texts']` の各項目に `thumb`（その図形の base64 サムネイル）が追加され、フロントエンドでクリックのヒントとして表示できます。検証は従来どおり座標の比較です。
+
 #### 2. 回転認証 (RotateCaptcha)
 
 システムが画像を 30°〜330° の範囲でランダムに回転させ、ユーザーがスライダーをドラッグして画像を元の角度に戻します。
@@ -263,8 +267,33 @@ $pass = $manager->verify($captcha['key'], [
 | ワンタイム | 検証に成功した時点、または最大回数を超えた時点で key を削除 |
 | 総当たり対策 | デフォルトでは最大 3 回まで検証（設定可能） |
 | 有効期限 | デフォルト 300 秒（設定可能） |
-| ランダム性 | 生成するたびに背景色・ノイズ・目標位置がすべてランダム |
+| ランダム性 | 生成するたびに背景色・ノイズ・目標位置がすべてランダム。クリックの目標は 1 つずつ色相と回転角度もランダム |
+| セッション単位のレート制限 | key をまたいで効くウィンドウ制限（デフォルト 60 秒に 30 回）。「毎回新しい key で 1 回だけ推測する」総当たりを塞ぐ |
+| 行動軌跡 | 任意（デフォルト無効）：ドラッグ軌跡の点数・所要時間・直線度を検証。スクリプトが答えを直接 POST すると拒否される |
 | 背景の装飾 | プログラム生成のグラデーション背景。3 種類のスタイル（シンプル / ポップ / ナチュラル）をランダムに切替。デフォルトの背景画像ディレクトリも設定可能 |
+| キャンバス下限 | 背景が小さすぎる場合は退化させずエラーを返す（クリック認証は最小 120×120、スライダーは 4×2 のパズルピースが収まる大きさが必要） |
+
+#### 行動軌跡の検証（任意）
+
+デフォルトは無効です（タッチ操作や支援技術を誤って弾かないため）。有効にすると `slider` / `rotate` はフロントエンドからドラッグ軌跡を送る必要があり、サーバー側で点数・所要時間・軌跡の直線度を検証します：
+
+```php
+// config/poster.php
+'captcha' => [
+    'trajectory' => [
+        'enabled'      => true,
+        'min_points'   => 4,      // 最小サンプル点数
+        'min_duration' => 300,    // 最短所要時間（ミリ秒）
+        'max_duration' => 5000,   // 最長所要時間（ミリ秒）
+        'max_linearity' => 0.99,  // 直線度がこの値を超えたら機械と判定（スクリプトのドラッグは直線になる）
+    ],
+],
+
+// フロントエンドからの送信：従来の数値だけの書き方も引き続き互換
+captcha_verify($key, 'slider', 173);
+// 軌跡検証を有効にした場合は軌跡が必要
+captcha_verify($key, 'slider', ['x' => 173, 'trail' => [[12, 3, 0], [40, 9, 22], /* … */], 'duration' => 1200]);
+```
 
 #### 背景画像の設定
 
@@ -322,6 +351,8 @@ $builder->backgroundGradient('#FF6B6B', '#FF8E53', 'vertical'); // グラデー�
 
 // 出力
 $builder->save('/output/poster.jpg', 90);  // ファイルに保存（パス, 品質 0-100）
+                                           // 形式は拡張子から判定：jpg/jpeg/png/webp/gif
+                                           // 品質を省略した場合、JPEG は poster.jpeg_quality、PNG は poster.png_compression を読む
 $dataUrl = $builder->output('png', 90);    // base64 data URL を取得
 ```
 
@@ -384,6 +415,8 @@ $builder->addQrcode('https://example.com/page/123', [
     'label_color' => '#999999',
 ]);
 ```
+
+容量がそのバージョンの上限を超える場合（H レベルで約 1273 バイト以上など）は `InvalidArgumentException` をスローし、読み取れない QR コードを黙って出力することはなくなりました。
 
 #### 図形 `addShape()`
 
@@ -684,6 +717,21 @@ $builder->useTemplate($template)->with([
 //                      chart, calendar, artistic-text, emoji, icon, emoticon
 ```
 
+`useTemplate()` はデフォルトで、それ以前の `addXxx()` で追加した要素を**置換**します（従来のセマンティクスを維持）。「テンプレートを下地にして手書きの要素を重ねる」場合は 2 番目の引数を使います：
+
+```php
+$builder->replaceElements(false)->useTemplate($template)->with($vars)->addPet(['x' => 20, 'y' => 20, 'width' => 80]);
+
+// 逆方向のエクスポート：現在の builder（または単一の要素）をテンプレート構造に変換し、再び fromConfig() に渡せる
+$config = $builder->toArray();          // ['width'=>…, 'height'=>…, 'elements'=>[…]]
+$template2 = PosterTemplate::fromConfig($config);   // エクスポート → 再インポート、構造は一致する
+
+// 新しい要素タイプは ElementRegistry に一度登録するだけで、Builder とテンプレートの両方に反映される
+$builder->add('text', ['text' => 'hello', 'x' => 10, 'y' => 30, 'size' => 20]);
+```
+
+> 注意：`AbstractElement::toArray()` は本バージョンから「短い型名 + フラット化したオプション」を返します（以前は `['type' => クラス名, 'options' => [...]]`）。テンプレート構造と往復できるようにするためで、これは**動作変更**にあたります。
+
 ## フレームワーク連携
 
 ### Laravel
@@ -694,6 +742,20 @@ use Erikwang2013\Poster\Adapters\Laravel\Facades\Poster;
 
 $result = Captcha::create('click')->generate();
 Poster::width(750)->height(1334)->background('#FFF')->save('poster.jpg');
+```
+
+```php
+// config/poster.php の captcha.route.enabled = true にすると、アダプタが画像エンドポイントを登録する：
+//   GET /captcha/{key} → PNG を直接返す（Content-Type: image/png、Cache-Control: no-store）
+// フロントエンドは URL を使えばよく、base64 を渡す必要はない（サイズが 33% 小さく、ブラウザ / CDN のキャッシュも効く）
+$result = Captcha::create('click')->generate();
+// $result['image'] は従来どおり data URI。$result['url'] は <img src> にそのまま入れられるアドレス
+
+// フォームバリデーション：ルール名は captcha、引数は画像の key
+$request->validate([
+    'captcha_key'  => 'required|string',
+    'captcha_code' => 'required|captcha:captcha_key',
+]);
 ```
 
 ```bash
@@ -741,6 +803,10 @@ ConfigProvider 経由で自動登録されます。
 | `captcha.tolerance` | `{click:18,rotate:5,slider:4}` | 種類ごとの許容誤差 |
 | `image.driver` | `auto` | 画像ドライバ：`auto` / `gd` / `imagick` |
 | `poster.placeholder` | `null` | 画像欠損時のプレースホルダー画像パス。`null` ならスキップして描画しない。マスコットのパスを設定すると欠損位置に Posty を描画 |
+| `captcha.rate_limit` | `{max:30,window:60}` | セッション / アカウント単位のウィンドウ制限。識別子はデフォルトで session_id、セッションが無ければクライアント IP |
+| `captcha.trajectory` | `{enabled:false,…}` | 行動軌跡の検証（デフォルト無効） |
+| `captcha.cache.pool` | `null` | PSR-16 プールオブジェクト（`storage=cache` のときに使用）。実行時に `StorageFactory::setPsr16Pool()` でも設定可能 |
+| `captcha.route` | `{enabled:false,path:'/captcha'}` | Laravel アダプタ：画像エンドポイント `GET {path}/{key}` を登録し PNG を直接返す |
 
 ## オープンソースの継続にはご支援をお願いします
 

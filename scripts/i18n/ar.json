@@ -23,7 +23,7 @@
     ],
     "core": [
       ["مشغل الصور", "ImageDriverInterface", ["GdDriver · ImagickDriver", "كشف تلقائي وتراجع إلى GD", "يمكن إضافة مشغل خاص"]],
-      ["التخزين", "StorageInterface", ["FileStorage · Session", "RedisStorage موزّع", "يراعي ttl / attempts"]],
+      ["التخزين", "StorageInterface", ["FileStorage · Session", "RedisStorage موزّع · PSR-16", "يراعي ttl / attempts"]],
       ["رمز QR", "QrcodeGenerator", ["PHP خالص بلا إضافات", "Model 2 · v1-40", "شعار في الوسط · نص سفلي"]],
       ["الإعدادات", "load / get / merge / reset", ["captcha.* · image.*", "يحمل إعدادات الإطار", "قيم افتراضية آمنة"]]
     ],
@@ -52,8 +52,8 @@
     ],
     "security": {
       "title": "الأمان والتخزين",
-      "chips1": ["مفتاح لمرة واحدة", "3 محاولات كحد أقصى", "صلاحية 300 ث"],
-      "chips2": ["خلفيات بثلاث طبقات", "هامش خطأ قابل للضبط", "File/Session/Redis"]
+      "chips1": ["مفتاح لمرة واحدة", "3 محاولات كحد أقصى", "تحديد معدل الجلسة"],
+      "chips2": ["خلفيات 3 طبقات", "مسار السلوك (اختياري)", "File/Session/Redis"]
     },
     "elementCount": "%d أنواع",
     "elementGroups": [

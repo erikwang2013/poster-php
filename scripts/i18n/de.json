@@ -38,7 +38,7 @@
       [
         "Speicher",
         "StorageInterface",
-        ["FileStorage · Session", "RedisStorage verteilt", "TTL / Versuche beachtet"]
+        ["FileStorage · Session", "RedisStorage, PSR-16-Cache", "TTL / Versuche beachtet"]
       ],
       [
         "QR-Code",
@@ -76,8 +76,8 @@
     ],
     "security": {
       "title": "Sicherheit",
-      "chips1": ["Einmal-Schlüssel", "Max. 3 Versuche", "TTL 300s"],
-      "chips2": ["3 Hintergrundstufen", "Eigene Toleranz", "File/Session/Redis"]
+      "chips1": ["Einmal-Schlüssel", "Max. 3 Versuche", "Sitzungs-Limit"],
+      "chips2": ["3 Hintergründe", "Trajektorie (optional)", "File/Session/Redis"]
     },
     "elementCount": "%d Typen",
     "elementGroups": [

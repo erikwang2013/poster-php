@@ -28,14 +28,15 @@ poster-php é um kit de ferramentas de imagem em PHP que faz apenas duas coisas 
 
 ```
 poster-php/
-├── src/                        # Código principal: 56 arquivos PHP / ~4250 linhas
+├── src/                        # Código principal: 64 arquivos PHP / ~6093 linhas
 │   ├── Captcha/                # Módulo captcha: interface + classe base abstrata + 3 implementações + factory + manager
-│   ├── Poster/                 # Módulo pôster
+│   │                           #   + RateLimiter (limite de taxa) / TrajectoryVerifier (trajetória)
+│   ├── Poster/                 # Módulo pôster (Elements/ElementRegistry.php é o registro único de elementos)
 │   │   ├── PosterBuilder.php   # Builder encadeado, 14 métodos addXxx()
 │   │   ├── PosterTemplate.php  # Template JSON → substituição de {{variável}}
 │   │   └── Elements/           # 14 renderizadores de elementos + ElementInterface + classe base abstrata
 │   ├── Drivers/                # Drivers de imagem: ImageDriverInterface / GdDriver / ImagickDriver
-│   ├── Storage/                # Armazenamento dos dados de verificação: File / Session / Redis
+│   ├── Storage/                # Armazenamento dos dados de verificação: File / Session / Redis / cache PSR-16
 │   ├── Qrcode/                 # Gerador de QR Code em PHP puro (Model 2, v1-40, zero dependências de extensão)
 │   ├── Adapters/               # Adaptadores de framework: Laravel / ThinkPHP / Webman / Hyperf
 │   ├── PosterConfig.php        # Leitura de configuração (merge da config do framework + padrões)
@@ -48,7 +49,7 @@ poster-php/
 │   └── pet.png                 # Rasterizado de pet.svg: usado por addPet() e como placeholder
 ├── helpers.php                 # Funções globais: captcha_create / captcha_verify / poster_create
 ├── native.php                  # Entrada em PHP nativo: sem Composer, basta um require
-├── tests/                      # Testes PHPUnit, 41 arquivos, estrutura de diretórios espelhando src/
+├── tests/                      # Testes PHPUnit, 53 arquivos, estrutura de diretórios espelhando src/
 ├── examples/                   # Scripts de exemplo prontos para executar
 ├── docs/                       # Documentação de arquitetura, diagramas de design e ciclo de vida (SVG), códigos de doação
 └── composer.json               # PSR-4: Erikwang2013\Poster\ → src/
@@ -263,8 +264,12 @@ $pass = $manager->verify($captcha['key'], [
 | Uso único | A key é removida após o sucesso da verificação ou ao exceder o número máximo de tentativas |
 | Anti força bruta | Máximo de 3 tentativas de verificação por padrão (configurável) |
 | Validade | 300 segundos por padrão (configurável) |
-| Aleatoriedade | A cor de fundo, o ruído e a posição dos alvos são sorteados a cada geração |
+| Aleatoriedade | A cor de fundo, o ruído e a posição dos alvos são sorteados a cada geração; no captcha de clique, cada alvo recebe matiz e ângulo de rotação aleatórios |
+| Limite de taxa por sessão | Limite de janela que vale entre keys (padrão: 30 vezes em 60 segundos), fechando a brecha de «trocar de key a cada tentativa para chutar de novo» |
+| Trajetória de comportamento | Opcional (desligado por padrão): valida o número de pontos, a duração e a linearidade do trajeto de arrasto; um script que envia a resposta por POST direto é recusado |
 | Fundo embelezado | Fundo gradiente procedural com três estilos (minimalista / vibrante / natural) alternados aleatoriamente; diretório de imagens de fundo padrão configurável |
+| Canvas mínimo | Fundo pequeno demais gera erro em vez de degradar (captcha de clique mínimo 120×120; o deslize precisa comportar a peça 4×2) |
+
 
 #### Configuração das imagens de fundo
 

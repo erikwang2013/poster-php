@@ -53,14 +53,14 @@
   <text x="111.98" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">1 回限りの key</text>
   <rect x="171.95" y="500" width="73.48" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
   <text x="208.69" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">最大 3 回</text>
-  <rect x="253.43" y="500" width="82.1" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
-  <text x="294.48" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">TTL 300 秒</text>
+  <rect x="253.43" y="500" width="135" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="320.93" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">セッション単位で制限</text>
   <rect x="60" y="538" width="90.15" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
   <text x="105.08" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">3 段階の背景</text>
-  <rect x="158.15" y="538" width="100.5" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
-  <text x="208.4" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">カスタム許容値</text>
-  <rect x="266.65" y="538" width="133.85" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
-  <text x="333.58" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">File/Session/Redis</text>
+  <rect x="158.15" y="538" width="112" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="214.15" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">軌跡検証（任意）</text>
+  <rect x="278.15" y="538" width="133.85" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="345.08" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">File/Session/Redis</text>
   <rect x="530" y="154" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="530" y="164" width="4" height="44" rx="2" fill="#4ECDC4"/>
   <text x="550" y="182" font-size="14" fill="#2D3436" font-weight="600">文字と配置</text>

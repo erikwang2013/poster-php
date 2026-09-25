@@ -38,7 +38,7 @@
       [
         "ストレージ",
         "StorageInterface",
-        ["FileStorage · Session", "RedisStorage 分散対応", "ttl / attempts に対応"]
+        ["FileStorage · Session", "RedisStorage · PSR-16", "ttl / attempts に対応"]
       ],
       [
         "QR コード",
@@ -76,8 +76,8 @@
     ],
     "security": {
       "title": "セキュリティとストレージ",
-      "chips1": ["1 回限りの key", "最大 3 回", "TTL 300 秒"],
-      "chips2": ["3 段階の背景", "カスタム許容値", "File/Session/Redis"]
+      "chips1": ["1 回限りの key", "最大 3 回", "セッション単位で制限"],
+      "chips2": ["3 段階の背景", "軌跡検証（任意）", "File/Session/Redis"]
     },
     "elementCount": "%d 種類",
     "elementGroups": [

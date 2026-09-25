@@ -28,14 +28,15 @@ poster-php adalah toolkit gambar PHP yang hanya mengerjakan dua hal, dan mengerj
 
 ```
 poster-php/
-├── src/                        # kode inti: 56 file PHP / sekitar 4250 baris
+├── src/                        # kode inti: 64 file PHP / sekitar 6093 baris
 │   ├── Captcha/                # modul captcha: antarmuka + kelas abstrak + 3 implementasi + factory + manager
-│   ├── Poster/                 # modul poster
+│   │                           #   + RateLimiter (pembatasan) / TrajectoryVerifier (verifikasi jejak)
+│   ├── Poster/                 # modul poster (Elements/ElementRegistry.php sebagai registri elemen terpusat)
 │   │   ├── PosterBuilder.php   # Builder berantai, 14 metode addXxx()
 │   │   ├── PosterTemplate.php  # template JSON → substitusi {{variabel}}
 │   │   └── Elements/           # 14 perender elemen + ElementInterface + kelas abstrak
 │   ├── Drivers/                # driver gambar: ImageDriverInterface / GdDriver / ImagickDriver
-│   ├── Storage/                # penyimpanan data verifikasi: File / Session / Redis
+│   ├── Storage/                # penyimpanan data verifikasi: File / Session / Redis / cache PSR-16
 │   ├── Qrcode/                 # generator kode QR murni PHP (Model 2, v1-40, tanpa ekstensi)
 │   ├── Adapters/               # adapter framework: Laravel / ThinkPHP / Webman / Hyperf
 │   ├── PosterConfig.php        # pembacaan konfigurasi (nilai default + merge config framework)
@@ -48,7 +49,7 @@ poster-php/
 │   └── pet.png                 # hasil raster pet.svg: dipakai addPet() dan placeholder
 ├── helpers.php                 # fungsi global: captcha_create / captcha_verify / poster_create
 ├── native.php                  # entri PHP native — cukup require, tanpa Composer
-├── tests/                      # tes PHPUnit, 41 file, struktur direktori mencerminkan src/
+├── tests/                      # tes PHPUnit, 53 file, struktur direktori mencerminkan src/
 ├── examples/                   # skrip contoh yang bisa langsung dijalankan
 ├── docs/                       # dokumen arsitektur, diagram desain & siklus hidup (SVG), kode donasi
 └── composer.json               # PSR-4: Erikwang2013\Poster\ → src/
@@ -184,6 +185,9 @@ $pass = $manager->verify($result['key'], [
 ]);
 ```
 
+`setTargetType('icon')` mengganti teks target dengan bentuk vektor yang dibuat secara terprogram (11 jenis, digambar memakai primitif GD, tanpa perlu aset gambar):
+setiap item `extra['texts']` mendapat tambahan `thumb` (gambar kecil base64 dari bentuk tersebut) untuk ditampilkan frontend sebagai petunjuk klik; verifikasinya tetap membandingkan koordinat.
+
 #### 2. Captcha Putar (RotateCaptcha)
 
 Sistem memutar gambar secara acak 30°~330°, pengguna menggeser slider untuk memutar gambar kembali ke posisi tegak.
@@ -264,8 +268,33 @@ $pass = $manager->verify($captcha['key'], [
 | Sekali pakai | key dihapus setelah verifikasi berhasil atau percobaan melebihi batas |
 | Anti brute-force | Default maksimal 3 kali verifikasi (dapat dikonfigurasi) |
 | Masa berlaku | Default 300 detik (dapat dikonfigurasi) |
-| Keacakan | Warna latar, noise, dan posisi target setiap kali dibuat selalu acak |
+| Keacakan | Warna latar, noise, dan posisi target setiap kali dibuat selalu acak; tiap target klik mendapat hue dan sudut rotasi yang acak |
+| Pembatasan per sesi | Pembatasan jendela waktu yang berlaku lintas key (default 30 kali dalam 60 detik), menutup tebakan buta "ganti key baru lalu tebak sekali lagi" |
+| Jejak perilaku | Opsional (default nonaktif): memeriksa jumlah titik, durasi, dan kelinieran jejak geser; skrip yang langsung POST jawaban akan ditolak |
 | Latar yang menarik | Latar gradasi terprogram dengan tiga gaya (sederhana/ceria/alami) yang berganti acak, mendukung konfigurasi direktori gambar latar default |
+| Ukuran minimum kanvas | Latar yang terlalu kecil langsung menghasilkan error, bukan degradasi (captcha klik minimal 120×120, slider minimal harus memuat potongan puzzle 4×2) |
+
+#### Verifikasi Jejak Perilaku (Opsional)
+
+Default nonaktif (agar tidak salah menolak perangkat layar sentuh dan perangkat aksesibilitas). Setelah diaktifkan, `slider` / `rotate` mengharuskan frontend mengirim jejak geser; server memeriksa jumlah titik, durasi, dan kelinieran jejak:
+
+```php
+// config/poster.php
+'captcha' => [
+    'trajectory' => [
+        'enabled'      => true,
+        'min_points'   => 4,      // jumlah titik sampel minimum
+        'min_duration' => 300,    // durasi terpendek (milidetik)
+        'max_duration' => 5000,   // durasi terpanjang (milidetik)
+        'max_linearity' => 0.99,  // kelinieran di atas nilai ini dianggap mesin (geseran skrip berupa garis lurus)
+    ],
+],
+
+// Pengiriman dari frontend: cara lama yang mengirim angka tetap kompatibel
+captcha_verify($key, 'slider', 173);
+// Setelah verifikasi jejak aktif, jejak wajib disertakan
+captcha_verify($key, 'slider', ['x' => 173, 'trail' => [[12, 3, 0], [40, 9, 22], /* … */], 'duration' => 1200]);
+```
 
 #### Konfigurasi Gambar Latar
 
@@ -323,6 +352,8 @@ $builder->backgroundGradient('#FF6B6B', '#FF8E53', 'vertical'); // latar gradasi
 
 // Keluaran
 $builder->save('/output/poster.jpg', 90);  // simpan ke file (path, kualitas 0-100)
+                                           // format disimpulkan dari ekstensi: jpg/jpeg/png/webp/gif
+                                           // bila kualitas tidak diberikan, JPEG membaca poster.jpeg_quality, PNG membaca poster.png_compression
 $dataUrl = $builder->output('png', 90);    // ambil base64 data URL
 ```
 
@@ -385,6 +416,8 @@ $builder->addQrcode('https://example.com/page/123', [
     'label_color' => '#999999',
 ]);
 ```
+
+Bila kapasitas melebihi batas versi tersebut (misalnya di atas sekitar 1273 byte untuk level H), akan dilempar `InvalidArgumentException`, tidak lagi diam-diam menghasilkan kode yang tidak bisa dipindai.
 
 #### Bentuk `addShape()`
 
@@ -685,6 +718,21 @@ $builder->useTemplate($template)->with([
 //                      chart, calendar, artistic-text, emoji, icon, emoticon
 ```
 
+`useTemplate()` secara default **mengganti** elemen `addXxx()` sebelumnya (mempertahankan semantik semula); untuk "template sebagai dasar + elemen tulisan tangan di atasnya", gunakan parameter kedua:
+
+```php
+$builder->replaceElements(false)->useTemplate($template)->with($vars)->addPet(['x' => 20, 'y' => 20, 'width' => 80]);
+
+// Ekspor balik: ubah builder saat ini (atau satu elemen) menjadi struktur template, bisa dimasukkan lagi ke fromConfig()
+$config = $builder->toArray();          // ['width'=>…, 'height'=>…, 'elements'=>[…]]
+$template2 = PosterTemplate::fromConfig($config);   // ekspor → impor lagi, struktur tetap sama
+
+// Jenis elemen baru cukup didaftarkan sekali di ElementRegistry, Builder dan template langsung berlaku
+$builder->add('text', ['text' => 'hello', 'x' => 10, 'y' => 30, 'size' => 20]);
+```
+
+> Catatan: sejak versi ini `AbstractElement::toArray()` mengembalikan "nama jenis singkat + opsi yang diratakan" (sebelumnya `['type' => nama kelas, 'options' => [...]]`), agar konsisten saat bolak-balik dengan struktur template.
+
 ## Integrasi Framework
 
 ### Laravel
@@ -695,6 +743,20 @@ use Erikwang2013\Poster\Adapters\Laravel\Facades\Poster;
 
 $result = Captcha::create('click')->generate();
 Poster::width(750)->height(1334)->background('#FFF')->save('poster.jpg');
+```
+
+```php
+// Setelah captcha.route.enabled = true di config/poster.php, adapter mendaftarkan endpoint gambar:
+//   GET /captcha/{key} → langsung mengembalikan PNG (Content-Type: image/png, Cache-Control: no-store)
+// Frontend cukup memakai URL, tidak perlu mengirim base64 lagi (33% lebih kecil dan bisa di-cache browser/CDN)
+$result = Captcha::create('click')->generate();
+// $result['image'] tetap data URI; $result['url'] adalah alamat yang bisa langsung dipasang di <img src>
+
+// Validasi form: nama rule adalah captcha, parameternya image key
+$request->validate([
+    'captcha_key'  => 'required|string',
+    'captcha_code' => 'required|captcha:captcha_key',
+]);
 ```
 
 ```bash
@@ -742,6 +804,10 @@ Item konfigurasi utama:
 | `captcha.tolerance` | `{click:18,rotate:5,slider:4}` | Toleransi tiap jenis |
 | `image.driver` | `auto` | Driver gambar: `auto` / `gd` / `imagick` |
 | `poster.placeholder` | `null` | Path placeholder untuk gambar yang hilang, `null` berarti dilewati; atur ke path maskot agar Posty digambar di posisi gambar yang hilang |
+| `captcha.rate_limit` | `{max:30,window:60}` | Pembatasan jendela per sesi/akun; identitas default diambil dari session_id, bila tidak ada sesi diambil dari IP klien |
+| `captcha.trajectory` | `{enabled:false,…}` | Verifikasi jejak perilaku (default nonaktif) |
+| `captcha.cache.pool` | `null` | Objek pool PSR-16 (dipakai saat `storage=cache`), bisa juga diatur saat runtime lewat `StorageFactory::setPsr16Pool()` |
+| `captcha.route` | `{enabled:false,path:'/captcha'}` | Adapter Laravel: mendaftarkan endpoint gambar `GET {path}/{key}` yang langsung mengembalikan PNG |
 
 ## Dukungan untuk Proyek Ini
 

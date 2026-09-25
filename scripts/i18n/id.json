@@ -38,7 +38,7 @@
       [
         "Penyimpanan",
         "StorageInterface",
-        ["FileStorage · Session", "RedisStorage terdistribusi", "sadar ttl / attempts"]
+        ["FileStorage · Session", "RedisStorage · cache PSR-16", "sadar ttl / attempts"]
       ],
       [
         "Kode QR",
@@ -76,8 +76,8 @@
     ],
     "security": {
       "title": "Keamanan & Penyimpanan",
-      "chips1": ["Kunci sekali pakai", "Maks 3 percobaan", "TTL 300s"],
-      "chips2": ["Latar 3 tingkat", "Toleransi kustom", "File/Session/Redis"]
+      "chips1": ["Kunci sekali pakai", "Maks 3 percobaan", "Batas per sesi"],
+      "chips2": ["Latar 3 tingkat", "Cek jejak (opsional)", "File/Session/Redis"]
     },
     "elementCount": "%d jenis",
     "elementGroups": [

@@ -28,14 +28,15 @@ poster-php est une boîte à outils d'images PHP qui fait deux choses, et les fa
 
 ```
 poster-php/
-├── src/                        # code cœur : 56 fichiers PHP / env. 4250 lignes
+├── src/                        # code cœur : 64 fichiers PHP / env. 6093 lignes
 │   ├── Captcha/                # module captcha : interface + classe abstraite + 3 implémentations + factory + manager
-│   ├── Poster/                 # module affiche
+│   │                           #   + RateLimiter (limitation de débit) / TrajectoryVerifier (contrôle de trajectoire)
+│   ├── Poster/                 # module affiche (Elements/ElementRegistry.php = registre unique des éléments)
 │   │   ├── PosterBuilder.php   # Builder fluide, 14 méthodes addXxx()
 │   │   ├── PosterTemplate.php  # modèle JSON → remplacement de {{variable}}
 │   │   └── Elements/           # 14 rendus d'éléments + ElementInterface + classe abstraite
 │   ├── Drivers/                # pilotes d'image : ImageDriverInterface / GdDriver / ImagickDriver
-│   ├── Storage/                # stockage des données de vérification : File / Session / Redis
+│   ├── Storage/                # stockage des données de vérification : File / Session / Redis / cache PSR-16
 │   ├── Qrcode/                 # générateur de QR code en PHP pur (Model 2, v1-40, sans extension)
 │   ├── Adapters/               # adaptateurs de frameworks : Laravel / ThinkPHP / Webman / Hyperf
 │   ├── PosterConfig.php        # lecture de la configuration (valeurs par défaut + fusion avec le framework)
@@ -48,7 +49,7 @@ poster-php/
 │   └── pet.png                 # rasterisé depuis pet.svg : utilisé par addPet() et comme image de remplacement
 ├── helpers.php                 # fonctions globales : captcha_create / captcha_verify / poster_create
 ├── native.php                  # point d'entrée PHP natif — un simple require, sans Composer
-├── tests/                      # tests PHPUnit, 41 fichiers, arborescence calquée sur src/
+├── tests/                      # tests PHPUnit, 53 fichiers, arborescence calquée sur src/
 ├── examples/                   # scripts d'exemple directement exécutables
 ├── docs/                       # documentation d'architecture, diagrammes (SVG), QR codes de don
 └── composer.json               # PSR-4 : Erikwang2013\Poster\ → src/
@@ -183,6 +184,9 @@ $pass = $manager->verify($result['key'], [
 ]);
 ```
 
+`setTargetType('icon')` remplace les textes cibles par des formes vectorielles générées par programme (11 formes dessinées avec les primitives GD, sans ressource image) :
+chaque entrée de `extra['texts']` reçoit en plus un `thumb` (miniature base64 de la forme), à afficher comme indice de clic côté frontend ; la vérification reste une comparaison de coordonnées.
+
 #### 2. Captcha rotation (RotateCaptcha)
 
 Le système fait tourner l'image au hasard de 30°~330°, l'utilisateur fait glisser le curseur pour la remettre droite.
@@ -263,8 +267,33 @@ $pass = $manager->verify($captcha['key'], [
 | Usage unique | La clé est supprimée après un succès ou le nombre maximal de tentatives |
 | Anti-force brute | 3 vérifications au maximum par défaut (configurable) |
 | Durée de vie | 300 secondes par défaut (configurable) |
-| Aléatoire | Couleurs de fond, bruit et positions des cibles sont tirés au hasard à chaque génération |
+| Aléatoire | Couleurs de fond, bruit et positions des cibles sont tirés au hasard à chaque génération ; chaque cible cliquée reçoit une teinte et un angle de rotation tirés au hasard |
+| Limitation par session | Limitation à fenêtre glissante, toutes clés confondues (30 en 60 secondes par défaut), pour bloquer le devinage par renouvellement de clé |
+| Trajectoire | Optionnelle (désactivée par défaut) : contrôle le nombre de points, la durée et la linéarité de la trajectoire ; un script qui POSTe directement la réponse est rejeté |
 | Fonds soignés | Fonds dégradés programmatiques en trois styles (minimal / vibrant / naturel) tirés au hasard, répertoire de fonds par défaut configurable |
+| Taille minimale | Un fond trop petit lève une erreur au lieu de dégrader le rendu (120×120 minimum pour le clic, le curseur doit contenir une pièce de 4×2) |
+
+#### Contrôle de trajectoire (optionnel)
+
+Désactivé par défaut (pour ne pas pénaliser les écrans tactiles ni l'accessibilité). Une fois activé, `slider` / `rotate` demandent au frontend de transmettre la trajectoire de glissement ; le serveur contrôle le nombre de points, la durée et la linéarité :
+
+```php
+// config/poster.php
+'captcha' => [
+    'trajectory' => [
+        'enabled'      => true,
+        'min_points'   => 4,      // nombre minimal de points échantillonnés
+        'min_duration' => 300,    // durée minimale (millisecondes)
+        'max_duration' => 5000,   // durée maximale (millisecondes)
+        'max_linearity' => 0.99,  // au-delà de cette linéarité, jugé machine (un glissement scripté est une droite)
+    ],
+],
+
+// Envoi depuis le frontend : l'ancienne forme (valeur seule) reste compatible
+captcha_verify($key, 'slider', 173);
+// Avec le contrôle de trajectoire, la trajectoire est requise
+captcha_verify($key, 'slider', ['x' => 173, 'trail' => [[12, 3, 0], [40, 9, 22], /* … */], 'duration' => 1200]);
+```
 
 #### Configuration des images de fond
 
@@ -322,6 +351,8 @@ $builder->backgroundGradient('#FF6B6B', '#FF8E53', 'vertical'); // fond dégrad�
 
 // sortie
 $builder->save('/output/poster.jpg', 90);  // enregistrer dans un fichier (chemin, qualité 0-100)
+                                           // format déduit de l'extension : jpg/jpeg/png/webp/gif
+                                           // sans qualité, JPEG lit poster.jpeg_quality et PNG lit poster.png_compression
 $dataUrl = $builder->output('png', 90);    // récupérer une data URL base64
 ```
 
@@ -384,6 +415,8 @@ $builder->addQrcode('https://example.com/page/123', [
     'label_color' => '#999999',
 ]);
 ```
+
+Au-delà de la capacité maximale de la version (par exemple environ 1273 octets en niveau H), une `InvalidArgumentException` est levée, au lieu de produire silencieusement un code impossible à scanner.
 
 #### Forme `addShape()`
 
@@ -684,6 +717,21 @@ $builder->useTemplate($template)->with([
 //                      chart, calendar, artistic-text, emoji, icon, emoticon
 ```
 
+`useTemplate()` **remplace** par défaut les éléments `addXxx()` précédents (sémantique d'origine) ; pour « un template en fond, puis des éléments ajoutés à la main », utilisez le second paramètre :
+
+```php
+$builder->replaceElements(false)->useTemplate($template)->with($vars)->addPet(['x' => 20, 'y' => 20, 'width' => 80]);
+
+// Export inverse : convertir le builder courant (ou un seul élément) en structure de modèle, réinjectable dans fromConfig()
+$config = $builder->toArray();          // ['width'=>…, 'height'=>…, 'elements'=>[…]]
+$template2 = PosterTemplate::fromConfig($config);   // export → réimport, structure identique
+
+// Un nouveau type d'élément ne s'enregistre qu'une fois dans ElementRegistry : Builder et templates en bénéficient
+$builder->add('text', ['text' => 'hello', 'x' => 10, 'y' => 30, 'size' => 20]);
+```
+
+> Remarque : depuis cette version, `AbstractElement::toArray()` renvoie « nom de type court + options à plat » (auparavant `['type' => nom de classe, 'options' => [...]]`), afin d'être réversible avec la structure des modèles.
+
 ## Intégration aux frameworks
 
 ### Laravel
@@ -694,6 +742,20 @@ use Erikwang2013\Poster\Adapters\Laravel\Facades\Poster;
 
 $result = Captcha::create('click')->generate();
 Poster::width(750)->height(1334)->background('#FFF')->save('poster.jpg');
+```
+
+```php
+// Après avoir passé captcha.route.enabled = true dans config/poster.php, l'adaptateur enregistre un endpoint image :
+//   GET /captcha/{key} → renvoie directement le PNG (Content-Type: image/png, Cache-Control: no-store)
+// Le frontend peut alors utiliser l'URL, sans base64 (33 % plus léger, et cachable par le navigateur/CDN)
+$result = Captcha::create('click')->generate();
+// $result['image'] reste une data URI ; $result['url'] est une adresse à mettre directement dans <img src>
+
+// Validation de formulaire : la règle s'appelle captcha, son paramètre est la clé d'image
+$request->validate([
+    'captcha_key'  => 'required|string',
+    'captcha_code' => 'required|captcha:captcha_key',
+]);
 ```
 
 ```bash
@@ -741,6 +803,10 @@ Principales options :
 | `captcha.tolerance` | `{click:18,rotate:5,slider:4}` | Tolérance par type |
 | `image.driver` | `auto` | Pilote d'image : `auto` / `gd` / `imagick` |
 | `poster.placeholder` | `null` | Chemin de l'image de remplacement, `null` pour ne rien dessiner ; pointez vers la mascotte pour dessiner Posty aux images manquantes |
+| `captcha.rate_limit` | `{max:30,window:60}` | Limitation à fenêtre par session/compte ; l'identité vient de session_id, ou de l'IP client sans session |
+| `captcha.trajectory` | `{enabled:false,…}` | Contrôle de trajectoire (désactivé par défaut) |
+| `captcha.cache.pool` | `null` | Objet pool PSR-16 (utilisé quand `storage=cache`), ou `StorageFactory::setPsr16Pool()` à l'exécution |
+| `captcha.route` | `{enabled:false,path:'/captcha'}` | Adaptateur Laravel : enregistre l'endpoint image `GET {path}/{key}` qui renvoie directement le PNG |
 
 ## L'open source n'est pas facile, votre soutien est bienvenu
 

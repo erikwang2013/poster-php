@@ -38,7 +38,7 @@
       [
         "스토리지",
         "StorageInterface",
-        ["FileStorage · Session", "RedisStorage 분산", "ttl / attempts 지원"]
+        ["FileStorage · Session", "RedisStorage · PSR-16", "ttl / attempts 지원"]
       ],
       [
         "QR 코드",
@@ -76,8 +76,8 @@
     ],
     "security": {
       "title": "보안 · 스토리지",
-      "chips1": ["일회용 키", "최대 3회 시도", "TTL 300초"],
-      "chips2": ["3단계 배경", "허용 오차 설정", "File/Session/Redis"]
+      "chips1": ["일회용 키", "최대 3회 시도", "세션 단위 레이트 리밋"],
+      "chips2": ["3단계 배경", "궤적 검증(선택)", "File/Session/Redis"]
     },
     "elementCount": "%d종",
     "elementGroups": [

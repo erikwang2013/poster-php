@@ -409,12 +409,18 @@ foreach ($files as $locale) {
         continue;
     }
     $font = $lang['meta']['fontStack'] ?? FONT_BY_LANG[$locale] ?? FONT_DEFAULT;
-    $out = I18N_OUT . '/' . $locale;
+    // zh 输出到 docs/（中文版图表与 README 同级），其余语言各占 docs/i18n/{locale}/
+    $out = $locale === 'zh' ? ROOT . '/docs' : I18N_OUT . '/' . $locale;
     $WARNINGS = [];
     drawArchitecture($lang, $en, $font, $out);
     drawFeatures($lang, $en, $font, $out);
     drawLifecycle($lang, $en, $font, $out);
-    printf("%-4s → docs/i18n/%s/*.svg%s\n", $locale, $locale, $WARNINGS ? '  (' . count($WARNINGS) . ' 条缩字号提示)' : '');
+    printf(
+        "%-4s → %s/*.svg%s\n",
+        $locale,
+        $locale === 'zh' ? 'docs' : 'docs/i18n/' . $locale,
+        $WARNINGS ? '  (' . count($WARNINGS) . ' 条缩字号提示)' : ''
+    );
     foreach ($WARNINGS as $w) {
         echo "      ! $w\n";
     }

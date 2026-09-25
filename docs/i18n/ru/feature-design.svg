@@ -53,14 +53,14 @@
   <text x="126.64" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Одноразовый ключ</text>
   <rect x="201.28" y="500" width="145.93" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
   <text x="274.24" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Максимум 3 попытки</text>
-  <rect x="355.2" y="500" width="77.73" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
-  <text x="394.07" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">TTL 300 с</text>
-  <rect x="60" y="538" width="117.41" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
-  <text x="118.7" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">3 уровня фонов</text>
-  <rect x="185.41" y="538" width="140.41" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
-  <text x="255.61" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Настройка допуска</text>
-  <rect x="333.81" y="538" width="133.85" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
-  <text x="400.74" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">File/Session/Redis</text>
+  <rect x="355.2" y="500" width="104.76" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="407.58" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Лимит сессии</text>
+  <rect x="60" y="538" width="110.28" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="115.14" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">3 уровня фона</text>
+  <rect x="178.28" y="538" width="137.99" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="247.27" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Траектория (опц.)</text>
+  <rect x="324.27" y="538" width="133.85" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="391.19" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">File/Session/Redis</text>
   <rect x="530" y="154" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="530" y="164" width="4" height="44" rx="2" fill="#4ECDC4"/>
   <text x="550" y="182" font-size="14" fill="#2D3436" font-weight="600">Текст</text>

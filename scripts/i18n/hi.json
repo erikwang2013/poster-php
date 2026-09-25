@@ -38,7 +38,7 @@
       [
         "स्टोरेज",
         "StorageInterface",
-        ["FileStorage · Session", "RedisStorage वितरित", "ttl व attempts का पालन"]
+        ["FileStorage · Session", "RedisStorage + PSR-16 कैश", "ttl व attempts का पालन"]
       ],
       [
         "QR कोड",
@@ -76,8 +76,8 @@
     ],
     "security": {
       "title": "सुरक्षा और स्टोरेज",
-      "chips1": ["वन-शॉट key", "अधिकतम 3 प्रयास", "TTL 300s"],
-      "chips2": ["3-स्तरीय बैकग्राउंड", "कस्टम टॉलरेंस", "File/Session/Redis"]
+      "chips1": ["वन-शॉट key", "अधिकतम 3 प्रयास", "सेशन रेट लिमिट"],
+      "chips2": ["3-लेयर बैकग्राउंड", "ट्रेल चेक (वैकल्पिक)", "File/Session/Redis"]
     },
     "elementCount": "%d प्रकार",
     "elementGroups": [

@@ -1,0 +1,316 @@
+{
+  "meta": {
+    "lang": "zh",
+    "langName": "中文（简体）"
+  },
+  "architecture": {
+    "title": "poster-php 系统架构设计",
+    "subtitle": "框架无关核心 + 4 种框架适配 · 上层只依赖下层接口，驱动与存储可替换",
+    "layerApi": "接口层 API",
+    "api": [
+      [
+        "helpers.php",
+        "captcha_* · poster_*"
+      ],
+      [
+        "Laravel",
+        "Facade · Provider"
+      ],
+      [
+        "ThinkPHP",
+        "CaptchaService"
+      ],
+      [
+        "Webman",
+        "CaptchaPlugin"
+      ],
+      [
+        "Hyperf",
+        "ConfigProvider"
+      ]
+    ],
+    "layerBusiness": "业务层 Business",
+    "business": [
+      [
+        "验证码模块 Captcha",
+        "CaptchaManager → CaptchaFactory",
+        [
+          "点击 click",
+          "旋转 rotate",
+          "滑块 slider",
+          "随机 random"
+        ]
+      ],
+      [
+        "海报模块 Poster",
+        "PosterBuilder → 14 种元素 → PosterTemplate",
+        [
+          "文字排版 5",
+          "图像图形 5",
+          "数据展示 3",
+          "覆盖装饰 1"
+        ]
+      ]
+    ],
+    "layerCore": "核心层 Core",
+    "core": [
+      [
+        "图像驱动 ImageDriver",
+        "ImageDriverInterface",
+        [
+          "GdDriver · ImagickDriver",
+          "auto 自动检测，回退 GD",
+          "可自定义驱动实现"
+        ]
+      ],
+      [
+        "存储驱动 Storage",
+        "StorageInterface",
+        [
+          "FileStorage · Session",
+          "RedisStorage · PSR-16",
+          "ttl / attempts 兼容"
+        ]
+      ],
+      [
+        "二维码 Qrcode",
+        "QrcodeGenerator",
+        [
+          "纯 PHP，零扩展依赖",
+          "Model 2 · v1-40",
+          "中心 Logo · 底部文案"
+        ]
+      ],
+      [
+        "配置 PosterConfig",
+        "load / get / merge / reset",
+        [
+          "captcha.* · image.driver",
+          "框架配置自动载入",
+          "默认值兜底"
+        ]
+      ]
+    ],
+    "layerFoundation": "基础层 Foundation",
+    "foundation": {
+      "required": [
+        "PHP ≥ 8.0",
+        "ext-gd",
+        "ext-mbstring"
+      ],
+      "requiredLabel": "运行必需",
+      "optional": [
+        "ext-imagick 可选",
+        "ext-redis 可选"
+      ]
+    },
+    "arrowCall": "调用 Call",
+    "arrowDraw": "绘制 Draw",
+    "arrowRequire": "依赖 Require",
+    "footer": "替换图像驱动或存储实现，业务层与接口层代码零改动"
+  },
+  "features": {
+    "title": "poster-php 功能设计",
+    "subtitle": "两大模块：验证码人机校验 · 海报图片合成，均提供辅助函数、完整 API 与框架门面",
+    "modules": [
+      [
+        "验",
+        "验证码 Captcha",
+        "3 种交互 + 随机切换"
+      ],
+      [
+        "图",
+        "海报 Poster",
+        "链式 Builder · 14 种元素"
+      ]
+    ],
+    "captchaTypes": [
+      [
+        "click",
+        "点击验证",
+        "按顺序点击图片上的目标文字",
+        "2-4 目标 · 容差 18px"
+      ],
+      [
+        "rotate",
+        "旋转验证",
+        "拖动滑块把图片旋转回正角度",
+        "30°-330° · 容差 ±5°"
+      ],
+      [
+        "slider",
+        "滑块验证",
+        "拖动拼图块补全背景缺口",
+        "容差 ±4px · 自定义尺寸"
+      ],
+      [
+        "random",
+        "随机切换",
+        "随机选取以上三种之一",
+        "提升破解难度"
+      ]
+    ],
+    "security": {
+      "title": "安全与存储",
+      "chips1": [
+        "一次性 key",
+        "防暴力 3 次",
+        "会话级限流"
+      ],
+      "chips2": [
+        "三级背景优先级",
+        "轨迹校验可选",
+        "File/Session/Redis"
+      ]
+    },
+    "elementGroups": [
+      [
+        "文字排版",
+        "文字",
+        "艺术字",
+        "Emoji",
+        "图标",
+        "颜文字"
+      ],
+      [
+        "图像图形",
+        "图片",
+        "头像",
+        "二维码",
+        "形状",
+        "分割线"
+      ],
+      [
+        "数据展示",
+        "表格",
+        "图表 柱/折/饼",
+        "日历"
+      ],
+      [
+        "覆盖装饰",
+        "水印 平铺 / 角度 / 间距"
+      ]
+    ],
+    "elementCount": "%d 种",
+    "template": {
+      "title": "模板系统 PosterTemplate",
+      "chips1": [
+        "JSON 定义",
+        "{{变量}} 替换",
+        "一次定义多处复用"
+      ],
+      "chips2": [
+        "Laravel",
+        "ThinkPHP",
+        "Webman",
+        "Hyperf"
+      ]
+    },
+    "entry": {
+      "title": "统一入口",
+      "subtitle": "helpers.php 全局函数，开箱即用",
+      "chips": [
+        "captcha_create()",
+        "captcha_verify()",
+        "poster_create()"
+      ],
+      "note": "addXxx() 可任意顺序链式调用，元素按调用顺序叠加绘制"
+    }
+  },
+  "lifecycle": {
+    "title": "poster-php 生命周期",
+    "subtitle": "一次验证码校验与一张海报生成的完整链路：从创建到失效 / 从初始化到输出",
+    "lanes": [
+      {
+        "title": "① 验证码生命周期",
+        "sub": "create → generate → store → verify → 失效",
+        "steps": [
+          [
+            "创建",
+            "create(type) — click / rotate / slider / random，可选难度"
+          ],
+          [
+            "生成",
+            "generate() — 随机 key + 背景 + 目标（坐标 / 角度 / 缺口）"
+          ],
+          [
+            "存储",
+            "set(key, data, ttl) — File / Session / Redis，300 秒一次性"
+          ],
+          [
+            "下发",
+            "output('png') → base64 图片 + extra 提示，不含答案"
+          ],
+          [
+            "校验",
+            "verify(key, type, data) — 逐点 ≤18px / 角度 ±5° / 像素 ±4px"
+          ],
+          [
+            "判定",
+            "命中容差 → 通过；超出容差 → 失败；key 不存在 → 过期"
+          ]
+        ],
+        "branchTitle": "结果分支",
+        "branches": [
+          [
+            "通过",
+            "del(key) 立即销毁，同一 key 不可复用"
+          ],
+          [
+            "失败",
+            "attempts+1，最多 3 次重试，超次即失效"
+          ],
+          [
+            "过期",
+            "超过 TTL 或 key 不存在，需重新生成"
+          ]
+        ]
+      },
+      {
+        "title": "② 海报生命周期",
+        "sub": "new → background → addXxx → render → save",
+        "steps": [
+          [
+            "初始化",
+            "new PosterBuilder(driver) 或 poster_create(w, h)"
+          ],
+          [
+            "背景",
+            "background() — 纯色 / 图片（自动缩放）/ 渐变（垂直 / 水平）"
+          ],
+          [
+            "元素",
+            "addText / addImage / addQrcode … 共 14 种，链式调用"
+          ],
+          [
+            "模板",
+            "useTemplate($t)->with($vars) — {{变量}} 替换（可选）"
+          ],
+          [
+            "渲染",
+            "驱动原语绘制到画布，坐标以左上角为原点，尺寸自动缩放"
+          ],
+          [
+            "输出",
+            "save(path, quality) 或 output('png'|'jpg') 返回 data URL"
+          ]
+        ],
+        "branchTitle": "结果分支",
+        "branches": [
+          [
+            "图片海报",
+            "save() 写入磁盘，便于接入 CDN / 对象存储"
+          ],
+          [
+            "接口海报",
+            "output() 返回 base64，直接响应前端请求"
+          ],
+          [
+            "模板复用",
+            "同一模板换变量即可批量出图，无需重新编排"
+          ]
+        ]
+      }
+    ]
+  }
+}

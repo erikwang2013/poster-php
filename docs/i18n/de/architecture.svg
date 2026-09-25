@@ -70,7 +70,7 @@
   <text x="313" y="454" font-size="13" fill="#2D3436" font-weight="600">Speicher</text>
   <text x="313" y="471" font-size="10" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">StorageInterface</text>
   <text x="313" y="490" font-size="11" fill="#7F8C8D">· FileStorage · Session</text>
-  <text x="313" y="505" font-size="11" fill="#7F8C8D">· RedisStorage verteilt</text>
+  <text x="313" y="505" font-size="11" fill="#7F8C8D">· RedisStorage, PSR-16-Cache</text>
   <text x="313" y="520" font-size="11" fill="#7F8C8D">· TTL / Versuche beachtet</text>
   <rect x="526" y="432" width="219" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="526" y="442" width="4" height="76" rx="2" fill="#45B7D1"/>

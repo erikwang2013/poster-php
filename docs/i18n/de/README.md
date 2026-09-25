@@ -28,14 +28,15 @@ poster-php ist ein PHP-Bild-Toolkit, das genau zwei Dinge tut — und zwar gut g
 
 ```
 poster-php/
-├── src/                        # Kerncode: 56 PHP-Dateien / ca. 4250 Zeilen
+├── src/                        # Kerncode: 64 PHP-Dateien / ca. 6093 Zeilen
 │   ├── Captcha/                # Captcha-Modul: Interface + abstrakte Basisklasse + 3 Implementierungen + Factory + Manager
-│   ├── Poster/                 # Poster-Modul
+│   │                           #   + RateLimiter (Limitierung) / TrajectoryVerifier (Trajektorien-Prüfung)
+│   ├── Poster/                 # Poster-Modul (Elements/ElementRegistry.php als zentrale Element-Registry)
 │   │   ├── PosterBuilder.php   # Fluent Builder mit 14 addXxx()-Methoden
 │   │   ├── PosterTemplate.php  # JSON-Vorlage → {{Variable}}-Ersetzung
 │   │   └── Elements/           # 14 Element-Renderer + ElementInterface + abstrakte Basisklasse
 │   ├── Drivers/                # Bildtreiber: ImageDriverInterface / GdDriver / ImagickDriver
-│   ├── Storage/                # Speicher für Verifikationsdaten: File / Session / Redis
+│   ├── Storage/                # Speicher für Verifikationsdaten: File / Session / Redis / PSR-16-Cache
 │   ├── Qrcode/                 # QR-Code-Generator in reinem PHP (Modell 2, v1-40, ohne Extensions)
 │   ├── Adapters/               # Framework-Adapter: Laravel / ThinkPHP / Webman / Hyperf
 │   ├── PosterConfig.php        # Konfiguration lesen (Defaults als Fallback + Merge der Framework-Konfig)
@@ -48,7 +49,7 @@ poster-php/
 │   └── pet.png                 # aus pet.svg gerastert: für addPet() und als Platzhalter
 ├── helpers.php                 # globale Funktionen: captcha_create / captcha_verify / poster_create
 ├── native.php                  # nativer PHP-Einstieg: nur require, kein Composer nötig
-├── tests/                      # PHPUnit-Tests, 41 Dateien, Verzeichnisse wie in src/
+├── tests/                      # PHPUnit-Tests, 53 Dateien, Verzeichnisse wie in src/
 ├── examples/                   # direkt ausführbare Beispielskripte
 ├── docs/                       # Architekturdokument, Design- und Lebenszyklus-Diagramme (SVG), Spenden-QR-Codes
 └── composer.json               # PSR-4: Erikwang2013\Poster\ → src/
@@ -183,6 +184,9 @@ $pass = $manager->verify($result['key'], [
 ]);
 ```
 
+`setTargetType('icon')` ersetzt die Zieltexte durch programmatisch erzeugte Vektorformen (11 Stück, mit GD-Grundelementen gezeichnet, ohne Bildmaterial):
+jeder Eintrag in `extra['texts']` enthält zusätzlich ein `thumb` (das kleine base64-Bild der Form) als Klick-Hinweis fürs Frontend; geprüft werden weiterhin die Koordinaten.
+
 #### 2. Dreh-Captcha (RotateCaptcha)
 
 Das System dreht das Bild zufällig um 30°~330°, der Nutzer zieht den Slider, bis das Bild wieder gerade steht.
@@ -263,8 +267,33 @@ $pass = $manager->verify($captcha['key'], [
 | Einmalig | Nach Erfolg oder Überschreiten der maximalen Versuche wird der key gelöscht |
 | Brute-Force-Schutz | Standardmäßig höchstens 3 Prüfungen (konfigurierbar) |
 | Gültigkeit | Standardmäßig 300 Sekunden (konfigurierbar) |
-| Zufälligkeit | Hintergrundfarben, Rauschen und Zielpositionen sind bei jeder Erzeugung zufällig |
+| Zufälligkeit | Hintergrundfarben, Rauschen und Zielpositionen sind bei jeder Erzeugung zufällig; Klick-Ziele bekommen je Ziel einen zufälligen Farbton und Drehwinkel |
+| Limit je Sitzung | Fenster-Limit über alle keys hinweg (standardmäßig 30 Aufrufe in 60 Sekunden); stoppt das Raten mit immer neuen keys |
+| Verhaltens-Trajektorie | optional (standardmäßig aus): prüft Punktzahl, Dauer und Linearität der Ziehbewegung; ein Skript, das die Antwort direkt per POST schickt, wird abgelehnt |
 | Hintergrund-Design | programmatische Verlaufs-Hintergründe in drei Stilen (minimal/lebhaft/natürlich) im Zufallswechsel; Standard-Verzeichnis für Hintergrundbilder konfigurierbar |
+| Mindest-Fläche | Ist der Hintergrund zu klein, wird ein Fehler geworfen statt zu degradieren (Klick-Captcha mindestens 120×120, der Slider muss 4×2 Puzzleteile aufnehmen) |
+
+#### Trajektorien-Prüfung (optional)
+
+Standardmäßig aus (um Touch-Geräte und Barrierefreiheit nicht zu beeinträchtigen). Ist sie aktiv, müssen `slider` / `rotate` die Ziehbewegung vom Frontend mitschicken; der Server prüft Punktzahl, Dauer und Linearität der Bewegung:
+
+```php
+// config/poster.php
+'captcha' => [
+    'trajectory' => [
+        'enabled'      => true,
+        'min_points'   => 4,      // minimale Anzahl Messpunkte
+        'min_duration' => 300,    // kürzeste Dauer (Millisekunden)
+        'max_duration' => 5000,   // längste Dauer (Millisekunden)
+        'max_linearity' => 0.99,  // höhere Linearität gilt als Maschine (ein Skript zieht eine Gerade)
+    ],
+],
+
+// Übergabe vom Frontend: die alte Schreibweise mit einer Zahl bleibt kompatibel
+captcha_verify($key, 'slider', 173);
+// mit aktivierter Trajektorien-Prüfung muss die Bewegung mitgeschickt werden
+captcha_verify($key, 'slider', ['x' => 173, 'trail' => [[12, 3, 0], [40, 9, 22], /* … */], 'duration' => 1200]);
+```
 
 #### Hintergrundbilder konfigurieren
 
@@ -322,6 +351,8 @@ $builder->backgroundGradient('#FF6B6B', '#FF8E53', 'vertical'); // Verlaufs-Hint
 
 // Ausgabe
 $builder->save('/output/poster.jpg', 90);  // in eine Datei speichern (Pfad, Qualität 0-100)
+                                           // Format wird aus der Endung abgeleitet: jpg/jpeg/png/webp/gif
+                                           // ohne Qualitätsangabe liest JPEG poster.jpeg_quality, PNG poster.png_compression
 $dataUrl = $builder->output('png', 90);    // base64-Data-URL holen
 ```
 
@@ -384,6 +415,8 @@ $builder->addQrcode('https://example.com/page/123', [
     'label_color' => '#999999',
 ]);
 ```
+
+Überschreitet der Inhalt die Kapazität der Version (z. B. ab etwa 1273 Bytes bei Stufe H), wird eine `InvalidArgumentException` geworfen, statt still einen nicht scanbaren Code zu erzeugen.
 
 #### Form `addShape()`
 
@@ -684,6 +717,21 @@ $builder->useTemplate($template)->with([
 //                      chart, calendar, artistic-text, emoji, icon, emoticon
 ```
 
+`useTemplate()` **ersetzt** standardmäßig die bisherigen `addXxx()`-Elemente (die ursprüngliche Semantik bleibt erhalten); für „Vorlage als Basis + darüber eigene Elemente“ den zweiten Parameter nutzen:
+
+```php
+$builder->replaceElements(false)->useTemplate($template)->with($vars)->addPet(['x' => 20, 'y' => 20, 'width' => 80]);
+
+// Rückwärts-Export: den aktuellen builder (oder ein einzelnes Element) in eine Vorlagenstruktur umwandeln, die wieder an fromConfig() übergeben werden kann
+$config = $builder->toArray();          // ['width'=>…, 'height'=>…, 'elements'=>[…]]
+$template2 = PosterTemplate::fromConfig($config);   // Export → erneuter Import, Struktur bleibt gleich
+
+// Neue Elementtypen wirken in Builder und Vorlage, sobald sie einmal in der ElementRegistry registriert sind
+$builder->add('text', ['text' => 'hello', 'x' => 10, 'y' => 30, 'size' => 20]);
+```
+
+> Achtung: `AbstractElement::toArray()` liefert seit dieser Version „kurzer Typname + flache Optionen“ (vorher `['type' => Klassenname, 'options' => [...]]`), damit die Struktur verlustfrei mit der Vorlage hin- und hergereicht werden kann.
+
 ## Framework-Integration
 
 ### Laravel
@@ -694,6 +742,20 @@ use Erikwang2013\Poster\Adapters\Laravel\Facades\Poster;
 
 $result = Captcha::create('click')->generate();
 Poster::width(750)->height(1334)->background('#FFF')->save('poster.jpg');
+```
+
+```php
+// Ist captcha.route.enabled = true in config/poster.php gesetzt, registriert der Adapter den Bild-Endpunkt:
+//   GET /captcha/{key} → liefert direkt PNG (Content-Type: image/png, Cache-Control: no-store)
+// Das Frontend nutzt einfach die URL, base64 entfällt (33 % kleiner und von Browser/CDN cachebar)
+$result = Captcha::create('click')->generate();
+// $result['image'] ist weiterhin eine data URI; $result['url'] ist eine Adresse für <img src>
+
+// Formular-Validierung: der Regelname ist captcha, der Parameter ist der image key
+$request->validate([
+    'captcha_key'  => 'required|string',
+    'captcha_code' => 'required|captcha:captcha_key',
+]);
 ```
 
 ```bash

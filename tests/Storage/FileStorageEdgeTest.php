@@ -114,6 +114,20 @@ class FileStorageEdgeTest extends TestCase
         $this->assertNull($this->storage->get('k1'));
     }
 
+    /** 测试写入后目录里只留 md5(key).json：临时文件已 rename，锁文件不在存储目录内 */
+    public function testWriteLeavesNoStrayFiles(): void
+    {
+        $this->storage->set('k1', ['type' => 'click'], 60);
+        $this->storage->incrementAttempts('k1');
+
+        $this->assertSame(
+            [md5('k1') . '.json'],
+            array_values(array_diff(scandir($this->tempDir), ['.', '..'])),
+            '存储目录里不应出现 .tmp 临时文件或锁文件'
+        );
+        $this->assertSame(1, $this->storage->get('k1')['attempts']);
+    }
+
     /** 测试构造函数自动创建不存在的目录 */
     public function testConstructorCreatesMissingDirectory(): void
     {

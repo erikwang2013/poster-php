@@ -20,7 +20,7 @@ graph TB
 
     subgraph "Core Layer 核心层"
         DRIVERS["Image Drivers 图像驱动<br/>ImageDriverInterface<br/>GdDriver / ImagickDriver"]
-        STORAGE["Storage Drivers 存储驱动<br/>StorageInterface<br/>FileStorage / SessionStorage / RedisStorage"]
+        STORAGE["Storage Drivers 存储驱动<br/>StorageInterface<br/>FileStorage / SessionStorage / RedisStorage<br/>Psr16Storage (PSR-16 缓存池，鸭子类型)"]
         QRCODE["QR Code Generator 二维码生成器<br/>QrcodeGenerator<br/>Pure PHP, Model 2, v1-40"]
         CONFIG["Config Loader 配置加载<br/>PosterConfig<br/>load / get / merge / reset"]
     end
@@ -82,6 +82,7 @@ graph LR
         D5["RedisStorage"]
         D6["QrcodeGenerator"]
         D7["PosterConfig"]
+        D8["Psr16Storage"]
     end
 
     A1 --> B1
@@ -99,12 +100,14 @@ graph LR
 
     C1 --> D1
     C1 --> D3
+    C1 --> D8
     C2 --> D1
     C2 --> D6
 
     B2 --> D1
     B2 --> D3
     B2 --> D7
+    B2 --> D8
     B3 --> D1
     B3 --> D7
 ```
@@ -134,6 +137,7 @@ graph TB
     SI --> FS["FileStorage"]
     SI --> SS["SessionStorage"]
     SI --> RS["RedisStorage"]
+    SI --> PS["Psr16Storage<br/>PSR-16 缓存池"]
 
     PB["PosterBuilder<br/>海报构建器"] --> ELEMENTS["14 Element Types<br/>14种元素"]
     PB --> PT["PosterTemplate<br/>海报模板"]
@@ -247,7 +251,7 @@ sequenceDiagram
         Note over Manager: 逐点检查距离 ≤ 18px
     else type === 'rotate'
         Manager->>Manager: checkRotate(stored, data, tolerance)
-        Note over Manager: |用户角度 - (360-实际角度)| ≤ 5°
+        Note over Manager: |用户角度 - 实际角度| ≤ 5°<br/>提交的是你施加的反向旋转角度<br/>（差值超过 180° 时按 360-差值 折回，以代码与测试为准）
     else type === 'slider'
         Manager->>Manager: checkSlider(stored, data, tolerance)
         Note over Manager: |用户x - 实际x| ≤ 4px
@@ -425,8 +429,13 @@ graph TB
     CHECK_STORAGE -->|"'redis'"| RS["new RedisStorage()"]
     CHECK_STORAGE -->|"'session'"| SS["new SessionStorage()"]
     CHECK_STORAGE -->|"'file'"| FS["new FileStorage()"]
+    CHECK_STORAGE -->|"'cache'"| POOL_CHECK{"setPsr16Pool()<br/>已注入池？"}
+    CHECK_STORAGE -->|"其它"| THROW["InvalidArgumentException"]
 
-    S_AUTO["auto detect 自动检测"] --> REDIS_CHECK{"ext-redis loaded<br/>&& class_exists('Redis')?"}
+    POOL_CHECK -->|"yes"| PS["new Psr16Storage(pool)"]
+    POOL_CHECK -->|"no"| THROW_CACHE["RuntimeException<br/>提示先注入 PSR-16 池"]
+
+    S_AUTO["auto detect 自动检测<br/>首次结果缓存进静态属性<br/>后续调用复用同一实例"] --> REDIS_CHECK{"ext-redis loaded<br/>&& class_exists('Redis')?"}
     REDIS_CHECK -->|"yes"| TRY_REDIS["try new RedisStorage()"]
     TRY_REDIS -->|"success"| RS
     TRY_REDIS -->|"catch Throwable"| SESSION_CHECK
@@ -435,6 +444,13 @@ graph TB
     SESSION_CHECK -->|"yes"| SS
     SESSION_CHECK -->|"no"| FS
 ```
+
+说明：
+
+- **`auto` 只探测一次**：结果（实例）缓存在 `StorageFactory` 的静态属性里，同一次请求内生成与校验必定落在同一后端；否则 Redis 探测偶发失败会让写入落到 File、校验落到 Redis，用户答对也验不过。长驻进程可用 `StorageFactory::reset()` 重新探测。
+- **`session` 驱动要求会话已启动**：`SessionStorage` 在 `session_status() !== PHP_SESSION_ACTIVE` 时抛 `RuntimeException`（会话未启动时 `$_SESSION` 读写会静默失效），无状态场景请改用 `file` / `redis` / `cache`。
+- **`cache` 驱动**：需先 `StorageFactory::setPsr16Pool($pool)`（Laravel 里 provider 自动注入 `Cache::store()`）；池只按 `get/set/delete` 鸭子类型使用，`incrementAttempts()` 是读改写、非原子，并发计数可能低估。
+- **`file` 驱动并发**：读走 `flock(LOCK_SH)`，写走「同目录临时文件 + `rename()`」原子替换，读方不会读到半截 JSON（旧实现原地 `ftruncate` 重写，40 并发下实测 16 次读到 null → 答对也判失败）；`incrementAttempts()` 的读改写用独立锁文件串行化，锁文件放系统临时目录，不落在存储目录里。
 
 ---
 
@@ -543,8 +559,8 @@ graph LR
     POSTER_DIR --> P_FILES["18 files<br/>Builder + Template + 14 elements + Interface + Abstract"]
     DRIVERS_DIR --> D_FILES["5 files<br/>Interface + Gd + Imagick + TextTrait + DriverFactory"]
     QRCODE_DIR --> Q_FILES["1 file<br/>Pure PHP QR Code Generator"]
-    STORAGE_DIR --> S_FILES["5 files<br/>Interface + File + Session + Redis + StorageFactory"]
-    ADAPTERS_DIR --> A_FILES["18 files<br/>Laravel / ThinkPHP / Webman / Hyperf"]
+    STORAGE_DIR --> S_FILES["6 files<br/>Interface + File + Session + Redis + Psr16 + StorageFactory"]
+    ADAPTERS_DIR --> A_FILES["22 files<br/>Laravel / ThinkPHP / Webman / Hyperf"]
 
     TESTS --> T_DIRS["6 test suites<br/>Drivers / Storage / Captcha / Poster / QR / Helpers"]
     DOCS --> DOC_FILES["architecture.md + i18n/（12 语言 README 与图表）+ 收款码"]

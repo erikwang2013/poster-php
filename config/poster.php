@@ -12,7 +12,8 @@ return [
         // 'auto' auto-detects available driver / 自动检测可用驱动
         'driver' => 'auto',
 
-        // JPEG output quality / JPEG 输出质量 0-100
+        // save()/output() 未显式指定质量时的默认 JPEG 质量 0-100
+        // Default JPEG quality used by save()/output() when none is given
         'quality' => 90,
 
         // 默认字体路径 / Default font path
@@ -32,6 +33,25 @@ return [
         // 同一 key 最多验证次数 / Max verification attempts per key
         // Prevents brute-force enumeration / 防暴力枚举
         'max_attempts' => 3,
+
+        // 会话/账号级限流（跨 key 生效）/ Per-session (or per-account) rate limit
+        // 单 key 计数挡不住「每次换新 key 再猜一次」，故再加一层窗口限流
+        // 窗口内校验次数超过 max 即拒绝 / Reject once verify calls exceed max within window
+        'rate_limit' => [
+            'max'    => 30,   // 每个窗口允许的校验次数 / verifications per window
+            'window' => 60,   // 窗口秒数 / window size in seconds
+        ],
+
+        // 行为轨迹校验 / Interaction trajectory checks (slider & rotate)
+        // 开启后要求前端提交拖动轨迹（data 传 ['x'=>.., 'trail'=>[[x,y,t],..], 'duration'=>ms]）
+        // 旧前端仍可只传数值，但开启此项后会因缺少轨迹而被拒
+        'trajectory' => [
+            'enabled'      => false,   // 默认关闭，避免误杀触屏/无障碍设备
+            'min_points'   => 4,       // 最少采样点 / minimum sample points
+            'min_duration' => 300,     // 最短耗时（毫秒）/ minimum duration
+            'max_duration' => 5000,    // 最长耗时（毫秒）/ maximum duration
+            'max_linearity' => 0.99,   // 线性度高于此值判为机器 / linearity above this = bot
+        ],
 
         // 默认验证码类型 / Default captcha type: 'click' | 'rotate' | 'slider' | 'random'
         'default_type' => 'random',
@@ -110,11 +130,13 @@ return [
         // 默认字体路径 / Default font path
         'font' => dirname(__DIR__) . '/src/fonts/Alibaba-PuHuiTi-Regular.ttf',
 
-        // JPEG output quality / JPEG 输出质量 0-100
+        // save($path) 未显式指定质量时的默认值 0-100
+        // Default quality for save($path) when no quality argument is passed
         'jpeg_quality' => 90,
 
         // PNG compression level / PNG 压缩级别 0-9
         // 0 = no compression / 不压缩, 9 = max / 最大压缩
+        // output('png') 与 save('*.png') 使用 / used by output('png') and save('*.png')
         'png_compression' => 6,
 
         // 缺失图片的占位图 / Placeholder for missing image files

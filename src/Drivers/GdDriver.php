@@ -188,7 +188,11 @@ class GdDriver implements ImageDriverInterface
         $ov = $overlay->getResource();
         $owned = false;
         if ($ov instanceof \Imagick) {
-            $ov = imagecreatefromstring($ov->getImageBlob());
+            // 克隆后强制 png32：Imagick 默认的 'png' 是 24 位，透明区域会在跨驱动合成时变成不透明
+            $clone = clone $ov;
+            $clone->setImageFormat('png32');
+            $ov = imagecreatefromstring($clone->getImageBlob());
+            $clone->clear();
             if ($ov === false) {
                 throw new RuntimeException('Cannot convert Imagick overlay to GD');
             }

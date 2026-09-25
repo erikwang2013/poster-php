@@ -333,6 +333,8 @@ class ImagickDriver implements ImageDriverInterface
             // poster.png_compression（0-9）在 Imagick 侧对应 ZIP 压缩级别
             $image->setImageCompression(Imagick::COMPRESSION_ZIP);
             $image->setImageCompressionQuality($encoded);
+            // 强制 RGBA 输出，理由同 output()：'png' 默认 24 位会把透明写成不透明
+            $image->setImageFormat('png32');
         }
         $result = $image->writeImage($path);
         $image->setImageFormat($prev);
@@ -352,6 +354,10 @@ class ImagickDriver implements ImageDriverInterface
         } elseif ($format === 'png') {
             $image->setImageCompression(Imagick::COMPRESSION_ZIP);
             $image->setImageCompressionQuality($encoded);
+            // 强制 RGBA 输出：'png' 默认写 24 位不带 alpha，透明区域落盘后变成不透明，
+            // 圆角/圆形头像、透明水印在 GD/浏览器侧会变成黑块（Imagick 自己读回却是透明的，
+            // 所以该问题只在跨库消费时暴露）。
+            $image->setImageFormat('png32');
         }
         $data = $image->getImageBlob();
         $image->setImageFormat($prev);

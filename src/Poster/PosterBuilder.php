@@ -55,6 +55,10 @@ class PosterBuilder
 
     public function addText(string $text, array $options = []): static { $this->elements[] = new TextElement(array_merge($options, ['text'=>$text])); return $this; }
     public function addImage(string $src, array $options = []): static { $this->elements[] = new ImageElement(array_merge($options, ['src'=>$src])); return $this; }
+    /** 添加项目宠物 Posty（assets/pet.png），等价于 addImage(self::petPath(), $options) */
+    public function addPet(array $options = []): static { return $this->addImage(self::petPath(), $options); }
+    /** 项目宠物 Posty 图片路径 / Bundled mascot image path */
+    public static function petPath(): string { return dirname(__DIR__, 2) . '/assets/pet.png'; }
     public function addQrcode(string $content, array $options = []): static { $this->elements[] = new QrcodeElement(array_merge($options, ['content'=>$content])); return $this; }
     public function addAvatar(string $src, array $options = []): static { $this->elements[] = new AvatarElement(array_merge($options, ['src'=>$src])); return $this; }
     public function addShape(string $shape, array $options = []): static { $this->elements[] = new ShapeElement(array_merge($options, ['shape'=>$shape])); return $this; }

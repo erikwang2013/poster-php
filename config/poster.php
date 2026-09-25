@@ -116,5 +116,11 @@ return [
         // PNG compression level / PNG 压缩级别 0-9
         // 0 = no compression / 不压缩, 9 = max / 最大压缩
         'png_compression' => 6,
+
+        // 缺失图片的占位图 / Placeholder for missing image files
+        // null = 跳过缺失的图片（默认，不改变既有行为）
+        // 设为内置吉祥物 dirname(__DIR__) . '/assets/pet.png' 可在缺图位置绘制 Posty
+        // null = skip missing images (default); point it at the bundled mascot
+        'placeholder' => null,
     ],
 ];

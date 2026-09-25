@@ -15,6 +15,7 @@ $builder
     ->addText('新品首发', ['x' => 80, 'y' => 100, 'size' => 48, 'color' => '#FFFFFF'])
     ->addText('限时特惠', ['x' => 80, 'y' => 180, 'size' => 28, 'color' => '#FFE0E0'])
     ->addQrcode('https://example.com', ['x' => 275, 'y' => 1050, 'size' => 200, 'label' => '扫码查看详情'])
+    ->addPet(['x' => 555, 'y' => 140, 'width' => 150, 'height' => 130])  // 内置吉祥物 Posty
     ->save($path);
 
 echo "Poster saved to: $path\n";

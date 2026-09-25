@@ -6,7 +6,6 @@
 
 namespace Erikwang2013\Poster\Poster\Elements;
 
-use Erikwang2013\Poster\Drivers\DriverFactory;
 use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 
 class ImageElement extends AbstractElement
@@ -15,9 +14,8 @@ class ImageElement extends AbstractElement
 
     public function render(ImageDriverInterface $canvas): void
     {
-        $src = $this->options['src'] ?? '';
-        if (!is_file($src)) return;
-        $img = DriverFactory::create()->load($src);
+        $img = $this->loadImage($this->options['src'] ?? '');
+        if ($img === null) return;
         $canvas->image($img, intval($this->options['x'] ?? 0), intval($this->options['y'] ?? 0), $this->options);
         $img->destroy();
     }

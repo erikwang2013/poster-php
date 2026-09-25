@@ -53,6 +53,22 @@ class PosterBuilderTest extends TestCase
         $this->assertSame($builder, $builder->addEmoji('😀'));
         $this->assertSame($builder, $builder->addIcon('heart'));
         $this->assertSame($builder, $builder->addEmoticon('happy'));
+        $this->assertSame($builder, $builder->addPet(['x' => 1, 'y' => 2, 'width' => 100]));
+    }
+
+    /** 验证 addPet() 使用随包分发的吉祥物图片，且该文件真实存在 */
+    public function testAddPetUsesBundledMascot(): void
+    {
+        $path = PosterBuilder::petPath();
+        $this->assertFileExists($path);
+
+        $driver = $this->mockDriver();
+        $driver->expects($this->once())->method('create')->with(100, 100);
+        $driver->expects($this->once())->method('image')->with(
+            $this->isInstanceOf(ImageDriverInterface::class), 10, 20,
+            $this->callback(fn(array $o) => $o['src'] === $path && $o['width'] === 60)
+        );
+        (new PosterBuilder($driver))->width(100)->height(100)->addPet(['x' => 10, 'y' => 20, 'width' => 60])->output('png');
     }
 
     /** 验证未设宽高时渲染使用配置默认值 750x1334 */

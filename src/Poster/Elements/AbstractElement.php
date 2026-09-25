@@ -6,6 +6,10 @@
 
 namespace Erikwang2013\Poster\Poster\Elements;
 
+use Erikwang2013\Poster\Drivers\DriverFactory;
+use Erikwang2013\Poster\Drivers\ImageDriverInterface;
+use Erikwang2013\Poster\PosterConfig;
+
 abstract class AbstractElement implements ElementInterface
 {
     protected array $options = [];
@@ -38,5 +42,30 @@ abstract class AbstractElement implements ElementInterface
         return preg_replace_callback('/\{\{\s*(\w+)\s*\}\}/', function ($m) use ($variables) {
             return $variables[$m[1]] ?? $m[0];
         }, $text);
+    }
+
+    /**
+     * 文本字体：未显式指定 font 选项时用配置的 poster.font，显式传 null 则退回驱动内置位图字体。
+     * 自行拼装 text() 选项的元素（表格 / 日历 / 二维码文案 / 艺术字）应走这里，
+     * 否则中英文会落到 GD 内置位图字体而渲染错乱。
+     */
+    protected function font(): ?string
+    {
+        return array_key_exists('font', $this->options)
+            ? $this->options['font']
+            : PosterConfig::get('poster.font');
+    }
+
+    /**
+     * 加载图片文件；文件缺失时回退到 poster.placeholder 配置的占位图
+     * （留空即保持原行为：跳过缺失图片）。占位图也不存在时返回 null。
+     */
+    protected function loadImage(string $src): ?ImageDriverInterface
+    {
+        if (!is_file($src)) {
+            $src = (string) PosterConfig::get('poster.placeholder', '');
+        }
+
+        return is_file($src) ? DriverFactory::create()->load($src) : null;
     }
 }

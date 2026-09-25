@@ -8,6 +8,7 @@ namespace Erikwang2013\Poster\Tests\Poster\Elements;
 
 use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 use Erikwang2013\Poster\Poster\Elements\ImageElement;
+use Erikwang2013\Poster\PosterConfig;
 use PHPUnit\Framework\TestCase;
 
 class ImageElementTest extends TestCase
@@ -47,5 +48,47 @@ class ImageElementTest extends TestCase
         $el = new ImageElement(['src' => '/img/{{id}}.png']);
         $el->resolve(['id' => '42']);
         $this->assertSame('/img/42.png', $el->toArray()['options']['src']);
+    }
+
+    /** 验证配置占位图后，缺失的 src 回退到占位图，并沿用原尺寸选项 */
+    public function testMissingSourceFallsBackToPlaceholder(): void
+    {
+        $placeholder = $this->tempPng();
+        PosterConfig::merge(['poster' => ['placeholder' => $placeholder]]);
+        try {
+            $canvas = $this->createMock(ImageDriverInterface::class);
+            $canvas->expects($this->once())->method('image')->with(
+                $this->isInstanceOf(ImageDriverInterface::class),
+                6, 7,
+                $this->callback(fn(array $o) => $o['src'] === '/no/such/photo.jpg' && $o['width'] === 120)
+            );
+            (new ImageElement(['src' => '/no/such/photo.jpg', 'x' => 6, 'y' => 7, 'width' => 120]))
+                ->render($canvas);
+        } finally {
+            PosterConfig::reset();
+            unlink($placeholder);
+        }
+    }
+
+    /** 验证占位图本身缺失时仍跳过渲染（不抛错、不调用驱动） */
+    public function testMissingPlaceholderStillRendersNothing(): void
+    {
+        PosterConfig::merge(['poster' => ['placeholder' => '/no/such/placeholder.png']]);
+        try {
+            $canvas = $this->createMock(ImageDriverInterface::class);
+            $canvas->expects($this->never())->method('image');
+            (new ImageElement(['src' => '/no/such/photo.jpg']))->render($canvas);
+        } finally {
+            PosterConfig::reset();
+        }
+    }
+
+    private function tempPng(): string
+    {
+        $path = sys_get_temp_dir() . '/img-el-' . uniqid() . '.png';
+        $img = imagecreatetruecolor(10, 10);
+        imagepng($img, $path);
+        imagedestroy($img);
+        return $path;
     }
 }

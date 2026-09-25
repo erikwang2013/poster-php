@@ -8,6 +8,7 @@ namespace Erikwang2013\Poster\Tests\Poster\Elements;
 
 use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 use Erikwang2013\Poster\Poster\Elements\WatermarkElement;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class WatermarkElementTest extends TestCase
@@ -75,24 +76,44 @@ class WatermarkElementTest extends TestCase
             ->render($canvas);
     }
 
-    /** 验证 spacing <= 0 被夹到 1：步进 0 会让 for 循环永不退出（挂死进程） */
-    public function testNonPositiveSpacingIsClampedToStepOne(): void
+    /** 验证 spacing <= 0 明确报错：步进 0 会让 for 循环永不退出（旧实现直接挂死进程，模板 JSON 也能触发） */
+    public function testNonPositiveSpacingThrows(): void
     {
         foreach ([0, -50, '0'] as $spacing) {
             $canvas = $this->createMock(ImageDriverInterface::class);
             $canvas->expects($this->once())->method('getSize')->willReturn(['width' => 20, 'height' => 10]);
-            $canvas->expects($this->exactly(200))->method('text')->willReturnSelf();
-            (new WatermarkElement(['text' => 'wm', 'spacing' => $spacing]))->render($canvas);
+            $canvas->expects($this->never())->method('text');
+            try {
+                (new WatermarkElement(['text' => 'wm', 'spacing' => $spacing]))->render($canvas);
+                $this->fail('spacing=' . var_export($spacing, true) . ' 应抛出 InvalidArgumentException');
+            } catch (InvalidArgumentException $e) {
+                $this->assertStringContainsString('greater than 0', $e->getMessage());
+            }
         }
     }
 
-    /** 验证 spacing_x/spacing_y 为 0 或负数时同样夹到 1（模板 JSON 也能触发） */
-    public function testNonPositivePerAxisSpacingIsClamped(): void
+    /** 验证 spacing_x/spacing_y 为 0 或负数时同样报错（模板 JSON 也能触发） */
+    public function testNonPositivePerAxisSpacingThrows(): void
     {
         $canvas = $this->createMock(ImageDriverInterface::class);
         $canvas->expects($this->once())->method('getSize')->willReturn(['width' => 20, 'height' => 10]);
-        $canvas->expects($this->exactly(200))->method('text')->willReturnSelf();
+        $canvas->expects($this->never())->method('text');
+        $this->expectException(InvalidArgumentException::class);
         (new WatermarkElement(['text' => 'wm', 'spacing_x' => -5, 'spacing_y' => 0]))->render($canvas);
+    }
+
+    /** 验证间距过小导致瓦片数爆炸时被拦下：750×1334 配 spacing=1 是 100 万次绘制，可远程打满 CPU */
+    public function testExcessiveTileCountThrows(): void
+    {
+        $canvas = $this->createMock(ImageDriverInterface::class);
+        $canvas->expects($this->once())->method('getSize')->willReturn(['width' => 750, 'height' => 1334]);
+        $canvas->expects($this->never())->method('text');
+        try {
+            (new WatermarkElement(['text' => 'wm', 'spacing' => 1]))->render($canvas);
+            $this->fail('瓦片数超过上限应抛出 InvalidArgumentException');
+        } catch (InvalidArgumentException $e) {
+            $this->assertStringContainsString('too small', $e->getMessage());
+        }
     }
 
     /** 验证 resolve() 替换 text 占位符 */

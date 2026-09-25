@@ -28,14 +28,15 @@ poster-php 是一个 PHP 图像工具包，只做两件事，并且做到够用�
 
 ```
 poster-php/
-├── src/                        # 核心代码：56 个 PHP 文件 / 约 4250 行
+├── src/                        # 核心代码：64 个 PHP 文件 / 约 6093 行
 │   ├── Captcha/                # 验证码模块：接口 + 抽象基类 + 3 种实现 + 工厂 + 管理器
-│   ├── Poster/                 # 海报模块
+│   │                           #   + RateLimiter（限流）/ TrajectoryVerifier（轨迹校验）
+│   ├── Poster/                 # 海报模块（Elements/ElementRegistry.php 为元素单点注册表）
 │   │   ├── PosterBuilder.php   # 链式 Builder，14 个 addXxx() 方法
 │   │   ├── PosterTemplate.php  # JSON 模板 → {{变量}} 替换
 │   │   └── Elements/           # 14 种元素渲染器 + ElementInterface + 抽象基类
 │   ├── Drivers/                # 图像驱动：ImageDriverInterface / GdDriver / ImagickDriver
-│   ├── Storage/                # 验证数据存储：File / Session / Redis
+│   ├── Storage/                # 验证数据存储：File / Session / Redis / PSR-16 缓存
 │   ├── Qrcode/                 # 纯 PHP 二维码生成器（Model 2，v1-40，零扩展依赖）
 │   ├── Adapters/               # 框架适配：Laravel / ThinkPHP / Webman / Hyperf
 │   ├── PosterConfig.php        # 配置读取（默认值兜底 + 框架配置合并）
@@ -48,7 +49,7 @@ poster-php/
 │   └── pet.png                 # 由 pet.svg 栅格化：addPet() 与缺图占位图使用
 ├── helpers.php                 # 全局函数：captcha_create / captcha_verify / poster_create
 ├── native.php                  # 原生 PHP 入口：无需 Composer，require 即用
-├── tests/                      # PHPUnit 测试，41 个文件，目录结构与 src/ 镜像
+├── tests/                      # PHPUnit 测试，53 个文件，目录结构与 src/ 镜像
 ├── examples/                   # 可直接运行的示例脚本
 ├── docs/                       # 架构文档、设计与生命周期图（SVG）、收款码
 └── composer.json               # PSR-4：Erikwang2013\Poster\ → src/
@@ -183,6 +184,9 @@ $pass = $manager->verify($result['key'], [
 ]);
 ```
 
+`setTargetType('icon')` 可把目标文字换成程序化生成的矢量图形（11 种，用 GD 图元绘制，无需图片素材）：
+`extra['texts']` 每项会多一个 `thumb`（该图形的 base64 小图），供前端展示点击提示；校验仍是坐标比对。
+
 #### 2. 旋转验证码 (RotateCaptcha)
 
 系统随机旋转图片 30°~330°，用户拖动滑块将图片旋转回正。
@@ -263,8 +267,33 @@ $pass = $manager->verify($captcha['key'], [
 | 一次性 | 验证成功/超过最大次数后 key 删除 |
 | 防暴力 | 默认最多验证 3 次（可配置） |
 | 有效期 | 默认 300 秒（可配置） |
-| 随机性 | 每次生成的背景颜色、噪声、目标位置均随机 |
+| 随机性 | 每次生成的背景颜色、噪声、目标位置均随机；点击目标逐目标随机色相与旋转角度 |
+| 会话级限流 | 跨 key 生效的窗口限流（默认 60 秒内 30 次），堵住「每次换新 key 再猜一次」的盲猜 |
+| 行为轨迹 | 可选（默认关闭）：校验拖动轨迹的点数/耗时/线性度，脚本直接 POST 答案会被拒 |
 | 背景美化 | 程序化渐变背景，三种风格（简约/活泼/自然）随机切换，支持配置默认背景图目录 |
+| 画布下限 | 背景过小时直接报错而不是退化（点击验证码最小 120×120，滑块最小需容纳 4×2 拼图块） |
+
+#### 行为轨迹校验（可选）
+
+默认关闭（避免误伤触屏与无障碍设备）。开启后 `slider` / `rotate` 需要前端提交拖动轨迹，服务端校验点数、耗时与轨迹线性度：
+
+```php
+// config/poster.php
+'captcha' => [
+    'trajectory' => [
+        'enabled'      => true,
+        'min_points'   => 4,      // 最少采样点
+        'min_duration' => 300,    // 最短耗时（毫秒）
+        'max_duration' => 5000,   // 最长耗时（毫秒）
+        'max_linearity' => 0.99,  // 线性度高于此值判为机器（脚本拖动是条直线）
+    ],
+],
+
+// 前端提交：旧写法传数值仍然兼容
+captcha_verify($key, 'slider', 173);
+// 开启轨迹校验后需带轨迹
+captcha_verify($key, 'slider', ['x' => 173, 'trail' => [[12, 3, 0], [40, 9, 22], /* … */], 'duration' => 1200]);
+```
 
 #### 背景图片配置
 
@@ -322,6 +351,8 @@ $builder->backgroundGradient('#FF6B6B', '#FF8E53', 'vertical'); // 渐变背景
 
 // 输出
 $builder->save('/output/poster.jpg', 90);  // 保存到文件（路径, 质量 0-100）
+                                           // 格式按扩展名推断：jpg/jpeg/png/webp/gif
+                                           // 不传质量时 JPEG 读 poster.jpeg_quality、PNG 读 poster.png_compression
 $dataUrl = $builder->output('png', 90);    // 获取 base64 data URL
 ```
 
@@ -384,6 +415,8 @@ $builder->addQrcode('https://example.com/page/123', [
     'label_color' => '#999999',
 ]);
 ```
+
+容量超出该版本上限时（例如 H 级约 1273 字节以上）会抛 `InvalidArgumentException`，不再静默产出扫不出来的码。
 
 #### 形状 `addShape()`
 
@@ -684,6 +717,21 @@ $builder->useTemplate($template)->with([
 //                      chart, calendar, artistic-text, emoji, icon, emoticon
 ```
 
+`useTemplate()` 默认**替换**此前的 `addXxx()` 元素（保持原有语义）；要「模板打底 + 再叠手写元素」用第二个参数：
+
+```php
+$builder->replaceElements(false)->useTemplate($template)->with($vars)->addPet(['x' => 20, 'y' => 20, 'width' => 80]);
+
+// 反向导出：把当前 builder（或单个元素）转成模板结构，可再次喂回 fromConfig()
+$config = $builder->toArray();          // ['width'=>…, 'height'=>…, 'elements'=>[…]]
+$template2 = PosterTemplate::fromConfig($config);   // 导出 → 再导入，结构一致
+
+// 新增元素类型只要在 ElementRegistry 注册一次，Builder 与模板同时生效
+$builder->add('text', ['text' => 'hello', 'x' => 10, 'y' => 30, 'size' => 20]);
+```
+
+> 注意：`AbstractElement::toArray()` 自本版本起返回「短类型名 + 拍平选项」（此前是 `['type' => 类名, 'options' => [...]]`），以便与模板结构往返一致。
+
 ## 框架集成
 
 ### Laravel
@@ -694,6 +742,20 @@ use Erikwang2013\Poster\Adapters\Laravel\Facades\Poster;
 
 $result = Captcha::create('click')->generate();
 Poster::width(750)->height(1334)->background('#FFF')->save('poster.jpg');
+```
+
+```php
+// 配置 config/poster.php 里的 captcha.route.enabled = true 后，适配器会注册图片端点：
+//   GET /captcha/{key} → 直接返回 PNG（Content-Type: image/png，Cache-Control: no-store）
+// 前端用 URL 即可，无需再传 base64（体积小 33%，且可被浏览器/CDN 缓存）
+$result = Captcha::create('click')->generate();
+// $result['image'] 仍是 data URI；$result['url'] 是可直接放进 <img src> 的地址
+
+// 表单校验：规则名为 captcha，参数是 image key
+$request->validate([
+    'captcha_key'  => 'required|string',
+    'captcha_code' => 'required|captcha:captcha_key',
+]);
 ```
 
 ```bash
@@ -741,6 +803,10 @@ return [
 | `captcha.tolerance` | `{click:18,rotate:5,slider:4}` | 各类型容差 |
 | `image.driver` | `auto` | 图像驱动：`auto` / `gd` / `imagick` |
 | `poster.placeholder` | `null` | 缺失图片的占位图路径，`null` 跳过不绘制；设为吉祥物路径可在缺图处绘制 Posty |
+| `captcha.rate_limit` | `{max:30,window:60}` | 会话/账号级窗口限流；身份默认取 session_id，无会话时取客户端 IP |
+| `captcha.trajectory` | `{enabled:false,…}` | 行为轨迹校验（默认关闭） |
+| `captcha.cache.pool` | `null` | PSR-16 池对象（`storage=cache` 时用），也可运行时 `StorageFactory::setPsr16Pool()` |
+| `captcha.route` | `{enabled:false,path:'/captcha'}` | Laravel 适配器：注册图片端点 `GET {path}/{key}` 直接返回 PNG |
 
 ## 开源不易，欢迎支持
 

@@ -217,8 +217,33 @@ $pass = $manager->verify($captcha['key'], ['type' => $captcha['type'], 'data' =>
 | One-time use | Key deleted after successful verification or max attempts |
 | Brute-force protection | Max 3 attempts per key (configurable) |
 | TTL | 300 seconds default (configurable) |
-| Randomization | Background colors, noise, positions randomly generated |
+| Randomization | Background colors, noise, target positions — and each click target gets its own hue and rotation |
+| Rate limiting | Cross-key sliding window (30 verifications per 60s by default) — closes the "grab a fresh key per guess" brute force |
+| Trajectory | Optional (off by default): validates point count / duration / linearity so a script POSTing the answer is rejected |
+| Minimum canvas | Too-small backgrounds raise an error instead of degrading (click needs >= 120x120, slider must fit a 4x2 puzzle grid) |
 | Visual Polish | Procedural gradient backgrounds with 3 styles (minimal/vibrant/natural), configurable default image directory |
+
+#### Interaction Trajectory (optional)
+
+Off by default (avoids false positives on touch screens and assistive devices). When enabled, `slider` / `rotate` require the frontend to submit the drag trail:
+
+```php
+// config/poster.php
+'captcha' => [
+    'trajectory' => [
+        'enabled'      => true,
+        'min_points'   => 4,
+        'min_duration' => 300,    // ms
+        'max_duration' => 5000,   // ms
+        'max_linearity' => 0.99,  // a scripted drag is a straight line
+    ],
+],
+
+// Legacy call still works (plain number)
+captcha_verify($key, 'slider', 173);
+// With trajectory verification enabled, submit the trail
+captcha_verify($key, 'slider', ['x' => 173, 'trail' => [[12, 3, 0], [40, 9, 22]], 'duration' => 1200]);
+```
 
 #### Background Image Configuration
 
@@ -270,7 +295,8 @@ $builder->background('/path/to/bg.jpg');                    // image (auto-resiz
 $builder->backgroundGradient('#FF6B6B', '#FF8E53', 'vertical'); // gradient
 
 // Output
-$builder->save('/output/poster.jpg', 90);  // save to file (path, quality 0-100)
+$builder->save('/output/poster.jpg', 90);  // format inferred from the extension: jpg/jpeg/png/webp/gif
+                                           // omit quality → JPEG uses poster.jpeg_quality, PNG uses poster.png_compression
 $dataUrl = $builder->output('png', 90);    // base64 data URL
 ```
 
@@ -377,6 +403,22 @@ $builder->useTemplate($template)->with([
 ])->save('poster.jpg');
 ```
 
+`useTemplate()` **replaces** elements previously added via `addXxx()` (unchanged semantics). To layer hand-written elements on top of a template:
+
+```php
+$builder->replaceElements(false)->useTemplate($template)->with($vars)->addPet(['x' => 20, 'y' => 20, 'width' => 80]);
+
+// Round-trip: export the current builder back into template structure
+$template2 = PosterTemplate::fromConfig($builder->toArray());
+
+// New element types only need registering once in ElementRegistry
+$builder->add('text', ['text' => 'hello', 'x' => 10, 'y' => 30, 'size' => 20]);
+```
+
+> Note: `AbstractElement::toArray()` now returns "short type name + flattened options" (it used to be `['type' => FQCN, 'options' => [...]]`) so it round-trips with the template structure.
+>
+> Capacity: payloads beyond a version's limit (about 1273 bytes at level H) now throw `InvalidArgumentException` instead of silently emitting an unscannable code.
+
 ## Framework Integration
 
 ### Laravel
@@ -387,6 +429,14 @@ use Erikwang2013\Poster\Adapters\Laravel\Facades\Poster;
 
 $result = Captcha::create('click')->generate();
 Poster::width(750)->height(1334)->background('#FFF')->save('poster.jpg');
+
+// With captcha.route.enabled = true the adapter registers GET /captcha/{key} → PNG
+// (Content-Type: image/png, Cache-Control: no-store). $result['url'] is ready for <img src>,
+// $result['image'] keeps the data URI for backwards compatibility.
+$request->validate([
+    'captcha_key'  => 'required|string',
+    'captcha_code' => 'required|captcha:captcha_key',
+]);
 ```
 
 ### ThinkPHP
@@ -430,6 +480,10 @@ Key config options:
 | `captcha.tolerance` | `{click:18,rotate:5,slider:4}` | Per-type tolerance |
 | `image.driver` | `auto` | Image driver: `auto` / `gd` / `imagick` |
 | `poster.placeholder` | `null` | Placeholder path for missing images; `null` skips them, point it at the mascot to draw Posty instead |
+| `captcha.rate_limit` | `{max:30,window:60}` | Per-session (or per-IP) window; identity defaults to session_id, falling back to the client IP |
+| `captcha.trajectory` | `{enabled:false,…}` | Interaction trajectory checks (off by default) |
+| `captcha.cache.pool` | `null` | PSR-16 pool object for `storage=cache` (or `StorageFactory::setPsr16Pool()` at runtime) |
+| `captcha.route` | `{enabled:false,path:'/captcha'}` | Laravel adapter: registers `GET {path}/{key}` returning PNG directly |
 
 ## Support Open Source
 

@@ -10,6 +10,7 @@ use Erikwang2013\Poster\Adapters\Laravel\Rules\CaptchaRule;
 use Erikwang2013\Poster\Captcha\CaptchaManager;
 use Erikwang2013\Poster\Drivers\DriverFactory;
 use Erikwang2013\Poster\Storage\StorageFactory;
+use Erikwang2013\Poster\Storage\RedisStorage;
 use Erikwang2013\Poster\Storage\StorageInterface;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
@@ -26,6 +27,14 @@ class CaptchaServiceProvider extends ServiceProvider
             $driver = config('poster.captcha.storage') ?: 'auto';
             if ($driver === 'cache') {
                 StorageFactory::setPsr16Pool($app['cache']->store(config('poster.captcha.cache.store')));
+            }
+            if ($driver === 'redis') {
+                // captcha.redis.connection 由框架解析：连接名 → Laravel Redis 连接 → 底层 phpredis 客户端。
+                // 核心库不认识框架连接名，这个键只有在这里才用得上。
+                $name = config('poster.captcha.redis.connection');
+                if ($name !== null && $name !== '') {
+                    return new RedisStorage($app['redis']->connection($name)->client());
+                }
             }
             return StorageFactory::create($driver);
         });

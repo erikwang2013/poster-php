@@ -125,6 +125,9 @@ class HelpersTest extends TestCase
         $ref = new \ReflectionClass($builder);
         $width = $ref->getProperty('width');
         $height = $ref->getProperty('height');
+        // PHP 8.0 读取私有属性必须先 setAccessible（8.1+ 起为 no-op，保留即可兼容两代）
+        $width->setAccessible(true);
+        $height->setAccessible(true);
         $this->assertSame(300, $width->getValue($builder));
         $this->assertSame(400, $height->getValue($builder));
     }
@@ -135,6 +138,8 @@ class HelpersTest extends TestCase
         $builder = poster_create();
         $this->assertInstanceOf(PosterBuilder::class, $builder);
         $ref = new \ReflectionClass($builder);
-        $this->assertFalse($ref->getProperty('width')->isInitialized($builder));
+        $prop = $ref->getProperty('width');
+        $prop->setAccessible(true);   // PHP 8.0 必需
+        $this->assertFalse($prop->isInitialized($builder));
     }
 }

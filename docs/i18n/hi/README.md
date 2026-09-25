@@ -8,7 +8,7 @@
 
 PHP इमेज कैप्चा और पोस्टर जनरेशन टूलकिट —— फ़्रेमवर्क-स्वतंत्र कोर + Laravel / ThinkPHP / Webman / Hyperf अडैप्टर।
 
-[English Documentation](../../../README_EN.md) | [आर्किटेक्चर डिज़ाइन दस्तावेज़](../../../docs/architecture.md)
+[English Documentation](../../../README_EN.md) | [आर्किटेक्चर डिज़ाइन दस्तावेज़](../../../docs/architecture.md) | [सभी भाषाएँ](../README.md)
 
 ## प्रोजेक्ट परिचय
 

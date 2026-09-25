@@ -11,50 +11,98 @@
     "layerCore": "Couche cœur",
     "layerFoundation": "Fondations",
     "api": [
-      ["helpers.php", "captcha_* · poster_*"],
-      ["Laravel", "Facade · Provider"],
-      ["ThinkPHP", "CaptchaService"],
-      ["Webman", "CaptchaPlugin"],
-      ["Hyperf", "ConfigProvider"]
+      [
+        "helpers.php",
+        "captcha_* · poster_*"
+      ],
+      [
+        "Laravel",
+        "Facade · Provider"
+      ],
+      [
+        "ThinkPHP",
+        "CaptchaService"
+      ],
+      [
+        "Webman",
+        "CaptchaPlugin"
+      ],
+      [
+        "Hyperf",
+        "ConfigProvider"
+      ]
     ],
     "business": [
       [
         "Module Captcha",
         "CaptchaManager → CaptchaFactory",
-        ["Clic", "Rotation", "Curseur", "Aléatoire"]
+        [
+          "Clic",
+          "Rotation",
+          "Curseur",
+          "Aléatoire"
+        ]
       ],
       [
         "Module Poster",
         "PosterBuilder → 14 éléments → PosterTemplate",
-        ["Texte 5", "Image 5", "Données 3", "Calque 1"]
+        [
+          "Texte 5",
+          "Image 5",
+          "Données 3",
+          "Calque 1"
+        ]
       ]
     ],
     "core": [
       [
         "Pilote d'image",
         "ImageDriverInterface",
-        ["GdDriver · ImagickDriver", "auto-détection, repli sur GD", "apportez votre pilote"]
+        [
+          "GdDriver · ImagickDriver",
+          "auto-détection, repli sur GD",
+          "apportez votre pilote"
+        ]
       ],
       [
         "Stockage",
         "StorageInterface",
-        ["FileStorage · Session", "RedisStorage · cache PSR-16", "gère ttl / tentatives"]
+        [
+          "FileStorage · Session",
+          "RedisStorage · cache PSR-16",
+          "gère ttl / tentatives"
+        ]
       ],
       [
         "Code QR",
         "QrcodeGenerator",
-        ["100 % PHP, zéro extension", "Model 2 · v1-40", "logo central · libellé"]
+        [
+          "100 % PHP, zéro extension",
+          "Model 2 · v1-40",
+          "logo central · libellé"
+        ]
       ],
       [
         "Configuration",
         "load / get / merge / reset",
-        ["captcha.* · image.*", "lit la config du framework", "valeurs par défaut sûres"]
+        [
+          "captcha.* · image.*",
+          "lit la config du framework",
+          "valeurs par défaut sûres"
+        ]
       ]
     ],
     "foundation": {
-      "required": ["PHP ≥ 8.0", "ext-gd", "ext-mbstring"],
+      "required": [
+        "PHP ≥ 8.0",
+        "ext-gd",
+        "ext-mbstring"
+      ],
       "requiredLabel": "requis",
-      "optional": ["ext-imagick optionnel", "ext-redis optionnel"]
+      "optional": [
+        "ext-imagick optionnel",
+        "ext-redis optionnel"
+      ]
     },
     "arrowCall": "Appel",
     "arrowDraw": "Dessin",
@@ -65,36 +113,107 @@
     "title": "Conception fonctionnelle de poster-php",
     "subtitle": "Deux modules : vérification humaine et composition d'images — helpers, API complète et façades de frameworks",
     "modules": [
-      ["C", "Captcha", "3 interactions + aléatoire"],
-      ["P", "Poster", "Builder fluide · 14 éléments"]
+      [
+        "C",
+        "Captcha",
+        "3 interactions + aléatoire"
+      ],
+      [
+        "P",
+        "Poster",
+        "Builder fluide · 14 éléments"
+      ]
     ],
     "captchaTypes": [
-      ["click", "Clic", "Cliquez les caractères cibles en ordre", "2-4 cibles · ±18px"],
-      ["rotate", "Rotation", "Glissez le curseur pour redresser l'image", "30°-330° · ±5°"],
-      ["slider", "Curseur", "Amenez la pièce de puzzle à l'encoche", "±4px · taille au choix"],
-      ["random", "Aléatoire", "Choisit une des trois au hasard", "plus dur à contourner"]
+      [
+        "click",
+        "Clic",
+        "Cliquez les caractères cibles en ordre",
+        "2-4 cibles · ±18px"
+      ],
+      [
+        "rotate",
+        "Rotation",
+        "Glissez le curseur pour redresser l'image",
+        "30°-330° · ±5°"
+      ],
+      [
+        "slider",
+        "Curseur",
+        "Amenez la pièce de puzzle à l'encoche",
+        "±4px · taille au choix"
+      ],
+      [
+        "random",
+        "Aléatoire",
+        "Choisit une des trois au hasard",
+        "plus dur à contourner"
+      ]
     ],
     "security": {
       "title": "Sécurité et stockage",
-      "chips1": ["Clé à usage unique", "3 tentatives max", "Limite par session"],
-      "chips2": ["3 niveaux de fond", "Trajectoire (option)", "File/Session/Redis"]
+      "chips1": [
+        "Clé à usage unique",
+        "3 tentatives max",
+        "Limite par session"
+      ],
+      "chips2": [
+        "3 niveaux de fond",
+        "Trajectoire (option)",
+        "File/Session/Redis"
+      ]
     },
     "elementCount": "%d types",
     "elementGroups": [
-      ["Texte", "Texte", "Artistique", "Emoji", "Icône", "Kaomoji"],
-      ["Image", "Image", "Avatar", "Code QR", "Forme", "Séparateur"],
-      ["Données ", "Tableau", "Graphique barres/lignes/camembert", "Calendrier"],
-      ["Calques", "Filigrane tuilé / angle / écart"]
+      [
+        "Texte",
+        "Texte",
+        "Artistique",
+        "Emoji",
+        "Icône",
+        "Kaomoji"
+      ],
+      [
+        "Image",
+        "Image",
+        "Avatar",
+        "Code QR",
+        "Forme",
+        "Séparateur"
+      ],
+      [
+        "Données",
+        "Tableau",
+        "Graphique barres/lignes/camembert",
+        "Calendrier"
+      ],
+      [
+        "Calques",
+        "Filigrane tuilé / angle / écart"
+      ]
     ],
     "template": {
       "title": "Système de templates",
-      "chips1": ["Définition JSON", "{{variable}} remplacé", "réutilisable"],
-      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf"]
+      "chips1": [
+        "Définition JSON",
+        "{{variable}} remplacé",
+        "réutilisable"
+      ],
+      "chips2": [
+        "Laravel",
+        "ThinkPHP",
+        "Webman",
+        "Hyperf"
+      ]
     },
     "entry": {
       "title": "Entrées",
       "subtitle": "fonctions globales de helpers.php",
-      "chips": ["captcha_create()", "captcha_verify()", "poster_create()"],
+      "chips": [
+        "captcha_create()",
+        "captcha_verify()",
+        "poster_create()"
+      ],
       "note": "addXxx() s'enchaînent librement ; dessin dans l'ordre d'appel"
     }
   },
@@ -106,36 +225,90 @@
         "title": "① Cycle du captcha",
         "sub": "créer → générer → stocker → vérifier → expirer",
         "steps": [
-          ["Créer", "create(type) — clic / rotation / curseur / aléatoire"],
-          ["Générer", "generate() — clé, fond et cibles (coords / angle / écart)"],
-          ["Stocker", "set(key, data, ttl) — File / Session / Redis, usage unique"],
-          ["Diffuser", "output('png') → image base64 + indices, jamais la réponse"],
-          ["Vérifier", "verify(key, type, data) — ±18px / ±5° / ±4px"],
-          ["Décider", "dans la tolérance → ok ; sinon échec ; clé absente → expiré"]
+          [
+            "Créer",
+            "create(type) — clic / rotation / curseur / aléatoire"
+          ],
+          [
+            "Générer",
+            "generate() — clé, fond et cibles (coords / angle / écart)"
+          ],
+          [
+            "Stocker",
+            "set(key, data, ttl) — File / Session / Redis, usage unique"
+          ],
+          [
+            "Diffuser",
+            "output('png') → image base64 + indices, jamais la réponse"
+          ],
+          [
+            "Vérifier",
+            "verify(key, type, data) — ±18px / ±5° / ±4px"
+          ],
+          [
+            "Décider",
+            "dans la tolérance → ok ; sinon échec ; clé absente → expiré"
+          ]
         ],
         "branchTitle": "Résultats",
         "branches": [
-          ["Succès", "del(key) — la même clé ne sert jamais deux fois"],
-          ["Échec", "tentatives+1, jusqu'à 3 essais, puis invalidation"],
-          ["Expiré", "TTL dépassé ou clé inconnue — en générer une nouvelle"]
+          [
+            "Succès",
+            "del(key) — la même clé ne sert jamais deux fois"
+          ],
+          [
+            "Échec",
+            "tentatives+1, jusqu'à 3 essais, puis invalidation"
+          ],
+          [
+            "Expiré",
+            "TTL dépassé ou clé inconnue — en générer une nouvelle"
+          ]
         ]
       },
       {
         "title": "② Cycle de l'affiche",
         "sub": "new → fond → addXxx → rendu → sauvegarde",
         "steps": [
-          ["Init", "new PosterBuilder(driver) ou poster_create(w, h)"],
-          ["Fond", "background() — uni / image (redimensionnée) / dégradé"],
-          ["Éléments", "addText / addImage / addQrcode … 14 types, chaînés"],
-          ["Template", "useTemplate($t)->with($vars) — remplace {{variable}}"],
-          ["Rendu", "les pilotes dessinent — origine en haut à gauche"],
-          ["Sortie", "save(path, quality) ou output('png'|'jpg') en data URL"]
+          [
+            "Init",
+            "new PosterBuilder(driver) ou poster_create(w, h)"
+          ],
+          [
+            "Fond",
+            "background() — uni / image (redimensionnée) / dégradé"
+          ],
+          [
+            "Éléments",
+            "addText / addImage / addQrcode … 14 types, chaînés"
+          ],
+          [
+            "Template",
+            "useTemplate($t)->with($vars) — remplace {{variable}}"
+          ],
+          [
+            "Rendu",
+            "les pilotes dessinent — origine en haut à gauche"
+          ],
+          [
+            "Sortie",
+            "save(path, quality) ou output('png'|'jpg') en data URL"
+          ]
         ],
         "branchTitle": "Résultats",
         "branches": [
-          ["Fichier", "save() écrit sur disque pour CDN / stockage objet"],
-          ["Réponse API", "output() renvoie du base64 pour le front"],
-          ["Réemploi", "même template, nouvelles variables — sortie en lot"]
+          [
+            "Fichier",
+            "save() écrit sur disque pour CDN / stockage objet"
+          ],
+          [
+            "Réponse API",
+            "output() renvoie du base64 pour le front"
+          ],
+          [
+            "Réemploi",
+            "même template, nouvelles variables — sortie en lot"
+          ]
         ]
       }
     ]

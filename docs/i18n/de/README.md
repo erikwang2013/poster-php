@@ -8,7 +8,7 @@
 
 PHP-Toolkit für Bild-Captchas und Poster-Generierung — framework-unabhängiger Kern + Adapter für Laravel / ThinkPHP / Webman / Hyperf.
 
-[Englische Dokumentation](../../../README_EN.md) | [Architektur-Dokumentation](../../../docs/architecture.md)
+[Englische Dokumentation](../../../README_EN.md) | [Architektur-Dokumentation](../../../docs/architecture.md) | [Alle Sprachen](../README.md)
 
 ## Projektübersicht
 

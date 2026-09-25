@@ -8,7 +8,7 @@
 
 PHP ইমেজ ক্যাপচা ও পোস্টার তৈরির টুলকিট —— ফ্রেমওয়ার্ক-নিরপেক্ষ কোর + Laravel / ThinkPHP / Webman / Hyperf অ্যাডাপ্টার।
 
-[English Documentation](../../../README_EN.md) | [আর্কিটেকচার ডকুমেন্ট](../../architecture.md)
+[English Documentation](../../../README_EN.md) | [আর্কিটেকচার ডকুমেন্ট](../../architecture.md) | [সব ভাষা](../README.md)
 
 ## প্রকল্প পরিচিতি
 

@@ -8,7 +8,7 @@
 
 Boîte à outils PHP de captcha image et de génération d'affiches — cœur agnostique + adaptateurs Laravel / ThinkPHP / Webman / Hyperf.
 
-[Documentation anglaise](../../../README_EN.md) | [Documentation d'architecture](../../../docs/architecture.md)
+[Documentation anglaise](../../../README_EN.md) | [Documentation d'architecture](../../../docs/architecture.md) | [Toutes les langues](../README.md)
 
 ## Présentation
 

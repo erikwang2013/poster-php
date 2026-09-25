@@ -8,7 +8,7 @@
 
 PHP の画像 CAPTCHA・ポスター生成ツールキット —— フレームワーク非依存のコア + Laravel / ThinkPHP / Webman / Hyperf アダプタ。
 
-[英語ドキュメント](../../../README_EN.md) | [アーキテクチャ設計ドキュメント](../../../docs/architecture.md)
+[英語ドキュメント](../../../README_EN.md) | [アーキテクチャ設計ドキュメント](../../../docs/architecture.md) | [すべての言語](../README.md)
 
 ## プロジェクト概要
 

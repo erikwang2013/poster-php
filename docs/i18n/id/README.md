@@ -8,7 +8,7 @@
 
 Toolkit PHP untuk captcha gambar dan pembuatan poster — inti tanpa ketergantungan framework + adapter Laravel / ThinkPHP / Webman / Hyperf.
 
-[Dokumentasi Bahasa Inggris](../../../README_EN.md) | [Dokumen Arsitektur](../../../docs/architecture.md)
+[Dokumentasi Bahasa Inggris](../../../README_EN.md) | [Dokumen Arsitektur](../../../docs/architecture.md) | [Semua bahasa](../README.md)
 
 ## Ikhtisar Proyek
 

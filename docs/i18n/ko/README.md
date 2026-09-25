@@ -8,7 +8,7 @@
 
 PHP 이미지 캡차 · 포스터 생성 툴킷 — 프레임워크 독립 코어 + Laravel / ThinkPHP / Webman / Hyperf 어댑터.
 
-[English Documentation](../../../README_EN.md) | [아키텍처 설계 문서](../../../docs/architecture.md)
+[English Documentation](../../../README_EN.md) | [아키텍처 설계 문서](../../../docs/architecture.md) | [모든 언어](../README.md)
 
 ## 프로젝트 소개
 

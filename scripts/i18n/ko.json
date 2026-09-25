@@ -1,0 +1,143 @@
+{
+  "meta": {
+    "lang": "ko",
+    "langName": "한국어"
+  },
+  "architecture": {
+    "title": "poster-php 시스템 아키텍처",
+    "subtitle": "프레임워크 독립 코어 + 4개 프레임워크 어댑터 · 모든 계층은 아래 인터페이스에만 의존",
+    "layerApi": "API 계층",
+    "layerBusiness": "비즈니스 계층",
+    "layerCore": "코어 계층",
+    "layerFoundation": "파운데이션",
+    "api": [
+      ["helpers.php", "captcha_* · poster_*"],
+      ["Laravel", "파사드 · 프로바이더"],
+      ["ThinkPHP", "CaptchaService"],
+      ["Webman", "CaptchaPlugin"],
+      ["Hyperf", "ConfigProvider"]
+    ],
+    "business": [
+      [
+        "캡차 모듈",
+        "CaptchaManager → CaptchaFactory",
+        ["클릭", "회전", "슬라이더", "랜덤"]
+      ],
+      [
+        "포스터 모듈",
+        "PosterBuilder → 14개 요소 → PosterTemplate",
+        ["텍스트 5", "이미지 5", "데이터 3", "오버레이 1"]
+      ]
+    ],
+    "core": [
+      [
+        "이미지 드라이버",
+        "ImageDriverInterface",
+        ["GdDriver · ImagickDriver", "자동 감지, GD로 폴백", "직접 구현도 가능"]
+      ],
+      [
+        "스토리지",
+        "StorageInterface",
+        ["FileStorage · Session", "RedisStorage 분산", "ttl / attempts 지원"]
+      ],
+      [
+        "QR 코드",
+        "QrcodeGenerator",
+        ["순수 PHP, 확장 0개", "Model 2 · v1-40", "중앙 로고 · 라벨"]
+      ],
+      [
+        "설정",
+        "load / get / merge / reset",
+        ["captcha.* · image.*", "프레임워크 설정 로드", "안전한 기본값"]
+      ]
+    ],
+    "foundation": {
+      "required": ["PHP ≥ 8.0", "ext-gd", "ext-mbstring"],
+      "requiredLabel": "필수",
+      "optional": ["ext-imagick 선택", "ext-redis 선택"]
+    },
+    "arrowCall": "호출",
+    "arrowDraw": "그리기",
+    "arrowRequire": "의존",
+    "footer": "이미지 드라이버와 스토리지 백엔드를 바꿔도 비즈니스와 API 코드는 그대로"
+  },
+  "features": {
+    "title": "poster-php 기능 설계",
+    "subtitle": "두 모듈: 사람 확인과 이미지 합성 — 각각 헬퍼, 전체 API, 프레임워크 파사드 제공",
+    "modules": [
+      ["캡", "캡차", "3가지 인터랙션 + 랜덤"],
+      ["포", "포스터", "플루언트 빌더 · 14개 요소"]
+    ],
+    "captchaTypes": [
+      ["click", "클릭", "대상 문자를 순서대로 클릭", "2-4개 · ±18px"],
+      ["rotate", "회전", "슬라이더를 끌어 이미지를 원래 각도로", "30°-330° · ±5°"],
+      ["slider", "슬라이더", "퍼즐 조각을 빈칸으로 끌어다 놓기", "±4px · 크기 지정"],
+      ["random", "랜덤", "세 가지 중 하나를 무작위로 선택", "우회 난이도 상승"]
+    ],
+    "security": {
+      "title": "보안 · 스토리지",
+      "chips1": ["일회용 키", "최대 3회 시도", "TTL 300초"],
+      "chips2": ["3단계 배경", "허용 오차 설정", "File/Session/Redis"]
+    },
+    "elementCount": "%d종",
+    "elementGroups": [
+      ["텍스트·레이아웃", "텍스트", "아트 텍스트", "이모지", "아이콘", "카오모지"],
+      ["이미지·도형", "이미지", "아바타", "QR 코드", "도형", "구분선"],
+      ["데이터 표시", "표", "차트 막대/선/파이", "캘린더"],
+      ["오버레이", "워터마크 타일/각도/간격"]
+    ],
+    "template": {
+      "title": "템플릿 시스템",
+      "chips1": ["JSON 정의", "{{variable}} 치환", "한 번 정의 후 재사용"],
+      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf"]
+    },
+    "entry": {
+      "title": "진입점",
+      "subtitle": "helpers.php 전역 함수, 바로 사용",
+      "chips": ["captcha_create()", "captcha_verify()", "poster_create()"],
+      "note": "addXxx()는 순서에 상관없이 체이닝되고, 요소는 호출 순서대로 그려집니다"
+    }
+  },
+  "lifecycle": {
+    "title": "poster-php 라이프사이클",
+    "subtitle": "캡차 한 번의 왕복과 포스터 한 장의 생성: 생성부터 만료까지 / 초기화부터 출력까지",
+    "lanes": [
+      {
+        "title": "① 캡차 라이프사이클",
+        "sub": "생성 → 발급 → 저장 → 검증 → 만료",
+        "steps": [
+          ["생성", "create(type) — click/rotate/slider/random, 난이도 선택"],
+          ["이미지 생성", "generate() — 랜덤 키 + 배경 + 정답(좌표/각도/간격)"],
+          ["저장", "set(key, data, ttl) — File/Session/Redis, 300초 일회용"],
+          ["응답", "output('png') → base64 이미지와 힌트, 정답은 미포함"],
+          ["검증", "verify(key, type, data) — ±18px / ±5° / ±4px"],
+          ["판정", "허용 오차 내 → 통과, 벗어나면 실패, 키 없음 → 만료"]
+        ],
+        "branchTitle": "결과",
+        "branches": [
+          ["통과", "del(key) — 같은 키는 다시 쓸 수 없음"],
+          ["실패", "시도 +1, 최대 3회 재시도 후 무효화"],
+          ["만료", "TTL 초과 또는 없는 키 — 새로 생성"]
+        ]
+      },
+      {
+        "title": "② 포스터 라이프사이클",
+        "sub": "new → 배경 → addXxx → 렌더 → 저장",
+        "steps": [
+          ["초기화", "new PosterBuilder(driver) 또는 poster_create(w, h)"],
+          ["배경", "background() — 단색/이미지(자동 축소)/그라데이션"],
+          ["요소", "addText / addImage / addQrcode … 14종, 체이닝"],
+          ["템플릿", "useTemplate($t)->with($vars) — {{variable}} 치환"],
+          ["렌더", "드라이버가 캔버스에 그리고, 원점은 좌상단, 크기는 비례"],
+          ["출력", "save(path, quality)로 저장 또는 output('png'|'jpg')"]
+        ],
+        "branchTitle": "결과",
+        "branches": [
+          ["이미지 파일", "save()가 디스크에 저장, CDN/오브젝트 스토리지용"],
+          ["API 응답", "output()이 base64 반환, 프런트엔드에서 바로 사용"],
+          ["템플릿 재사용", "같은 템플릿에 새 변수 — 배치 출력"]
+        ]
+      }
+    ]
+  }
+}

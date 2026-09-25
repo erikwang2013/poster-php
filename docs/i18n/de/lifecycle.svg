@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 812" width="1040" height="812" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei','Noto Sans CJK SC',sans-serif" role="img" aria-label="poster-php Lebenszyklus">
+  <title>poster-php Lebenszyklus</title>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#B2BEC3"/></marker></defs>
+  <rect width="1040" height="812" fill="#FFFFFF"/>
+  <text x="520" y="42" font-size="23" fill="#2D3436" font-weight="700" text-anchor="middle">poster-php Lebenszyklus</text>
+  <text x="520" y="66" font-size="13" fill="#7F8C8D" text-anchor="middle">Ein Captcha-Durchlauf und ein Poster-Aufbau: von der Erstellung bis zum Ablauf / von Init bis Ausgabe</text>
+  <rect x="40" y="118" width="465" height="638" rx="16" fill="#FFF6F6" stroke="#FF6B6B" stroke-width="1.5"/>
+  <rect x="60" y="103" width="193.15" height="30" rx="15" fill="#FF6B6B"/>
+  <text x="156.58" y="123" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">① Captcha-Lebenszyklus</text>
+  <text x="60" y="144" font-size="11.5" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">create → generate → store → verify → expire</text>
+  <rect x="60" y="160" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="88" cy="189" r="15" fill="#FF6B6B"/>
+  <text x="88" y="194" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">1</text>
+  <text x="114" y="185" font-size="14" fill="#2D3436" font-weight="700">Erstellen</text>
+  <text x="114" y="204" font-size="11" fill="#7F8C8D">create(type) — click/rotate/slider/random + Difficulty</text>
+  <line x1="272.5" y1="222" x2="272.5" y2="232" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="60" y="236" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="88" cy="265" r="15" fill="#FF6B6B"/>
+  <text x="88" y="270" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">2</text>
+  <text x="114" y="261" font-size="14" fill="#2D3436" font-weight="700">Generieren</text>
+  <text x="114" y="280" font-size="11" fill="#7F8C8D">generate() — Key + Hintergrund + Ziele (x/y, Winkel, Lücke)</text>
+  <line x1="272.5" y1="298" x2="272.5" y2="308" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="60" y="312" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="88" cy="341" r="15" fill="#FF6B6B"/>
+  <text x="88" y="346" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">3</text>
+  <text x="114" y="337" font-size="14" fill="#2D3436" font-weight="700">Speichern</text>
+  <text x="114" y="356" font-size="11" fill="#7F8C8D">set(key, data, ttl) — File/Session/Redis, 300s, einmalig</text>
+  <line x1="272.5" y1="374" x2="272.5" y2="384" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="60" y="388" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="88" cy="417" r="15" fill="#FF6B6B"/>
+  <text x="88" y="422" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">4</text>
+  <text x="114" y="413" font-size="14" fill="#2D3436" font-weight="700">Ausliefern</text>
+  <text x="114" y="432" font-size="11" fill="#7F8C8D">output(&apos;png&apos;) → base64-Bild + Hinweise, nie die Antwort</text>
+  <line x1="272.5" y1="450" x2="272.5" y2="460" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="60" y="464" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="88" cy="493" r="15" fill="#FF6B6B"/>
+  <text x="88" y="498" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">5</text>
+  <text x="114" y="489" font-size="14" fill="#2D3436" font-weight="700">Prüfen</text>
+  <text x="114" y="508" font-size="11" fill="#7F8C8D">verify(key, type, data) — Toleranz ±18px / ±5° / ±4px</text>
+  <line x1="272.5" y1="526" x2="272.5" y2="536" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="60" y="540" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="88" cy="569" r="15" fill="#FF6B6B"/>
+  <text x="88" y="574" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">6</text>
+  <text x="114" y="565" font-size="14" fill="#2D3436" font-weight="700">Entscheiden</text>
+  <text x="114" y="584" font-size="11" fill="#7F8C8D">in Toleranz → Erfolg; sonst Fehler; kein Key → abgelaufen</text>
+  <text x="60" y="630" font-size="12" fill="#2D3436" font-weight="700">Ergebnisse</text>
+  <rect x="60" y="642" width="425" height="92" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="80" cy="658" r="4.5" fill="#96CEB4"/>
+  <text x="94" y="662" font-size="12.5" fill="#96CEB4" font-weight="700">Erfolg</text>
+  <text x="147.73" y="662" font-size="10.5" fill="#7F8C8D">del(key) — Key kann nie wiederverwendet werden</text>
+  <circle cx="80" cy="684" r="4.5" fill="#FF8E53"/>
+  <text x="94" y="688" font-size="12.5" fill="#FF8E53" font-weight="700">Fehler</text>
+  <text x="147.73" y="688" font-size="10.5" fill="#7F8C8D">Versuche+1, max. 3 Wiederholungen, dann ungültig</text>
+  <circle cx="80" cy="710" r="4.5" fill="#7F8C8D"/>
+  <text x="94" y="714" font-size="12.5" fill="#7F8C8D" font-weight="700">Abgelaufen</text>
+  <text x="176.88" y="714" font-size="10.5" fill="#7F8C8D">TTL vorbei oder Key unbekannt — neu erzeugen</text>
+  <rect x="535" y="118" width="465" height="638" rx="16" fill="#F2FBF9" stroke="#4ECDC4" stroke-width="1.5"/>
+  <rect x="555" y="103" width="186" height="30" rx="15" fill="#4ECDC4"/>
+  <text x="648" y="123" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">② Poster-Lebenszyklus</text>
+  <text x="555" y="144" font-size="11.5" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">new → background → addXxx → render → save</text>
+  <rect x="555" y="160" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="583" cy="189" r="15" fill="#4ECDC4"/>
+  <text x="583" y="194" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">1</text>
+  <text x="609" y="185" font-size="14" fill="#2D3436" font-weight="700">Init</text>
+  <text x="609" y="204" font-size="11" fill="#7F8C8D">new PosterBuilder(driver) oder poster_create(w, h)</text>
+  <line x1="767.5" y1="222" x2="767.5" y2="232" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="555" y="236" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="583" cy="265" r="15" fill="#4ECDC4"/>
+  <text x="583" y="270" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">2</text>
+  <text x="609" y="261" font-size="14" fill="#2D3436" font-weight="700">Hintergrund</text>
+  <text x="609" y="280" font-size="11" fill="#7F8C8D">background() — Farbe / Bild (skaliert) / Verlauf</text>
+  <line x1="767.5" y1="298" x2="767.5" y2="308" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="555" y="312" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="583" cy="341" r="15" fill="#4ECDC4"/>
+  <text x="583" y="346" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">3</text>
+  <text x="609" y="337" font-size="14" fill="#2D3436" font-weight="700">Elemente</text>
+  <text x="609" y="356" font-size="11" fill="#7F8C8D">addText / addImage / addQrcode … 14 Typen, verkettet</text>
+  <line x1="767.5" y1="374" x2="767.5" y2="384" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="555" y="388" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="583" cy="417" r="15" fill="#4ECDC4"/>
+  <text x="583" y="422" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">4</text>
+  <text x="609" y="413" font-size="14" fill="#2D3436" font-weight="700">Template</text>
+  <text x="609" y="432" font-size="11" fill="#7F8C8D">useTemplate($t)-&gt;with($vars) — {{variable}} ersetzen</text>
+  <line x1="767.5" y1="450" x2="767.5" y2="460" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="555" y="464" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="583" cy="493" r="15" fill="#4ECDC4"/>
+  <text x="583" y="498" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">5</text>
+  <text x="609" y="489" font-size="14" fill="#2D3436" font-weight="700">Rendern</text>
+  <text x="609" y="508" font-size="11" fill="#7F8C8D">Treiber zeichnen; Ursprung oben links, Größen skalieren</text>
+  <line x1="767.5" y1="526" x2="767.5" y2="536" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="555" y="540" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="583" cy="569" r="15" fill="#4ECDC4"/>
+  <text x="583" y="574" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">6</text>
+  <text x="609" y="565" font-size="14" fill="#2D3436" font-weight="700">Ausgabe</text>
+  <text x="609" y="584" font-size="11" fill="#7F8C8D">save(path) → Datei oder output(&apos;png&apos;|&apos;jpg&apos;) als Data-URL</text>
+  <text x="555" y="630" font-size="12" fill="#2D3436" font-weight="700">Ergebnisse</text>
+  <rect x="555" y="642" width="425" height="92" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="575" cy="658" r="4.5" fill="#45B7D1"/>
+  <text x="589" y="662" font-size="12.5" fill="#45B7D1" font-weight="700">Bilddatei</text>
+  <text x="664.59" y="662" font-size="10.5" fill="#7F8C8D">save() schreibt auf Platte (CDN / Storage)</text>
+  <circle cx="575" cy="684" r="4.5" fill="#FF6B6B"/>
+  <text x="589" y="688" font-size="12.5" fill="#FF6B6B" font-weight="700">API-Antwort</text>
+  <text x="679.16" y="688" font-size="10.5" fill="#7F8C8D">output() liefert base64 für das Frontend</text>
+  <circle cx="575" cy="710" r="4.5" fill="#4ECDC4"/>
+  <text x="589" y="714" font-size="12.5" fill="#4ECDC4" font-weight="700">Vorlage</text>
+  <text x="650.01" y="714" font-size="10.5" fill="#7F8C8D">gleiche Vorlage, neue Variablen — Stapelausgabe</text>
+</svg>

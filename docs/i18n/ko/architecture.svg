@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 700" width="1040" height="700" font-family="'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif" role="img" aria-label="poster-php 시스템 아키텍처">
+  <title>poster-php 시스템 아키텍처</title>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#B2BEC3"/></marker></defs>
+  <rect width="1040" height="700" fill="#FFFFFF"/>
+  <text x="520" y="42" font-size="23" fill="#2D3436" font-weight="700" text-anchor="middle">poster-php 시스템 아키텍처</text>
+  <text x="520" y="66" font-size="13" fill="#7F8C8D" text-anchor="middle">프레임워크 독립 코어 + 4개 프레임워크 어댑터 · 모든 계층은 아래 인터페이스에만 의존</text>
+  <rect x="40" y="88" width="960" height="92" rx="16" fill="#FFF6F6" stroke="#FF6B6B" stroke-width="1.5"/>
+  <rect x="60" y="73" width="84.6" height="30" rx="15" fill="#FF6B6B"/>
+  <text x="102.3" y="93" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">API 계층</text>
+  <rect x="64" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="64" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="148" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">helpers.php</text>
+  <text x="148" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">captcha_* · poster_*</text>
+  <rect x="250" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="250" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="334" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">Laravel</text>
+  <text x="334" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">파사드 · 프로바이더</text>
+  <rect x="436" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="436" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="520" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">ThinkPHP</text>
+  <text x="520" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">CaptchaService</text>
+  <rect x="622" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="622" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="706" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">Webman</text>
+  <text x="706" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">CaptchaPlugin</text>
+  <rect x="808" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="808" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="892" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">Hyperf</text>
+  <text x="892" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">ConfigProvider</text>
+  <rect x="40" y="236" width="960" height="140" rx="16" fill="#F2FBF9" stroke="#4ECDC4" stroke-width="1.5"/>
+  <rect x="60" y="221" width="115.15" height="30" rx="15" fill="#4ECDC4"/>
+  <text x="117.58" y="241" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">비즈니스 계층</text>
+  <rect x="64" y="264" width="447" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="64" y="274" width="4" height="76" rx="2" fill="#4ECDC4"/>
+  <text x="82" y="286" font-size="14" fill="#2D3436" font-weight="600">캡차 모듈</text>
+  <text x="82" y="304" font-size="12" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">CaptchaManager → CaptchaFactory</text>
+  <rect x="82" y="316" width="43" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="103.5" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">클릭</text>
+  <rect x="133" y="316" width="43" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="154.5" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">회전</text>
+  <rect x="184" y="316" width="66" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="217" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">슬라이더</text>
+  <rect x="258" y="316" width="43" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="279.5" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">랜덤</text>
+  <rect x="529" y="264" width="447" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="529" y="274" width="4" height="76" rx="2" fill="#4ECDC4"/>
+  <text x="547" y="286" font-size="14" fill="#2D3436" font-weight="600">포스터 모듈</text>
+  <text x="547" y="304" font-size="12" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">PosterBuilder → 14개 요소 → PosterTemplate</text>
+  <rect x="547" y="316" width="67.15" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="580.58" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">텍스트 5</text>
+  <rect x="622.15" y="316" width="67.15" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="655.73" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">이미지 5</text>
+  <rect x="697.3" y="316" width="67.15" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="730.88" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">데이터 3</text>
+  <rect x="772.45" y="316" width="78.65" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="811.78" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">오버레이 1</text>
+  <rect x="40" y="404" width="960" height="140" rx="16" fill="#F4FAFD" stroke="#45B7D1" stroke-width="1.5"/>
+  <rect x="60" y="389" width="89.15" height="30" rx="15" fill="#45B7D1"/>
+  <text x="104.58" y="409" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">코어 계층</text>
+  <rect x="64" y="432" width="219" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="64" y="442" width="4" height="76" rx="2" fill="#45B7D1"/>
+  <text x="82" y="454" font-size="13" fill="#2D3436" font-weight="600">이미지 드라이버</text>
+  <text x="82" y="471" font-size="10" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">ImageDriverInterface</text>
+  <text x="82" y="490" font-size="11" fill="#7F8C8D">· GdDriver · ImagickDriver</text>
+  <text x="82" y="505" font-size="11" fill="#7F8C8D">· 자동 감지, GD로 폴백</text>
+  <text x="82" y="520" font-size="11" fill="#7F8C8D">· 직접 구현도 가능</text>
+  <rect x="295" y="432" width="219" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="295" y="442" width="4" height="76" rx="2" fill="#45B7D1"/>
+  <text x="313" y="454" font-size="13" fill="#2D3436" font-weight="600">스토리지</text>
+  <text x="313" y="471" font-size="10" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">StorageInterface</text>
+  <text x="313" y="490" font-size="11" fill="#7F8C8D">· FileStorage · Session</text>
+  <text x="313" y="505" font-size="11" fill="#7F8C8D">· RedisStorage 분산</text>
+  <text x="313" y="520" font-size="11" fill="#7F8C8D">· ttl / attempts 지원</text>
+  <rect x="526" y="432" width="219" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="526" y="442" width="4" height="76" rx="2" fill="#45B7D1"/>
+  <text x="544" y="454" font-size="13" fill="#2D3436" font-weight="600">QR 코드</text>
+  <text x="544" y="471" font-size="10" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">QrcodeGenerator</text>
+  <text x="544" y="490" font-size="11" fill="#7F8C8D">· 순수 PHP, 확장 0개</text>
+  <text x="544" y="505" font-size="11" fill="#7F8C8D">· Model 2 · v1-40</text>
+  <text x="544" y="520" font-size="11" fill="#7F8C8D">· 중앙 로고 · 라벨</text>
+  <rect x="757" y="432" width="219" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="757" y="442" width="4" height="76" rx="2" fill="#45B7D1"/>
+  <text x="775" y="454" font-size="13" fill="#2D3436" font-weight="600">설정</text>
+  <text x="775" y="471" font-size="10" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">load / get / merge / reset</text>
+  <text x="775" y="490" font-size="11" fill="#7F8C8D">· captcha.* · image.*</text>
+  <text x="775" y="505" font-size="11" fill="#7F8C8D">· 프레임워크 설정 로드</text>
+  <text x="775" y="520" font-size="11" fill="#7F8C8D">· 안전한 기본값</text>
+  <rect x="40" y="572" width="960" height="80" rx="16" fill="#F5FBF7" stroke="#96CEB4" stroke-width="1.5"/>
+  <rect x="60" y="557" width="95" height="30" rx="15" fill="#96CEB4"/>
+  <text x="107.5" y="577" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">파운데이션</text>
+  <rect x="64" y="598" width="95.5" height="34" rx="17" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
+  <text x="111.75" y="619.5" font-size="12.5" fill="#2D3436" font-weight="600" text-anchor="middle">PHP ≥ 8.0</text>
+  <rect x="171.5" y="598" width="69.25" height="34" rx="17" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
+  <text x="206.13" y="619.5" font-size="12.5" fill="#2D3436" font-weight="600" text-anchor="middle">ext-gd</text>
+  <rect x="252.75" y="598" width="110.5" height="34" rx="17" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
+  <text x="308" y="619.5" font-size="12.5" fill="#2D3436" font-weight="600" text-anchor="middle">ext-mbstring</text>
+  <text x="383.25" y="620" font-size="11" fill="#7F8C8D">필수</text>
+  <rect x="459.25" y="598" width="135.5" height="34" rx="17" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <text x="527" y="619.5" font-size="12.5" fill="#7F8C8D" text-anchor="middle">ext-imagick 선택</text>
+  <rect x="606.75" y="598" width="121.75" height="34" rx="17" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <text x="667.63" y="619.5" font-size="12.5" fill="#7F8C8D" text-anchor="middle">ext-redis 선택</text>
+  <line x1="520" y1="184" x2="520" y2="232" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="532" y="213" font-size="11.5" fill="#7F8C8D">호출</text>
+  <line x1="520" y1="380" x2="520" y2="400" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="532" y="395" font-size="11.5" fill="#7F8C8D">그리기</text>
+  <line x1="520" y1="548" x2="520" y2="568" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="532" y="563" font-size="11.5" fill="#7F8C8D">의존</text>
+  <text x="520" y="684" font-size="11.5" fill="#7F8C8D" text-anchor="middle">이미지 드라이버와 스토리지 백엔드를 바꿔도 비즈니스와 API 코드는 그대로</text>
+</svg>

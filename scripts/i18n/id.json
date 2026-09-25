@@ -1,0 +1,143 @@
+{
+  "meta": {
+    "lang": "id",
+    "langName": "Bahasa Indonesia"
+  },
+  "architecture": {
+    "title": "Arsitektur Sistem poster-php",
+    "subtitle": "Inti tanpa ketergantungan framework + 4 adapter · tiap lapisan hanya bergantung pada antarmuka di bawahnya",
+    "layerApi": "Lapisan API",
+    "layerBusiness": "Lapisan Bisnis",
+    "layerCore": "Lapisan Inti",
+    "layerFoundation": "Fondasi",
+    "api": [
+      ["helpers.php", "captcha_* · poster_*"],
+      ["Laravel", "Facade · Provider"],
+      ["ThinkPHP", "CaptchaService"],
+      ["Webman", "CaptchaPlugin"],
+      ["Hyperf", "ConfigProvider"]
+    ],
+    "business": [
+      [
+        "Modul Captcha",
+        "CaptchaManager → CaptchaFactory",
+        ["Klik", "Putar", "Geser", "Acak"]
+      ],
+      [
+        "Modul Poster",
+        "PosterBuilder → 14 elemen → PosterTemplate",
+        ["Teks 5", "Gambar 5", "Data 3", "Overlay 1"]
+      ]
+    ],
+    "core": [
+      [
+        "Driver Gambar",
+        "ImageDriverInterface",
+        ["GdDriver · ImagickDriver", "deteksi otomatis → GD", "driver Anda sendiri"]
+      ],
+      [
+        "Penyimpanan",
+        "StorageInterface",
+        ["FileStorage · Session", "RedisStorage terdistribusi", "sadar ttl / attempts"]
+      ],
+      [
+        "Kode QR",
+        "QrcodeGenerator",
+        ["PHP murni, tanpa ekstensi", "Model 2 · v1-40", "logo tengah · label"]
+      ],
+      [
+        "Konfigurasi",
+        "load / get / merge / reset",
+        ["captcha.* · image.*", "memuat config framework", "default aman"]
+      ]
+    ],
+    "foundation": {
+      "required": ["PHP ≥ 8.0", "ext-gd", "ext-mbstring"],
+      "requiredLabel": "wajib",
+      "optional": ["ext-imagick opsional", "ext-redis opsional"]
+    },
+    "arrowCall": "Panggil",
+    "arrowDraw": "Gambar",
+    "arrowRequire": "Butuh",
+    "footer": "Tukar driver gambar atau backend penyimpanan — kode bisnis dan API tetap utuh"
+  },
+  "features": {
+    "title": "Desain Fungsional poster-php",
+    "subtitle": "Dua modul: verifikasi manusia dan komposisi gambar — masing-masing dengan helper, API lengkap dan facade framework",
+    "modules": [
+      ["C", "Captcha", "3 jenis interaksi + acak"],
+      ["P", "Poster", "Builder fluent · 14 elemen"]
+    ],
+    "captchaTypes": [
+      ["click", "Klik", "Klik karakter target secara berurutan", "2-4 target · ±18px"],
+      ["rotate", "Putar", "Geser slider untuk meluruskan gambar", "30°-330° · ±5°"],
+      ["slider", "Geser", "Geser potongan puzzle ke celahnya", "±4px · ukuran bebas"],
+      ["random", "Acak", "Memilih satu dari tiga secara acak", "sulit dilewati"]
+    ],
+    "security": {
+      "title": "Keamanan & Penyimpanan",
+      "chips1": ["Kunci sekali pakai", "Maks 3 percobaan", "TTL 300s"],
+      "chips2": ["Latar 3 tingkat", "Toleransi kustom", "File/Session/Redis"]
+    },
+    "elementCount": "%d jenis",
+    "elementGroups": [
+      ["Teks & Layout", "Teks", "Artistik", "Emoji", "Ikon", "Kaomoji"],
+      ["Gambar/Bentuk", "Gambar", "Avatar", "Kode QR", "Bentuk", "Pembatas"],
+      ["Tampilan Data", "Tabel", "Grafik batang/garis/pie", "Kalender"],
+      ["Overlay", "Watermark ubin / sudut / jarak"]
+    ],
+    "template": {
+      "title": "Sistem Template",
+      "chips1": ["Definisi JSON", "ganti {{variable}}", "tulis sekali pakai ulang"],
+      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf"]
+    },
+    "entry": {
+      "title": "Titik Masuk",
+      "subtitle": "fungsi global helpers.php, siap dipakai",
+      "chips": ["captcha_create()", "captcha_verify()", "poster_create()"],
+      "note": "addXxx() bisa dirantai bebas; elemen digambar sesuai urutan panggilan"
+    }
+  },
+  "lifecycle": {
+    "title": "Siklus Hidup poster-php",
+    "subtitle": "Satu siklus captcha dan satu pembuatan poster: dari dibuat hingga kedaluwarsa / dari inisialisasi hingga keluaran",
+    "lanes": [
+      {
+        "title": "① Siklus Captcha",
+        "sub": "buat → generate → simpan → verifikasi → kedaluwarsa",
+        "steps": [
+          ["Buat", "create(type): click / rotate / slider / random"],
+          ["Generate", "generate(): kunci acak + latar + target"],
+          ["Simpan", "set(key, data, ttl): File / Session / Redis, 300s"],
+          ["Kirim", "output('png') → base64 + petunjuk, bukan jawaban"],
+          ["Verifikasi", "verify(key, type, data): ±18px / ±5° / ±4px"],
+          ["Putuskan", "dalam toleransi → lulus; di luar → gagal"]
+        ],
+        "branchTitle": "Hasil",
+        "branches": [
+          ["Lulus", "del(key): kunci sama tak bisa dipakai ulang"],
+          ["Gagal", "attempts+1, maks 3 kali, lalu dibatalkan"],
+          ["Kedaluwarsa", "lewat TTL / kunci tak dikenal → buat baru"]
+        ]
+      },
+      {
+        "title": "② Siklus Poster",
+        "sub": "new → background → addXxx → render → save",
+        "steps": [
+          ["Inisialisasi", "new PosterBuilder(driver) atau poster_create(w, h)"],
+          ["Latar", "background(): warna / gambar (auto-skal) / gradasi"],
+          ["Elemen", "addText / addImage / addQrcode … 14 jenis, berantai"],
+          ["Template", "useTemplate($t)->with($vars): ganti {{variable}}"],
+          ["Render", "driver menggambar kanvas; titik asal kiri-atas"],
+          ["Keluaran", "save(path, quality) ke disk atau output('png'|'jpg')"]
+        ],
+        "branchTitle": "Hasil",
+        "branches": [
+          ["File gambar", "save() menulis ke disk untuk CDN"],
+          ["Respons API", "output() mengembalikan base64 untuk frontend"],
+          ["Pakai ulang templat", "templat sama, variabel baru"]
+        ]
+      }
+    ]
+  }
+}

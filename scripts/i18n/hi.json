@@ -1,0 +1,143 @@
+{
+  "meta": {
+    "lang": "hi",
+    "langName": "हिन्दी"
+  },
+  "architecture": {
+    "title": "poster-php सिस्टम आर्किटेक्चर",
+    "subtitle": "फ़्रेमवर्क-स्वतंत्र कोर + 4 फ़्रेमवर्क अडैप्टर · हर परत नीचे के इंटरफ़ेस पर निर्भर",
+    "layerApi": "API लेयर",
+    "layerBusiness": "बिज़नेस लेयर",
+    "layerCore": "कोर लेयर",
+    "layerFoundation": "फ़ाउंडेशन",
+    "api": [
+      ["helpers.php", "captcha_* · poster_*"],
+      ["Laravel", "Facade · Provider"],
+      ["ThinkPHP", "CaptchaService"],
+      ["Webman", "CaptchaPlugin"],
+      ["Hyperf", "ConfigProvider"]
+    ],
+    "business": [
+      [
+        "कैप्चा मॉड्यूल",
+        "CaptchaManager → CaptchaFactory",
+        ["क्लिक", "रोटेट", "स्लाइडर", "रैंडम"]
+      ],
+      [
+        "पोस्टर मॉड्यूल",
+        "PosterBuilder → 14 elements → PosterTemplate",
+        ["टेक्स्ट 5", "इमेज 5", "डेटा 3", "ओवरले 1"]
+      ]
+    ],
+    "core": [
+      [
+        "इमेज ड्राइवर",
+        "ImageDriverInterface",
+        ["GdDriver · ImagickDriver", "ऑटो-डिटेक्ट, GD पर फ़ॉलबैक", "अपना ड्राइवर लाएँ"]
+      ],
+      [
+        "स्टोरेज",
+        "StorageInterface",
+        ["FileStorage · Session", "RedisStorage वितरित", "ttl व attempts का पालन"]
+      ],
+      [
+        "QR कोड",
+        "QrcodeGenerator",
+        ["शुद्ध PHP, शून्य एक्सटेंशन", "Model 2 · v1-40", "केंद्र लोगो · लेबल"]
+      ],
+      [
+        "कॉन्फ़िग",
+        "load / get / merge / reset",
+        ["captcha.* · image.*", "फ़्रेमवर्क कॉन्फ़िग पढ़ता है", "सुरक्षित डिफ़ॉल्ट"]
+      ]
+    ],
+    "foundation": {
+      "required": ["PHP ≥ 8.0", "ext-gd", "ext-mbstring"],
+      "requiredLabel": "आवश्यक",
+      "optional": ["ext-imagick वैकल्पिक", "ext-redis वैकल्पिक"]
+    },
+    "arrowCall": "कॉल",
+    "arrowDraw": "ड्रॉ",
+    "arrowRequire": "आवश्यक",
+    "footer": "इमेज ड्राइवर या स्टोरेज बैकएंड बदलें — बिज़नेस और API कोड अछूते रहते हैं"
+  },
+  "features": {
+    "title": "poster-php फ़ंक्शनल डिज़ाइन",
+    "subtitle": "दो मॉड्यूल: मानव सत्यापन और इमेज कंपोज़िशन — हर एक में हेल्पर, पूरा API और फ़्रेमवर्क फ़साड",
+    "modules": [
+      ["C", "कैप्चा", "3 इंटरैक्शन प्रकार + रैंडम"],
+      ["P", "पोस्टर", "फ़्लुएंट बिल्डर · 14 एलिमेंट"]
+    ],
+    "captchaTypes": [
+      ["click", "क्लिक", "लक्ष्य अक्षरों पर क्रम से क्लिक करें", "2-4 लक्ष्य · ±18px"],
+      ["rotate", "रोटेट", "स्लाइडर खींचकर इमेज को सीधा घुमाएँ", "30°-330° · ±5°"],
+      ["slider", "स्लाइडर", "पहेली का टुकड़ा खाँचे में खींचें", "±4px · कस्टम साइज़"],
+      ["random", "रैंडम", "तीनों में से एक बेतरतीब चुनता है", "बायपास करना कठिन"]
+    ],
+    "security": {
+      "title": "सुरक्षा और स्टोरेज",
+      "chips1": ["वन-शॉट key", "अधिकतम 3 प्रयास", "TTL 300s"],
+      "chips2": ["3-स्तरीय बैकग्राउंड", "कस्टम टॉलरेंस", "File/Session/Redis"]
+    },
+    "elementCount": "%d प्रकार",
+    "elementGroups": [
+      ["टेक्स्ट व लेआउट", "टेक्स्ट", "आर्टिस्टिक", "इमोजी", "आइकन", "काओमोजी"],
+      ["इमेज व शेप", "इमेज", "अवतार", "QR कोड", "शेप", "डिवाइडर"],
+      ["डेटा डिस्प्ले", "टेबल", "चार्ट bar/line/pie", "कैलेंडर"],
+      ["ओवरले", "वॉटरमार्क टाइल / कोण / गैप"]
+    ],
+    "template": {
+      "title": "टेम्पलेट सिस्टम",
+      "chips1": ["JSON परिभाषा", "{{variable}} रिप्लेस", "एक बार, बार-बार उपयोग"],
+      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf"]
+    },
+    "entry": {
+      "title": "एंट्री पॉइंट",
+      "subtitle": "helpers.php ग्लोबल फ़ंक्शन, सीधे उपयोग के लिए तैयार",
+      "chips": ["captcha_create()", "captcha_verify()", "poster_create()"],
+      "note": "addXxx() किसी भी क्रम में चेन करें; एलिमेंट कॉल क्रम में बनते हैं"
+    }
+  },
+  "lifecycle": {
+    "title": "poster-php जीवनचक्र",
+    "subtitle": "एक कैप्चा राउंड-ट्रिप और एक पोस्टर बिल्ड: बनाने से समाप्ति तक / इनिट से आउटपुट तक",
+    "lanes": [
+      {
+        "title": "① कैप्चा जीवनचक्र",
+        "sub": "create → generate → store → verify → expire",
+        "steps": [
+          ["बनाएँ", "create(type) · click/rotate/slider/random · कठिनाई वैकल्पिक"],
+          ["जनरेट", "generate() — रैंडम key, बैकग्राउंड, टारगेट (x/y · कोण · गैप)"],
+          ["स्टोर", "set(key, data, ttl) — File / Session / Redis, 300s, वन-शॉट"],
+          ["डिलीवर", "output('png') → base64 इमेज + अतिरिक्त संकेत, उत्तर नहीं"],
+          ["वेरिफ़ाई", "verify(key, type, data) — ±18px / ±5° / ±4px"],
+          ["निर्णय", "सीमा के भीतर → पास; बाहर → फ़ेल; key नहीं → समाप्त"]
+        ],
+        "branchTitle": "परिणाम",
+        "branches": [
+          ["पास", "del(key) — वही key दोबारा कभी उपयोग नहीं"],
+          ["फ़ेल", "attempts+1, 3 प्रयास तक, फिर अमान्य"],
+          ["समाप्त", "TTL पार या अज्ञात key — नया बनाएँ"]
+        ]
+      },
+      {
+        "title": "② पोस्टर जीवनचक्र",
+        "sub": "new → background → addXxx → render → save",
+        "steps": [
+          ["इनिट", "new PosterBuilder(driver) या poster_create(w, h)"],
+          ["बैकग्राउंड", "background() — ठोस / इमेज (ऑटो-स्केल) / ग्रेडिएंट"],
+          ["एलिमेंट", "addText / addImage / addQrcode … 14 प्रकार, चेन में"],
+          ["टेम्पलेट", "useTemplate($t)->with($vars) · {{variable}} रिप्लेस, वैकल्पिक"],
+          ["रेंडर", "ड्राइवर कैनवास बनाते हैं; मूल बिंदु ऊपर-बाएँ, साइज़ स्केल"],
+          ["आउटपुट", "save(path, quality) → डिस्क, output('png'|'jpg') → data URL"]
+        ],
+        "branchTitle": "परिणाम",
+        "branches": [
+          ["इमेज फ़ाइल", "save() → डिस्क, CDN / ऑब्जेक्ट स्टोरेज हेतु"],
+          ["API रिस्पॉन्स", "output() base64 देता है, फ़्रंटएंड हेतु तैयार"],
+          ["टेम्पलेट पुनः उपयोग", "एक ही टेम्पलेट, नए वेरिएबल — बैच आउटपुट"]
+        ]
+      }
+    ]
+  }
+}

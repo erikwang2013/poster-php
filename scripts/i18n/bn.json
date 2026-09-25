@@ -1,0 +1,143 @@
+{
+  "meta": {
+    "lang": "bn",
+    "langName": "বাংলা"
+  },
+  "architecture": {
+    "title": "poster-php সিস্টেম আর্কিটেকচার",
+    "subtitle": "ফ্রেমওয়ার্ক-নিরপেক্ষ কোর + 4টি অ্যাডাপ্টার · স্তর শুধু নিচের ইন্টারফেস-নির্ভর",
+    "layerApi": "API স্তর",
+    "layerBusiness": "বিজনেস স্তর",
+    "layerCore": "কোর স্তর",
+    "layerFoundation": "ভিত্তি স্তর",
+    "api": [
+      ["helpers.php", "captcha_* · poster_*"],
+      ["Laravel", "Facade · Provider"],
+      ["ThinkPHP", "CaptchaService"],
+      ["Webman", "CaptchaPlugin"],
+      ["Hyperf", "ConfigProvider"]
+    ],
+    "business": [
+      [
+        "ক্যাপচা মডিউল",
+        "CaptchaManager → CaptchaFactory",
+        ["ক্লিক", "ঘোরান", "স্লাইডার", "র্যান্ডম"]
+      ],
+      [
+        "পোস্টার মডিউল",
+        "PosterBuilder → 14টি এলিমেন্ট → PosterTemplate",
+        ["টেক্সট 5", "ছবি 5", "ডেটা 3", "ওভারলে 1"]
+      ]
+    ],
+    "core": [
+      [
+        "ইমেজ ড্রাইভার",
+        "ImageDriverInterface",
+        ["GdDriver · ImagickDriver", "GD-তে ফলব্যাক", "নিজের ড্রাইভার দিন"]
+      ],
+      [
+        "স্টোরেজ",
+        "StorageInterface",
+        ["FileStorage · Session", "RedisStorage · বিতরণ", "ttl ও attempts মেনে"]
+      ],
+      [
+        "কিউআর কোড",
+        "QrcodeGenerator",
+        ["শূন্য এক্সটেনশন", "Model 2 · v1-40", "মাঝে লোগো · লেবেল"]
+      ],
+      [
+        "কনফিগ",
+        "load / get / merge / reset",
+        ["captcha.* · image.*", "কনফিগ লোড করে", "নিরাপদ ডিফল্ট"]
+      ]
+    ],
+    "foundation": {
+      "required": ["PHP ≥ 8.0", "ext-gd", "ext-mbstring"],
+      "requiredLabel": "আবশ্যক",
+      "optional": ["ext-imagick ঐচ্ছিক", "ext-redis ঐচ্ছিক"]
+    },
+    "arrowCall": "কল",
+    "arrowDraw": "আঁকা",
+    "arrowRequire": "প্রয়োজন",
+    "footer": "ইমেজ ড্রাইভার বা স্টোরেজ বদলান — বিজনেস ও API কোড অপরিবর্তিত"
+  },
+  "features": {
+    "title": "poster-php ফিচার ডিজাইন",
+    "subtitle": "দুটি মডিউল: মানব যাচাই ও ছবি তৈরি — প্রতিটিতে হেল্পার, পূর্ণ API ও ফ্রেমওয়ার্ক ফ্যাসাড",
+    "modules": [
+      ["C", "ক্যাপচা", "3 ধরনের ইন্টারঅ্যাকশন + র্যান্ডম"],
+      ["P", "পোস্টার", "চেইনড বিল্ডার · 14টি এলিমেন্ট"]
+    ],
+    "captchaTypes": [
+      ["click", "ক্লিক", "ক্রমে অক্ষরে ক্লিক করুন", "2-4 লক্ষ্য · ±18px"],
+      ["rotate", "ঘোরান", "ছবি সোজা করতে টানুন", "30°-330° · ±5°"],
+      ["slider", "স্লাইডার", "পাজল ফাঁকে বসাতে টানুন", "±4px · কাস্টম"],
+      ["random", "র্যান্ডম", "এলোমেলোভাবে একটি বাছাই", "বাইপাস কঠিন"]
+    ],
+    "security": {
+      "title": "নিরাপত্তা ও স্টোরেজ",
+      "chips1": ["একবার", "সর্বোচ্চ 3 বার", "TTL 300s"],
+      "chips2": ["3 স্তরের ছবি", "টলারেন্স", "File/Session/Redis"]
+    },
+    "elementCount": "%d ধরন",
+    "elementGroups": [
+      ["টেক্সট", "Text", "Artistic", "Emoji", "Icon", "Kaomoji"],
+      ["ছবি", "Image", "Avatar", "QR Code", "Shape", "Divider"],
+      ["ডেটা", "Table", "Chart bar/line/pie", "Calendar"],
+      ["ওভারলে", "Watermark tiled / angle / gap"]
+    ],
+    "template": {
+      "title": "টেমপ্লেট সিস্টেম",
+      "chips1": ["JSON সংজ্ঞা", "{{variable}}", "বারবার ব্যবহার"],
+      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf"]
+    },
+    "entry": {
+      "title": "এন্ট্রি",
+      "subtitle": "helpers.php গ্লোবাল ফাংশন, ব্যবহারে প্রস্তুত",
+      "chips": ["captcha_create()", "captcha_verify()", "poster_create()"],
+      "note": "addXxx() যেকোনো ক্রমে; এলিমেন্ট কল-ক্রমে"
+    }
+  },
+  "lifecycle": {
+    "title": "poster-php লাইফসাইকেল",
+    "subtitle": "একটি ক্যাপচা রাউন্ড-ট্রিপ ও একটি পোস্টার তৈরি: সৃষ্টি থেকে মেয়াদ শেষ / শুরু থেকে আউটপুট",
+    "lanes": [
+      {
+        "title": "① ক্যাপচা লাইফসাইকেল",
+        "sub": "create → generate → store → verify → expire",
+        "steps": [
+          ["তৈরি", "create(type) — ক্লিক / ঘোরান / স্লাইডার / র্যান্ডম"],
+          ["জেনারেট", "generate() — কী + ব্যাকগ্রাউন্ড + লক্ষ্য"],
+          ["সংরক্ষণ", "set(key, data, ttl) — File/Session/Redis, 300s, একবার"],
+          ["প্রেরণ", "output('png') → base64 ছবি + সূত্র, উত্তর নয়"],
+          ["যাচাই", "verify(key, type, data) — ±18px / ±5° / ±4px"],
+          ["সিদ্ধান্ত", "ভিতরে → পাস; বাইরে → ফেল; মেয়াদ শেষ"]
+        ],
+        "branchTitle": "ফলাফল",
+        "branches": [
+          ["পাস", "del(key) — একই কী আর ব্যবহার করা যায় না"],
+          ["ফেল", "attempts+1, সর্বোচ্চ 3 বার, তারপর বাতিল"],
+          ["মেয়াদ শেষ", "TTL শেষ বা অজানা কী — নতুন কী"]
+        ]
+      },
+      {
+        "title": "② পোস্টার লাইফসাইকেল",
+        "sub": "new → background → addXxx → render → save",
+        "steps": [
+          ["শুরু", "new PosterBuilder(driver) বা poster_create(w, h)"],
+          ["পটভূমি", "background() — সলিড / ছবি / গ্রেডিয়েন্ট"],
+          ["এলিমেন্ট", "addText / addImage / addQrcode … 14টি ধরন, চেইনড"],
+          ["টেমপ্লেট", "useTemplate($t)->with($vars) — {{variable}} বসানো"],
+          ["রেন্ডার", "ড্রাইভার আঁকে; মূলবিন্দু উপর-বাঁয়ে"],
+          ["আউটপুট", "save(path, quality) ডিস্কে বা output() data URL"]
+        ],
+        "branchTitle": "ফলাফল",
+        "branches": [
+          ["ফাইল", "save() ডিস্কে লেখে — CDN / স্টোরেজ"],
+          ["API রেসপন্স", "output() → base64, ফ্রন্টএন্ডে"],
+          ["পুনঃব্যবহার", "একই টেমপ্লেট, নতুন চলক"]
+        ]
+      }
+    ]
+  }
+}

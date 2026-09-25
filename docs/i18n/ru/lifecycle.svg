@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 812" width="1040" height="812" font-family="'PT Sans','Noto Sans',Arial,sans-serif" role="img" aria-label="Жизненный цикл poster-php">
+  <title>Жизненный цикл poster-php</title>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#B2BEC3"/></marker></defs>
+  <rect width="1040" height="812" fill="#FFFFFF"/>
+  <text x="520" y="42" font-size="23" fill="#2D3436" font-weight="700" text-anchor="middle">Жизненный цикл poster-php</text>
+  <text x="520" y="66" font-size="13" fill="#7F8C8D" text-anchor="middle">Один цикл капчи и одна сборка постера: от создания до истечения / от инициализации до вывода</text>
+  <rect x="40" y="118" width="465" height="638" rx="16" fill="#FFF6F6" stroke="#FF6B6B" stroke-width="1.5"/>
+  <rect x="60" y="103" width="193.15" height="30" rx="15" fill="#FF6B6B"/>
+  <text x="156.58" y="123" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">① Жизненный цикл капчи</text>
+  <text x="60" y="144" font-size="11.5" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">создание → генерация → проверка → истечение</text>
+  <rect x="60" y="160" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="88" cy="189" r="15" fill="#FF6B6B"/>
+  <text x="88" y="194" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">1</text>
+  <text x="114" y="185" font-size="14" fill="#2D3436" font-weight="700">Создание</text>
+  <text x="114" y="204" font-size="11" fill="#7F8C8D">create(type) — 4 типа, сложность по желанию</text>
+  <line x1="272.5" y1="222" x2="272.5" y2="232" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="60" y="236" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="88" cy="265" r="15" fill="#FF6B6B"/>
+  <text x="88" y="270" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">2</text>
+  <text x="114" y="261" font-size="14" fill="#2D3436" font-weight="700">Генерация</text>
+  <text x="114" y="280" font-size="11" fill="#7F8C8D">generate() — ключ, фон и цели (координаты / угол / зазор)</text>
+  <line x1="272.5" y1="298" x2="272.5" y2="308" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="60" y="312" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="88" cy="341" r="15" fill="#FF6B6B"/>
+  <text x="88" y="346" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">3</text>
+  <text x="114" y="337" font-size="14" fill="#2D3436" font-weight="700">Хранение</text>
+  <text x="114" y="356" font-size="11" fill="#7F8C8D">set(key, data, ttl) — File/Session/Redis, 300 с</text>
+  <line x1="272.5" y1="374" x2="272.5" y2="384" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="60" y="388" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="88" cy="417" r="15" fill="#FF6B6B"/>
+  <text x="88" y="422" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">4</text>
+  <text x="114" y="413" font-size="14" fill="#2D3436" font-weight="700">Выдача</text>
+  <text x="114" y="432" font-size="11" fill="#7F8C8D">output(&apos;png&apos;) → картинка base64 + подсказки, но не ответ</text>
+  <line x1="272.5" y1="450" x2="272.5" y2="460" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="60" y="464" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="88" cy="493" r="15" fill="#FF6B6B"/>
+  <text x="88" y="498" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">5</text>
+  <text x="114" y="489" font-size="14" fill="#2D3436" font-weight="700">Проверка</text>
+  <text x="114" y="508" font-size="11" fill="#7F8C8D">verify(key, type, data) — ±18px / ±5° / ±4px</text>
+  <line x1="272.5" y1="526" x2="272.5" y2="536" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="60" y="540" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="88" cy="569" r="15" fill="#FF6B6B"/>
+  <text x="88" y="574" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">6</text>
+  <text x="114" y="565" font-size="14" fill="#2D3436" font-weight="700">Решение</text>
+  <text x="114" y="584" font-size="11" fill="#7F8C8D">в допуске → успех; вне допуска → провал; нет ключа → истёк</text>
+  <text x="60" y="630" font-size="12" fill="#2D3436" font-weight="700">Исходы</text>
+  <rect x="60" y="642" width="425" height="92" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="80" cy="658" r="4.5" fill="#96CEB4"/>
+  <text x="94" y="662" font-size="12.5" fill="#96CEB4" font-weight="700">Успех</text>
+  <text x="140.44" y="662" font-size="10.5" fill="#7F8C8D">del(key) — тот же ключ больше нельзя использовать</text>
+  <circle cx="80" cy="684" r="4.5" fill="#FF8E53"/>
+  <text x="94" y="688" font-size="12.5" fill="#FF8E53" font-weight="700">Провал</text>
+  <text x="147.73" y="688" font-size="10.5" fill="#7F8C8D">attempts+1, до 3 попыток, затем аннулирование</text>
+  <circle cx="80" cy="710" r="4.5" fill="#7F8C8D"/>
+  <text x="94" y="714" font-size="12.5" fill="#7F8C8D" font-weight="700">Истёк</text>
+  <text x="140.44" y="714" font-size="10.5" fill="#7F8C8D">истёк TTL или неизвестный ключ — создайте новый</text>
+  <rect x="535" y="118" width="465" height="638" rx="16" fill="#F2FBF9" stroke="#4ECDC4" stroke-width="1.5"/>
+  <rect x="555" y="103" width="207.45" height="30" rx="15" fill="#4ECDC4"/>
+  <text x="658.73" y="123" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">② Жизненный цикл постера</text>
+  <text x="555" y="144" font-size="11.5" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">new → фон → addXxx → рендер → сохранение</text>
+  <rect x="555" y="160" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="583" cy="189" r="15" fill="#4ECDC4"/>
+  <text x="583" y="194" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">1</text>
+  <text x="609" y="185" font-size="14" fill="#2D3436" font-weight="700">Инициализация</text>
+  <text x="609" y="204" font-size="11" fill="#7F8C8D">new PosterBuilder(driver) или poster_create(w, h)</text>
+  <line x1="767.5" y1="222" x2="767.5" y2="232" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="555" y="236" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="583" cy="265" r="15" fill="#4ECDC4"/>
+  <text x="583" y="270" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">2</text>
+  <text x="609" y="261" font-size="14" fill="#2D3436" font-weight="700">Фон</text>
+  <text x="609" y="280" font-size="11" fill="#7F8C8D">background() — цвет / картинка (с масштабом) / градиент</text>
+  <line x1="767.5" y1="298" x2="767.5" y2="308" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="555" y="312" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="583" cy="341" r="15" fill="#4ECDC4"/>
+  <text x="583" y="346" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">3</text>
+  <text x="609" y="337" font-size="14" fill="#2D3436" font-weight="700">Элементы</text>
+  <text x="609" y="356" font-size="11" fill="#7F8C8D">addText / addImage / addQrcode … 14 типов, цепочкой</text>
+  <line x1="767.5" y1="374" x2="767.5" y2="384" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="555" y="388" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="583" cy="417" r="15" fill="#4ECDC4"/>
+  <text x="583" y="422" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">4</text>
+  <text x="609" y="413" font-size="14" fill="#2D3436" font-weight="700">Шаблон</text>
+  <text x="609" y="432" font-size="11" fill="#7F8C8D">useTemplate($t)-&gt;with($vars) — подстановка {{variable}}</text>
+  <line x1="767.5" y1="450" x2="767.5" y2="460" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="555" y="464" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="583" cy="493" r="15" fill="#4ECDC4"/>
+  <text x="583" y="498" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">5</text>
+  <text x="609" y="489" font-size="14" fill="#2D3436" font-weight="700">Рендер</text>
+  <text x="609" y="508" font-size="11" fill="#7F8C8D">драйверы рисуют холст; начало координат — левый верх</text>
+  <line x1="767.5" y1="526" x2="767.5" y2="536" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="555" y="540" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="583" cy="569" r="15" fill="#4ECDC4"/>
+  <text x="583" y="574" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">6</text>
+  <text x="609" y="565" font-size="14" fill="#2D3436" font-weight="700">Вывод</text>
+  <text x="609" y="584" font-size="11" fill="#7F8C8D">save(path, quality) или output(&apos;png&apos;|&apos;jpg&apos;) как data URL</text>
+  <text x="555" y="630" font-size="12" fill="#2D3436" font-weight="700">Исходы</text>
+  <rect x="555" y="642" width="425" height="92" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="575" cy="658" r="4.5" fill="#45B7D1"/>
+  <text x="589" y="662" font-size="12.5" fill="#45B7D1" font-weight="700">Файл</text>
+  <text x="628.15" y="662" font-size="10.5" fill="#7F8C8D">save() пишет на диск для CDN / объектного хранилища</text>
+  <circle cx="575" cy="684" r="4.5" fill="#FF6B6B"/>
+  <text x="589" y="688" font-size="12.5" fill="#FF6B6B" font-weight="700">Ответ API</text>
+  <text x="664.59" y="688" font-size="10.5" fill="#7F8C8D">output() отдаёт base64, готовый для фронтенда</text>
+  <circle cx="575" cy="710" r="4.5" fill="#4ECDC4"/>
+  <text x="589" y="714" font-size="12.5" fill="#4ECDC4" font-weight="700">Шаблон</text>
+  <text x="642.73" y="714" font-size="10.5" fill="#7F8C8D">тот же шаблон, новые переменные — пакетный вывод</text>
+</svg>

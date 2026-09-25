@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 700" width="1040" height="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei','Noto Sans CJK SC',sans-serif" role="img" aria-label="Arsitektur Sistem poster-php">
+  <title>Arsitektur Sistem poster-php</title>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#B2BEC3"/></marker></defs>
+  <rect width="1040" height="700" fill="#FFFFFF"/>
+  <text x="520" y="42" font-size="23" fill="#2D3436" font-weight="700" text-anchor="middle">Arsitektur Sistem poster-php</text>
+  <text x="520" y="66" font-size="13" fill="#7F8C8D" text-anchor="middle">Inti tanpa ketergantungan framework + 4 adapter · tiap lapisan hanya bergantung pada antarmuka di bawahnya</text>
+  <rect x="40" y="88" width="960" height="92" rx="16" fill="#FFF6F6" stroke="#FF6B6B" stroke-width="1.5"/>
+  <rect x="60" y="73" width="108.65" height="30" rx="15" fill="#FF6B6B"/>
+  <text x="114.33" y="93" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">Lapisan API</text>
+  <rect x="64" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="64" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="148" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">helpers.php</text>
+  <text x="148" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">captcha_* · poster_*</text>
+  <rect x="250" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="250" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="334" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">Laravel</text>
+  <text x="334" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">Facade · Provider</text>
+  <rect x="436" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="436" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="520" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">ThinkPHP</text>
+  <text x="520" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">CaptchaService</text>
+  <rect x="622" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="622" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="706" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">Webman</text>
+  <text x="706" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">CaptchaPlugin</text>
+  <rect x="808" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="808" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="892" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">Hyperf</text>
+  <text x="892" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">ConfigProvider</text>
+  <rect x="40" y="236" width="960" height="140" rx="16" fill="#F2FBF9" stroke="#4ECDC4" stroke-width="1.5"/>
+  <rect x="60" y="221" width="130.1" height="30" rx="15" fill="#4ECDC4"/>
+  <text x="125.05" y="241" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">Lapisan Bisnis</text>
+  <rect x="64" y="264" width="447" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="64" y="274" width="4" height="76" rx="2" fill="#4ECDC4"/>
+  <text x="82" y="286" font-size="14" fill="#2D3436" font-weight="600">Modul Captcha</text>
+  <text x="82" y="304" font-size="12" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">CaptchaManager → CaptchaFactory</text>
+  <rect x="82" y="316" width="45.3" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="104.65" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Klik</text>
+  <rect x="135.3" y="316" width="51.63" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="161.11" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Putar</text>
+  <rect x="194.93" y="316" width="51.63" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="220.74" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Geser</text>
+  <rect x="254.55" y="316" width="45.3" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="277.2" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Acak</text>
+  <rect x="529" y="264" width="447" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="529" y="274" width="4" height="76" rx="2" fill="#4ECDC4"/>
+  <text x="547" y="286" font-size="14" fill="#2D3436" font-weight="600">Modul Poster</text>
+  <text x="547" y="304" font-size="12" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">PosterBuilder → 14 elemen → PosterTemplate</text>
+  <rect x="547" y="316" width="57.95" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="575.98" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Teks 5</text>
+  <rect x="612.95" y="316" width="70.6" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="648.25" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Gambar 5</text>
+  <rect x="691.55" y="316" width="57.95" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="720.53" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Data 3</text>
+  <rect x="757.5" y="316" width="76.93" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="795.96" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Overlay 1</text>
+  <rect x="40" y="404" width="960" height="140" rx="16" fill="#F4FAFD" stroke="#45B7D1" stroke-width="1.5"/>
+  <rect x="60" y="389" width="115.8" height="30" rx="15" fill="#45B7D1"/>
+  <text x="117.9" y="409" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">Lapisan Inti</text>
+  <rect x="64" y="432" width="219" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="64" y="442" width="4" height="76" rx="2" fill="#45B7D1"/>
+  <text x="82" y="454" font-size="13" fill="#2D3436" font-weight="600">Driver Gambar</text>
+  <text x="82" y="471" font-size="10" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">ImageDriverInterface</text>
+  <text x="82" y="490" font-size="11" fill="#7F8C8D">· GdDriver · ImagickDriver</text>
+  <text x="82" y="505" font-size="11" fill="#7F8C8D">· deteksi otomatis → GD</text>
+  <text x="82" y="520" font-size="11" fill="#7F8C8D">· driver Anda sendiri</text>
+  <rect x="295" y="432" width="219" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="295" y="442" width="4" height="76" rx="2" fill="#45B7D1"/>
+  <text x="313" y="454" font-size="13" fill="#2D3436" font-weight="600">Penyimpanan</text>
+  <text x="313" y="471" font-size="10" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">StorageInterface</text>
+  <text x="313" y="490" font-size="11" fill="#7F8C8D">· FileStorage · Session</text>
+  <text x="313" y="505" font-size="11" fill="#7F8C8D">· RedisStorage terdistribusi</text>
+  <text x="313" y="520" font-size="11" fill="#7F8C8D">· sadar ttl / attempts</text>
+  <rect x="526" y="432" width="219" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="526" y="442" width="4" height="76" rx="2" fill="#45B7D1"/>
+  <text x="544" y="454" font-size="13" fill="#2D3436" font-weight="600">Kode QR</text>
+  <text x="544" y="471" font-size="10" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">QrcodeGenerator</text>
+  <text x="544" y="490" font-size="11" fill="#7F8C8D">· PHP murni, tanpa ekstensi</text>
+  <text x="544" y="505" font-size="11" fill="#7F8C8D">· Model 2 · v1-40</text>
+  <text x="544" y="520" font-size="11" fill="#7F8C8D">· logo tengah · label</text>
+  <rect x="757" y="432" width="219" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="757" y="442" width="4" height="76" rx="2" fill="#45B7D1"/>
+  <text x="775" y="454" font-size="13" fill="#2D3436" font-weight="600">Konfigurasi</text>
+  <text x="775" y="471" font-size="10" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">load / get / merge / reset</text>
+  <text x="775" y="490" font-size="11" fill="#7F8C8D">· captcha.* · image.*</text>
+  <text x="775" y="505" font-size="11" fill="#7F8C8D">· memuat config framework</text>
+  <text x="775" y="520" font-size="11" fill="#7F8C8D">· default aman</text>
+  <rect x="40" y="572" width="960" height="80" rx="16" fill="#F5FBF7" stroke="#96CEB4" stroke-width="1.5"/>
+  <rect x="60" y="557" width="80.05" height="30" rx="15" fill="#96CEB4"/>
+  <text x="100.03" y="577" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">Fondasi</text>
+  <rect x="64" y="598" width="95.5" height="34" rx="17" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
+  <text x="111.75" y="619.5" font-size="12.5" fill="#2D3436" font-weight="600" text-anchor="middle">PHP ≥ 8.0</text>
+  <rect x="171.5" y="598" width="69.25" height="34" rx="17" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
+  <text x="206.13" y="619.5" font-size="12.5" fill="#2D3436" font-weight="600" text-anchor="middle">ext-gd</text>
+  <rect x="252.75" y="598" width="110.5" height="34" rx="17" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
+  <text x="308" y="619.5" font-size="12.5" fill="#2D3436" font-weight="600" text-anchor="middle">ext-mbstring</text>
+  <text x="383.25" y="620" font-size="11" fill="#7F8C8D">wajib</text>
+  <rect x="459.25" y="598" width="165.5" height="34" rx="17" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <text x="542" y="619.5" font-size="12.5" fill="#7F8C8D" text-anchor="middle">ext-imagick opsional</text>
+  <rect x="636.75" y="598" width="151.75" height="34" rx="17" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <text x="712.63" y="619.5" font-size="12.5" fill="#7F8C8D" text-anchor="middle">ext-redis opsional</text>
+  <line x1="520" y1="184" x2="520" y2="232" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="532" y="213" font-size="11.5" fill="#7F8C8D">Panggil</text>
+  <line x1="520" y1="380" x2="520" y2="400" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="532" y="395" font-size="11.5" fill="#7F8C8D">Gambar</text>
+  <line x1="520" y1="548" x2="520" y2="568" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="532" y="563" font-size="11.5" fill="#7F8C8D">Butuh</text>
+  <text x="520" y="684" font-size="11.5" fill="#7F8C8D" text-anchor="middle">Tukar driver gambar atau backend penyimpanan — kode bisnis dan API tetap utuh</text>
+</svg>

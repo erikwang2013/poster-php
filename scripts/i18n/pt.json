@@ -1,0 +1,143 @@
+{
+  "meta": {
+    "lang": "pt",
+    "langName": "Português"
+  },
+  "architecture": {
+    "title": "Arquitetura do Sistema poster-php",
+    "subtitle": "Núcleo agnóstico de framework + 4 adaptadores · cada camada depende só das interfaces abaixo",
+    "layerApi": "Camada de API",
+    "layerBusiness": "Camada de Negócio",
+    "layerCore": "Camada de Núcleo",
+    "layerFoundation": "Fundação",
+    "api": [
+      ["helpers.php", "captcha_* · poster_*"],
+      ["Laravel", "Facade · Provider"],
+      ["ThinkPHP", "CaptchaService"],
+      ["Webman", "CaptchaPlugin"],
+      ["Hyperf", "ConfigProvider"]
+    ],
+    "business": [
+      [
+        "Módulo Captcha",
+        "CaptchaManager → CaptchaFactory",
+        ["Clique", "Rotação", "Deslizar", "Aleatório"]
+      ],
+      [
+        "Módulo Pôster",
+        "PosterBuilder → 14 elementos → PosterTemplate",
+        ["Texto 5", "Imagem 5", "Dados 3", "Sobreposição 1"]
+      ]
+    ],
+    "core": [
+      [
+        "Driver de Imagem",
+        "ImageDriverInterface",
+        ["GdDriver · ImagickDriver", "detecção automática, usa GD", "traga seu próprio driver"]
+      ],
+      [
+        "Armazenamento",
+        "StorageInterface",
+        ["FileStorage · Session", "RedisStorage distribuído", "respeita ttl / tentativas"]
+      ],
+      [
+        "Código QR",
+        "QrcodeGenerator",
+        ["PHP puro, zero extensões", "Modelo 2 · v1-40", "logo central · legenda"]
+      ],
+      [
+        "Configuração",
+        "load / get / merge / reset",
+        ["captcha.* · image.*", "carrega config do framework", "padrões seguros"]
+      ]
+    ],
+    "foundation": {
+      "required": ["PHP ≥ 8.0", "ext-gd", "ext-mbstring"],
+      "requiredLabel": "obrigatório",
+      "optional": ["ext-imagick opcional", "ext-redis opcional"]
+    },
+    "arrowCall": "Chama",
+    "arrowDraw": "Desenha",
+    "arrowRequire": "Requer",
+    "footer": "Troque o driver de imagem ou o armazenamento — o código de negócio e de API não muda"
+  },
+  "features": {
+    "title": "Design Funcional do poster-php",
+    "subtitle": "Dois módulos: verificação humana e composição de imagens — cada um com helpers, API completa e facades",
+    "modules": [
+      ["C", "Captcha", "3 tipos de interação + aleatório"],
+      ["P", "Pôster", "Builder fluente · 14 elementos"]
+    ],
+    "captchaTypes": [
+      ["click", "Clique", "Clique nos caracteres-alvo na ordem", "2-4 alvos · ±18px"],
+      ["rotate", "Rotação", "Arraste o slider até a imagem ficar reta", "30°-330° · ±5°"],
+      ["slider", "Deslizar", "Arraste a peça até encaixar na lacuna", "±4px · tamanho livre"],
+      ["random", "Aleatório", "Sorteia um dos três aleatoriamente", "mais difícil de burlar"]
+    ],
+    "security": {
+      "title": "Segurança e Armazenamento",
+      "chips1": ["Chave de uso único", "Máx. 3 tentativas", "TTL 300s"],
+      "chips2": ["3 níveis de fundo", "Tolerância ajustável", "File/Session/Redis"]
+    },
+    "elementCount": "%d tipos",
+    "elementGroups": [
+      ["Texto", "Texto", "Artístico", "Emoji", "Ícone", "Kaomoji"],
+      ["Imagem", "Imagem", "Avatar", "QR Code", "Forma", "Divisor"],
+      ["Dados", "Tabela", "Gráfico barra/linha/pizza", "Calendário"],
+      ["Overlay", "Marca d'água: mosaico / ângulo / espaço"]
+    ],
+    "template": {
+      "title": "Sistema de Templates",
+      "chips1": ["Definição JSON", "troca de {{variable}}", "defina e reutilize"],
+      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf"]
+    },
+    "entry": {
+      "title": "Entradas",
+      "subtitle": "funções globais em helpers.php, prontas para usar",
+      "chips": ["captcha_create()", "captcha_verify()", "poster_create()"],
+      "note": "addXxx() em qualquer ordem; os elementos são pintados na ordem de chamada"
+    }
+  },
+  "lifecycle": {
+    "title": "Ciclo de Vida do poster-php",
+    "subtitle": "Um ciclo de captcha e uma montagem de pôster: da criação à expiração / do início à saída",
+    "lanes": [
+      {
+        "title": "① Ciclo do Captcha",
+        "sub": "create → generate → store → verify → expire",
+        "steps": [
+          ["Criar", "create(type) · click/rotate/slider/random, nível opcional"],
+          ["Gerar", "generate() · chave, fundo e alvos (x/y, ângulo, lacuna)"],
+          ["Armazenar", "set(key, data, ttl) · File/Session/Redis, 300s, uso único"],
+          ["Entregar", "output('png') → imagem base64 + dicas, nunca a resposta"],
+          ["Verificar", "verify(key, type, data) · ±18px / ±5° / ±4px"],
+          ["Decidir", "na tolerância passa; fora falha; sem chave expira"]
+        ],
+        "branchTitle": "Resultados",
+        "branches": [
+          ["Passou", "del(key) · a chave nunca pode ser reusada"],
+          ["Falhou", "tentativas+1, máximo 3, depois invalida"],
+          ["Expirou", "TTL vencido ou chave inválida: gere outra"]
+        ]
+      },
+      {
+        "title": "② Ciclo do Pôster",
+        "sub": "new → background → addXxx → render → save",
+        "steps": [
+          ["Início", "new PosterBuilder(driver) ou poster_create(w, h)"],
+          ["Fundo", "background() · sólido / imagem (auto) / gradiente"],
+          ["Elementos", "addText / addImage / addQrcode … 14 tipos, encadeados"],
+          ["Template", "useTemplate($t)->with($vars) · troca de {{variable}}"],
+          ["Renderizar", "os drivers pintam a tela; origem no topo-esquerdo"],
+          ["Saída", "save(path, quality) em disco ou output('png') → data URL"]
+        ],
+        "branchTitle": "Resultados",
+        "branches": [
+          ["Arquivo", "save() grava no disco para CDN / storage"],
+          ["Resposta API", "output() retorna base64 para o frontend"],
+          ["Reuso de template", "mesmo template, novas variáveis em lote"]
+        ]
+      }
+    ]
+  }
+}

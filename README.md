@@ -1,8 +1,77 @@
 # poster-php
 
+<p align="center">
+  <img src="assets/pet.svg" width="200" alt="poster-php 项目宠物 Posty" />
+</p>
+
 PHP 图片验证码与海报生成工具包 —— 框架无关核心 + Laravel / ThinkPHP / Webman / Hyperf 适配。
 
-[English Documentation](README_EN.md) | [架构设计图](docs/architecture.md)
+[English Documentation](README_EN.md) | [架构设计文档](docs/architecture.md) | [全部语言](docs/i18n/README.md)
+
+中文 | [English](README_EN.md) | [日本語](docs/i18n/ja/README.md) | [한국어](docs/i18n/ko/README.md) | [Русский](docs/i18n/ru/README.md) | [Deutsch](docs/i18n/de/README.md) | [Français](docs/i18n/fr/README.md) | [Español](docs/i18n/es/README.md) | [Português](docs/i18n/pt/README.md) | [हिन्दी](docs/i18n/hi/README.md) | [العربية](docs/i18n/ar/README.md) | [বাংলা](docs/i18n/bn/README.md) | [Bahasa Indonesia](docs/i18n/id/README.md)
+
+## 项目简介
+
+poster-php 是一个 PHP 图像工具包，只做两件事，并且做到够用：
+
+| 能力 | 说明 |
+|------|------|
+| **验证码** | 点击 / 旋转 / 滑块三种人机校验 + 随机切换，纯 PHP 生成图片与答案，不依赖第三方服务 |
+| **海报生成** | 链式 Builder API，14 种元素覆盖文字、图片、二维码、表格、图表、日历等排版需求 |
+| **框架无关** | 核心只依赖 PHP ≥ 8.0 + GD，可作为普通 Composer 包使用，无需框架 |
+| **开箱即用** | 3 个全局辅助函数 + 4 种框架适配（Laravel / ThinkPHP / Webman / Hyperf） |
+| **可替换** | 图像驱动（GD / ImageMagick）、存储后端（File / Session / Redis）均为接口实现，按需替换 |
+
+> 项目宠物 **Posty** —— 一只由海报本体、二维码卡片与滑块拼图组成的吉祥物，正好对应这个包的两大能力：出图与验证。它随包分发（[`assets/pet.svg`](assets/pet.svg) / `assets/pet.png`），可用 `->addPet()` 画进海报，也可配置为缺图占位图。
+
+## 项目结构
+
+```
+poster-php/
+├── src/                        # 核心代码：56 个 PHP 文件 / 约 4250 行
+│   ├── Captcha/                # 验证码模块：接口 + 抽象基类 + 3 种实现 + 工厂 + 管理器
+│   ├── Poster/                 # 海报模块
+│   │   ├── PosterBuilder.php   # 链式 Builder，14 个 addXxx() 方法
+│   │   ├── PosterTemplate.php  # JSON 模板 → {{变量}} 替换
+│   │   └── Elements/           # 14 种元素渲染器 + ElementInterface + 抽象基类
+│   ├── Drivers/                # 图像驱动：ImageDriverInterface / GdDriver / ImagickDriver
+│   ├── Storage/                # 验证数据存储：File / Session / Redis
+│   ├── Qrcode/                 # 纯 PHP 二维码生成器（Model 2，v1-40，零扩展依赖）
+│   ├── Adapters/               # 框架适配：Laravel / ThinkPHP / Webman / Hyperf
+│   ├── PosterConfig.php        # 配置读取（默认值兜底 + 框架配置合并）
+│   └── Installer.php           # composer 安装后自动复制配置文件
+├── config/
+│   └── poster.php              # 默认配置（验证码 / 图像驱动）
+├── assets/
+│   ├── backgrounds/            # 6 张内置验证码背景图（400×250 PNG）
+│   ├── pet.svg                 # 项目宠物 Posty（矢量源文件）
+│   └── pet.png                 # 由 pet.svg 栅格化：addPet() 与缺图占位图使用
+├── helpers.php                 # 全局函数：captcha_create / captcha_verify / poster_create
+├── tests/                      # PHPUnit 测试，41 个文件，目录结构与 src/ 镜像
+├── examples/                   # 可直接运行的示例脚本
+├── docs/                       # 架构文档、设计与生命周期图（SVG）、收款码
+└── composer.json               # PSR-4：Erikwang2013\Poster\ → src/
+```
+
+## 架构与设计
+
+### 系统架构设计
+
+分层依赖：上层只调用下层接口，替换驱动或存储实现时业务代码零改动。
+
+![poster-php 系统架构设计](docs/architecture.svg)
+
+### 功能设计
+
+两大模块的功能拆解：验证码的四种交互与安全特性、海报的 14 种元素与模板系统。
+
+![poster-php 功能设计](docs/feature-design.svg)
+
+### 生命周期
+
+一次验证码校验（创建 → 生成 → 存储 → 下发 → 校验 → 通过 / 失败 / 过期）与一张海报生成（初始化 → 背景 → 元素 → 模板 → 渲染 → 输出）的完整链路。
+
+![poster-php 生命周期](docs/lifecycle.svg)
 
 ## 功能
 
@@ -488,6 +557,8 @@ $builder->addEmoji('😀', [
 
 系统会自动检测 macOS / Linux / Windows 上的 emoji 字体路径。
 
+> 注意：能否画出 emoji 取决于字体本身。Linux 上常见的 `NotoColorEmoji.ttf` 是 CBDT 位图彩色字体，GD 的 FreeType 通道无法加载（`imagettftext()` 直接失败），此时 emoji 不会被绘制；请改用系统内可被 FreeType 正常加载的 emoji 字体。
+
 #### 字体图标 `addIcon()`
 
 ```php
@@ -541,6 +612,32 @@ $builder->addEmoticon('', [
 // 内置颜文字表达式
 // happy, love, cry, angry, surprised, cool, sleepy,
 // wave, think, shrug, tableflip, lenny
+```
+
+#### 项目宠物 `addPet()`
+
+内置吉祥物 Posty（`assets/pet.png`，由 `assets/pet.svg` 栅格化）可直接画进海报，等价于 `addImage(PosterBuilder::petPath(), $options)`：
+
+```php
+$builder->addPet([
+    'x'      => 555,
+    'y'      => 140,
+    'width'  => 150,
+    'height' => 130,   // 按给定宽高缩放，建议保持 600:520 比例
+    'radius' => 0,     // 支持 addImage() 的全部选项
+]);
+
+// 也可取路径自行使用（例如作为二维码中心 Logo）
+$logo = PosterBuilder::petPath();
+```
+
+**缺图占位图**：`addImage()` / `addAvatar()` 遇到不存在的文件时默认跳过不绘制。把 `poster.placeholder` 指向吉祥物，缺图位置就会画出 Posty，一眼看出哪张图漏了：
+
+```php
+// config/poster.php
+'poster' => [
+    'placeholder' => dirname(__DIR__) . '/assets/pet.png',
+],
 ```
 
 ### 三、模板系统
@@ -629,19 +726,7 @@ return [
 | `captcha.max_attempts` | `3` | 最大验证次数 |
 | `captcha.tolerance` | `{click:18,rotate:5,slider:4}` | 各类型容差 |
 | `image.driver` | `auto` | 图像驱动：`auto` / `gd` / `imagick` |
-
-## 目录结构
-
-```
-src/
-├── Captcha/        # 验证码模块
-├── Poster/         # 海报模块
-│   └── Elements/   # 14 种渲染元素
-├── Drivers/        # 图像驱动（GD / ImageMagick）
-├── Qrcode/         # 纯 PHP 二维码生成器
-├── Storage/        # 验证数据存储（File / Session / Redis）
-└── Adapters/       # 框架适配层
-```
+| `poster.placeholder` | `null` | 缺失图片的占位图路径，`null` 跳过不绘制；设为吉祥物路径可在缺图处绘制 Posty |
 
 ## 开源不易，欢迎支持
 

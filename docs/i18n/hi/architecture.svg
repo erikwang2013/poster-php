@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 700" width="1040" height="700" font-family="'Noto Sans Devanagari','Nirmala UI',sans-serif" role="img" aria-label="poster-php सिस्टम आर्किटेक्चर">
+  <title>poster-php सिस्टम आर्किटेक्चर</title>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#B2BEC3"/></marker></defs>
+  <rect width="1040" height="700" fill="#FFFFFF"/>
+  <text x="520" y="42" font-size="23" fill="#2D3436" font-weight="700" text-anchor="middle">poster-php सिस्टम आर्किटेक्चर</text>
+  <text x="520" y="66" font-size="13" fill="#7F8C8D" text-anchor="middle">फ़्रेमवर्क-स्वतंत्र कोर + 4 फ़्रेमवर्क अडैप्टर · हर परत नीचे के इंटरफ़ेस पर निर्भर</text>
+  <rect x="40" y="88" width="960" height="92" rx="16" fill="#FFF6F6" stroke="#FF6B6B" stroke-width="1.5"/>
+  <rect x="60" y="73" width="87.2" height="30" rx="15" fill="#FF6B6B"/>
+  <text x="103.6" y="93" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">API लेयर</text>
+  <rect x="64" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="64" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="148" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">helpers.php</text>
+  <text x="148" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">captcha_* · poster_*</text>
+  <rect x="250" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="250" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="334" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">Laravel</text>
+  <text x="334" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">Facade · Provider</text>
+  <rect x="436" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="436" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="520" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">ThinkPHP</text>
+  <text x="520" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">CaptchaService</text>
+  <rect x="622" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="622" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="706" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">Webman</text>
+  <text x="706" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">CaptchaPlugin</text>
+  <rect x="808" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="808" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="892" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">Hyperf</text>
+  <text x="892" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">ConfigProvider</text>
+  <rect x="40" y="236" width="960" height="140" rx="16" fill="#F2FBF9" stroke="#4ECDC4" stroke-width="1.5"/>
+  <rect x="60" y="221" width="115.8" height="30" rx="15" fill="#4ECDC4"/>
+  <text x="117.9" y="241" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">बिज़नेस लेयर</text>
+  <rect x="64" y="264" width="447" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="64" y="274" width="4" height="76" rx="2" fill="#4ECDC4"/>
+  <text x="82" y="286" font-size="14" fill="#2D3436" font-weight="600">कैप्चा मॉड्यूल</text>
+  <text x="82" y="304" font-size="12" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">CaptchaManager → CaptchaFactory</text>
+  <rect x="82" y="316" width="51.63" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="107.81" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">क्लिक</text>
+  <rect x="141.63" y="316" width="51.63" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="167.44" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">रोटेट</text>
+  <rect x="201.25" y="316" width="64.28" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="233.39" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">स्लाइडर</text>
+  <rect x="273.53" y="316" width="51.63" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="299.34" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">रैंडम</text>
+  <rect x="529" y="264" width="447" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="529" y="274" width="4" height="76" rx="2" fill="#4ECDC4"/>
+  <text x="547" y="286" font-size="14" fill="#2D3436" font-weight="600">पोस्टर मॉड्यूल</text>
+  <text x="547" y="304" font-size="12" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">PosterBuilder → 14 elements → PosterTemplate</text>
+  <rect x="547" y="316" width="76.93" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="585.46" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">टेक्स्ट 5</text>
+  <rect x="631.93" y="316" width="57.95" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="660.9" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">इमेज 5</text>
+  <rect x="697.88" y="316" width="57.95" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="726.85" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">डेटा 3</text>
+  <rect x="763.83" y="316" width="64.28" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="795.96" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">ओवरले 1</text>
+  <rect x="40" y="404" width="960" height="140" rx="16" fill="#F4FAFD" stroke="#45B7D1" stroke-width="1.5"/>
+  <rect x="60" y="389" width="87.2" height="30" rx="15" fill="#45B7D1"/>
+  <text x="103.6" y="409" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">कोर लेयर</text>
+  <rect x="64" y="432" width="219" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="64" y="442" width="4" height="76" rx="2" fill="#45B7D1"/>
+  <text x="82" y="454" font-size="13" fill="#2D3436" font-weight="600">इमेज ड्राइवर</text>
+  <text x="82" y="471" font-size="10" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">ImageDriverInterface</text>
+  <text x="82" y="490" font-size="11" fill="#7F8C8D">· GdDriver · ImagickDriver</text>
+  <text x="82" y="505" font-size="11" fill="#7F8C8D">· ऑटो-डिटेक्ट, GD पर फ़ॉलबैक</text>
+  <text x="82" y="520" font-size="11" fill="#7F8C8D">· अपना ड्राइवर लाएँ</text>
+  <rect x="295" y="432" width="219" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="295" y="442" width="4" height="76" rx="2" fill="#45B7D1"/>
+  <text x="313" y="454" font-size="13" fill="#2D3436" font-weight="600">स्टोरेज</text>
+  <text x="313" y="471" font-size="10" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">StorageInterface</text>
+  <text x="313" y="490" font-size="11" fill="#7F8C8D">· FileStorage · Session</text>
+  <text x="313" y="505" font-size="11" fill="#7F8C8D">· RedisStorage वितरित</text>
+  <text x="313" y="520" font-size="11" fill="#7F8C8D">· ttl व attempts का पालन</text>
+  <rect x="526" y="432" width="219" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="526" y="442" width="4" height="76" rx="2" fill="#45B7D1"/>
+  <text x="544" y="454" font-size="13" fill="#2D3436" font-weight="600">QR कोड</text>
+  <text x="544" y="471" font-size="10" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">QrcodeGenerator</text>
+  <text x="544" y="490" font-size="11" fill="#7F8C8D">· शुद्ध PHP, शून्य एक्सटेंशन</text>
+  <text x="544" y="505" font-size="11" fill="#7F8C8D">· Model 2 · v1-40</text>
+  <text x="544" y="520" font-size="11" fill="#7F8C8D">· केंद्र लोगो · लेबल</text>
+  <rect x="757" y="432" width="219" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="757" y="442" width="4" height="76" rx="2" fill="#45B7D1"/>
+  <text x="775" y="454" font-size="13" fill="#2D3436" font-weight="600">कॉन्फ़िग</text>
+  <text x="775" y="471" font-size="10" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">load / get / merge / reset</text>
+  <text x="775" y="490" font-size="11" fill="#7F8C8D">· captcha.* · image.*</text>
+  <text x="775" y="505" font-size="11" fill="#7F8C8D">· फ़्रेमवर्क कॉन्फ़िग पढ़ता है</text>
+  <text x="775" y="520" font-size="11" fill="#7F8C8D">· सुरक्षित डिफ़ॉल्ट</text>
+  <rect x="40" y="572" width="960" height="80" rx="16" fill="#F5FBF7" stroke="#96CEB4" stroke-width="1.5"/>
+  <rect x="60" y="557" width="94.35" height="30" rx="15" fill="#96CEB4"/>
+  <text x="107.18" y="577" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">फ़ाउंडेशन</text>
+  <rect x="64" y="598" width="95.5" height="34" rx="17" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
+  <text x="111.75" y="619.5" font-size="12.5" fill="#2D3436" font-weight="600" text-anchor="middle">PHP ≥ 8.0</text>
+  <rect x="171.5" y="598" width="69.25" height="34" rx="17" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
+  <text x="206.13" y="619.5" font-size="12.5" fill="#2D3436" font-weight="600" text-anchor="middle">ext-gd</text>
+  <rect x="252.75" y="598" width="110.5" height="34" rx="17" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
+  <text x="308" y="619.5" font-size="12.5" fill="#2D3436" font-weight="600" text-anchor="middle">ext-mbstring</text>
+  <text x="383.25" y="620" font-size="11" fill="#7F8C8D">आवश्यक</text>
+  <rect x="459.25" y="598" width="165.5" height="34" rx="17" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <text x="542" y="619.5" font-size="12.5" fill="#7F8C8D" text-anchor="middle">ext-imagick वैकल्पिक</text>
+  <rect x="636.75" y="598" width="151.75" height="34" rx="17" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <text x="712.63" y="619.5" font-size="12.5" fill="#7F8C8D" text-anchor="middle">ext-redis वैकल्पिक</text>
+  <line x1="520" y1="184" x2="520" y2="232" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="532" y="213" font-size="11.5" fill="#7F8C8D">कॉल</text>
+  <line x1="520" y1="380" x2="520" y2="400" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="532" y="395" font-size="11.5" fill="#7F8C8D">ड्रॉ</text>
+  <line x1="520" y1="548" x2="520" y2="568" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="532" y="563" font-size="11.5" fill="#7F8C8D">आवश्यक</text>
+  <text x="520" y="684" font-size="11.5" fill="#7F8C8D" text-anchor="middle">इमेज ड्राइवर या स्टोरेज बैकएंड बदलें — बिज़नेस और API कोड अछूते रहते हैं</text>
+</svg>

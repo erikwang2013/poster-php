@@ -1,0 +1,143 @@
+{
+  "meta": {
+    "lang": "ja",
+    "langName": "日本語"
+  },
+  "architecture": {
+    "title": "poster-php システムアーキテクチャ",
+    "subtitle": "フレームワーク非依存のコア + 4 つのアダプタ · 各層は下位のインターフェースだけに依存",
+    "layerApi": "API レイヤー",
+    "layerBusiness": "ビジネス層",
+    "layerCore": "コア層",
+    "layerFoundation": "基盤層",
+    "api": [
+      ["helpers.php", "captcha_* · poster_*"],
+      ["Laravel", "Facade · Provider"],
+      ["ThinkPHP", "CaptchaService"],
+      ["Webman", "CaptchaPlugin"],
+      ["Hyperf", "ConfigProvider"]
+    ],
+    "business": [
+      [
+        "CAPTCHA モジュール",
+        "CaptchaManager → CaptchaFactory",
+        ["Click", "Rotate", "Slider", "Random"]
+      ],
+      [
+        "ポスターモジュール",
+        "PosterBuilder → 14 要素 → PosterTemplate",
+        ["テキスト 5", "画像 5", "データ 3", "オーバーレイ 1"]
+      ]
+    ],
+    "core": [
+      [
+        "画像ドライバ",
+        "ImageDriverInterface",
+        ["GdDriver · ImagickDriver", "自動検出、GD にフォールバック", "独自ドライバも利用可"]
+      ],
+      [
+        "ストレージ",
+        "StorageInterface",
+        ["FileStorage · Session", "RedisStorage 分散対応", "ttl / attempts に対応"]
+      ],
+      [
+        "QR コード",
+        "QrcodeGenerator",
+        ["純 PHP・拡張機能ゼロ", "Model 2 · v1-40", "中央ロゴ・ラベル"]
+      ],
+      [
+        "設定",
+        "load / get / merge / reset",
+        ["captcha.* · image.*", "フレームワーク設定を読込", "安全なデフォルト値"]
+      ]
+    ],
+    "foundation": {
+      "required": ["PHP ≥ 8.0", "ext-gd", "ext-mbstring"],
+      "requiredLabel": "必須",
+      "optional": ["ext-imagick 任意", "ext-redis 任意"]
+    },
+    "arrowCall": "呼び出し",
+    "arrowDraw": "描画",
+    "arrowRequire": "依存",
+    "footer": "画像ドライバやストレージを差し替えても、ビジネス層と API のコードは変更不要"
+  },
+  "features": {
+    "title": "poster-php 機能設計",
+    "subtitle": "2 つのモジュール：CAPTCHA 検証と画像合成。ヘルパー・API・フレームワークファサードを完備",
+    "modules": [
+      ["認", "CAPTCHA", "3 種類の操作 + ランダム"],
+      ["画", "ポスター", "チェーン式ビルダー · 14 要素"]
+    ],
+    "captchaTypes": [
+      ["click", "クリック", "画像内の目標文字を順番にクリック", "2〜4 個 · ±18px"],
+      ["rotate", "回転", "スライダーをドラッグして正しい角度に戻す", "30°〜330° · ±5°"],
+      ["slider", "スライダー", "パズルピースを切り欠きまでドラッグ", "±4px · サイズ変更可"],
+      ["random", "ランダム", "3 種類からランダムに 1 つ選択", "突破が困難"]
+    ],
+    "security": {
+      "title": "セキュリティとストレージ",
+      "chips1": ["1 回限りの key", "最大 3 回", "TTL 300 秒"],
+      "chips2": ["3 段階の背景", "カスタム許容値", "File/Session/Redis"]
+    },
+    "elementCount": "%d 種類",
+    "elementGroups": [
+      ["文字と配置", "テキスト", "アート文字", "絵文字", "アイコン", "顔文字"],
+      ["画像と図形", "画像", "アバター", "QR コード", "図形", "区切り線"],
+      ["データ表示", "表", "グラフ 棒/折れ線/円", "カレンダー"],
+      ["オーバーレイ", "透かし タイル/角度/間隔"]
+    ],
+    "template": {
+      "title": "テンプレートシステム",
+      "chips1": ["JSON 定義", "{{variable}} 置換", "1 度定義して再利用"],
+      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf"]
+    },
+    "entry": {
+      "title": "入口",
+      "subtitle": "helpers.php のグローバル関数、すぐに使える",
+      "chips": ["captcha_create()", "captcha_verify()", "poster_create()"],
+      "note": "addXxx() は任意の順で連結可、要素は呼び出し順に描画"
+    }
+  },
+  "lifecycle": {
+    "title": "poster-php のライフサイクル",
+    "subtitle": "CAPTCHA 検証 1 回とポスター生成 1 枚：作成から期限切れまで / 初期化から出力まで",
+    "lanes": [
+      {
+        "title": "① CAPTCHA のライフサイクル",
+        "sub": "作成 → 生成 → 保存 → 配信 → 検証 → 期限切れ",
+        "steps": [
+          ["作成", "create(type) — 4 種類から選択、難易度も指定可"],
+          ["生成", "generate() — キー・背景・目標座標をランダム生成"],
+          ["保存", "set(key, data, ttl) — File / Session / Redis に保存"],
+          ["配信", "output('png') → base64 画像 + ヒント（答えは含まない）"],
+          ["検証", "verify(key, type, data) — 許容差 ±18px / ±5° / ±4px"],
+          ["判定", "許容内なら成功、外れれば失敗、key 無しは期限切れ"]
+        ],
+        "branchTitle": "結果",
+        "branches": [
+          ["成功", "del(key) — 同じ key は再利用不可"],
+          ["失敗", "attempts+1、最大 3 回で無効化"],
+          ["期限切れ", "TTL 切れか key 不明 — 再生成"]
+        ]
+      },
+      {
+        "title": "② ポスターのライフサイクル",
+        "sub": "new → 背景 → addXxx → 描画 → 保存",
+        "steps": [
+          ["初期化", "new PosterBuilder(driver) または poster_create(w, h)"],
+          ["背景", "background() — 単色 / 画像（自動縮小） / グラデーション"],
+          ["要素", "addText / addImage / addQrcode … 14 種類をチェーン"],
+          ["テンプレート", "useTemplate($t)->with($vars) — {{variable}} 置換"],
+          ["描画", "ドライバが描画。原点は左上、サイズは自動調整"],
+          ["出力", "save() で保存、output() で data URL を返す"]
+        ],
+        "branchTitle": "結果",
+        "branches": [
+          ["画像ファイル", "ディスク保存して CDN やオブジェクトストレージへ"],
+          ["API レスポンス", "output() は base64 を返し、そのまま表示"],
+          ["テンプレ再利用", "同じテンプレートに変数を差し替え一括出力"]
+        ]
+      }
+    ]
+  }
+}

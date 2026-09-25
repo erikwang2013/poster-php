@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 748" width="1040" height="748" font-family="'Hiragino Sans','Yu Gothic','Noto Sans JP','Meiryo',sans-serif" role="img" aria-label="poster-php 機能設計">
+  <title>poster-php 機能設計</title>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#B2BEC3"/></marker></defs>
+  <rect width="1040" height="748" fill="#FFFFFF"/>
+  <text x="520" y="42" font-size="23" fill="#2D3436" font-weight="700" text-anchor="middle">poster-php 機能設計</text>
+  <text x="520" y="66" font-size="13" fill="#7F8C8D" text-anchor="middle">2 つのモジュール：CAPTCHA 検証と画像合成。ヘルパー・API・フレームワークファサードを完備</text>
+  <rect x="40" y="88" width="470" height="54" rx="14" fill="#FFF6F6" stroke="#FF6B6B" stroke-width="1.5"/>
+  <circle cx="78" cy="115" r="14" fill="#FF6B6B"/>
+  <text x="78" y="120" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">認</text>
+  <text x="102" y="112" font-size="15.5" fill="#2D3436" font-weight="700">CAPTCHA</text>
+  <text x="102" y="130" font-size="11.5" fill="#7F8C8D">3 種類の操作 + ランダム</text>
+  <rect x="530" y="88" width="470" height="54" rx="14" fill="#F2FBF9" stroke="#4ECDC4" stroke-width="1.5"/>
+  <circle cx="568" cy="115" r="14" fill="#4ECDC4"/>
+  <text x="568" y="120" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">画</text>
+  <text x="592" y="112" font-size="15.5" fill="#2D3436" font-weight="700">ポスター</text>
+  <text x="592" y="130" font-size="11.5" fill="#7F8C8D">チェーン式ビルダー · 14 要素</text>
+  <rect x="40" y="154" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="40" y="164" width="4" height="44" rx="2" fill="#FF6B6B"/>
+  <circle cx="74" cy="186" r="14" fill="#FFF0F0" stroke="#FF6B6B" stroke-width="1.5"/>
+  <text x="74" y="191" font-size="13" fill="#FF6B6B" font-weight="700" text-anchor="middle">1</text>
+  <text x="100" y="182" font-size="14" fill="#2D3436" font-weight="600">クリック</text>
+  <text x="165.36" y="182" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">click</text>
+  <text x="100" y="202" font-size="11.5" fill="#7F8C8D">画像内の目標文字を順番にクリック</text>
+  <text x="490" y="186" font-size="11" fill="#7F8C8D" text-anchor="end">2〜4 個 · ±18px</text>
+  <rect x="40" y="230" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="40" y="240" width="4" height="44" rx="2" fill="#FF6B6B"/>
+  <circle cx="74" cy="262" r="14" fill="#FFF0F0" stroke="#FF6B6B" stroke-width="1.5"/>
+  <text x="74" y="267" font-size="13" fill="#FF6B6B" font-weight="700" text-anchor="middle">2</text>
+  <text x="100" y="258" font-size="14" fill="#2D3436" font-weight="600">回転</text>
+  <text x="135.68" y="258" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">rotate</text>
+  <text x="100" y="278" font-size="11.5" fill="#7F8C8D">スライダーをドラッグして正しい角度に戻す</text>
+  <text x="490" y="262" font-size="11" fill="#7F8C8D" text-anchor="end">30°〜330° · ±5°</text>
+  <rect x="40" y="306" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="40" y="316" width="4" height="44" rx="2" fill="#FF6B6B"/>
+  <circle cx="74" cy="338" r="14" fill="#FFF0F0" stroke="#FF6B6B" stroke-width="1.5"/>
+  <text x="74" y="343" font-size="13" fill="#FF6B6B" font-weight="700" text-anchor="middle">3</text>
+  <text x="100" y="334" font-size="14" fill="#2D3436" font-weight="600">スライダー</text>
+  <text x="180.2" y="334" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">slider</text>
+  <text x="100" y="354" font-size="11.5" fill="#7F8C8D">パズルピースを切り欠きまでドラッグ</text>
+  <text x="490" y="338" font-size="11" fill="#7F8C8D" text-anchor="end">±4px · サイズ変更可</text>
+  <rect x="40" y="382" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="40" y="392" width="4" height="44" rx="2" fill="#FF6B6B"/>
+  <circle cx="74" cy="414" r="14" fill="#FFF0F0" stroke="#FF6B6B" stroke-width="1.5"/>
+  <text x="74" y="419" font-size="13" fill="#FF6B6B" font-weight="700" text-anchor="middle">4</text>
+  <text x="100" y="410" font-size="14" fill="#2D3436" font-weight="600">ランダム</text>
+  <text x="165.36" y="410" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">random</text>
+  <text x="100" y="430" font-size="11.5" fill="#7F8C8D">3 種類からランダムに 1 つ選択</text>
+  <text x="490" y="414" font-size="11" fill="#7F8C8D" text-anchor="end">突破が困難</text>
+  <rect x="40" y="458" width="470" height="122" rx="12" fill="#FFF6F6" stroke="#FF6B6B" stroke-width="1.5"/>
+  <text x="60" y="486" font-size="14" fill="#2D3436" font-weight="700">セキュリティとストレージ</text>
+  <rect x="60" y="500" width="103.95" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="111.98" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">1 回限りの key</text>
+  <rect x="171.95" y="500" width="73.48" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="208.69" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">最大 3 回</text>
+  <rect x="253.43" y="500" width="82.1" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="294.48" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">TTL 300 秒</text>
+  <rect x="60" y="538" width="90.15" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="105.08" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">3 段階の背景</text>
+  <rect x="158.15" y="538" width="100.5" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="208.4" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">カスタム許容値</text>
+  <rect x="266.65" y="538" width="133.85" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="333.58" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">File/Session/Redis</text>
+  <rect x="530" y="154" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="530" y="164" width="4" height="44" rx="2" fill="#4ECDC4"/>
+  <text x="550" y="182" font-size="14" fill="#2D3436" font-weight="600">文字と配置</text>
+  <text x="630.2" y="182" font-size="11" fill="#4ECDC4" font-weight="700">5 種類</text>
+  <rect x="550" y="188" width="62" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="581" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">テキスト</text>
+  <rect x="618" y="188" width="73" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="654.5" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">アート文字</text>
+  <rect x="697" y="188" width="51" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="722.5" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">絵文字</text>
+  <rect x="754" y="188" width="62" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="785" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">アイコン</text>
+  <rect x="822" y="188" width="51" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="847.5" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">顔文字</text>
+  <rect x="530" y="230" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="530" y="240" width="4" height="44" rx="2" fill="#45B7D1"/>
+  <text x="550" y="258" font-size="14" fill="#2D3436" font-weight="600">画像と図形</text>
+  <text x="630.2" y="258" font-size="11" fill="#45B7D1" font-weight="700">5 種類</text>
+  <rect x="550" y="264" width="40" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="570" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">画像</text>
+  <rect x="596" y="264" width="62" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="627" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">アバター</text>
+  <rect x="664" y="264" width="69.15" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="698.58" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">QR コード</text>
+  <rect x="739.15" y="264" width="40" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="759.15" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">図形</text>
+  <rect x="785.15" y="264" width="62" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="816.15" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">区切り線</text>
+  <rect x="530" y="306" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="530" y="316" width="4" height="44" rx="2" fill="#FF8E53"/>
+  <text x="550" y="334" font-size="14" fill="#2D3436" font-weight="600">データ表示</text>
+  <text x="630.2" y="334" font-size="11" fill="#FF8E53" font-weight="700">3 種類</text>
+  <rect x="550" y="340" width="29" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
+  <text x="564.5" y="355.96" font-size="11" fill="#2D3436" text-anchor="middle">表</text>
+  <rect x="585" y="340" width="124.15" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
+  <text x="647.08" y="355.96" font-size="11" fill="#2D3436" text-anchor="middle">グラフ 棒/折れ線/円</text>
+  <rect x="715.15" y="340" width="73" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
+  <text x="751.65" y="355.96" font-size="11" fill="#2D3436" text-anchor="middle">カレンダー</text>
+  <rect x="530" y="382" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="530" y="392" width="4" height="44" rx="2" fill="#96CEB4"/>
+  <text x="550" y="410" font-size="14" fill="#2D3436" font-weight="600">オーバーレイ</text>
+  <text x="645.04" y="410" font-size="11" fill="#96CEB4" font-weight="700">1 種類</text>
+  <rect x="550" y="416" width="146.15" height="24" rx="12" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
+  <text x="623.08" y="431.96" font-size="11" fill="#2D3436" text-anchor="middle">透かし タイル/角度/間隔</text>
+  <rect x="530" y="458" width="470" height="122" rx="12" fill="#F2FBF9" stroke="#4ECDC4" stroke-width="1.5"/>
+  <text x="550" y="486" font-size="14" fill="#2D3436" font-weight="700">テンプレートシステム</text>
+  <rect x="550" y="500" width="74.63" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="587.31" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">JSON 定義</text>
+  <rect x="632.63" y="500" width="125.23" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="695.24" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">{{variable}} 置換</text>
+  <rect x="765.85" y="500" width="124.65" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="828.18" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">1 度定義して再利用</text>
+  <rect x="550" y="538" width="64.28" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="582.14" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Laravel</text>
+  <rect x="622.28" y="538" width="70.6" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="657.58" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">ThinkPHP</text>
+  <rect x="700.88" y="538" width="57.95" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="729.85" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Webman</text>
+  <rect x="766.83" y="538" width="57.95" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="795.8" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Hyperf</text>
+  <rect x="40" y="594" width="960" height="68" rx="12" fill="#F8FAFC" stroke="#D8E0E6" stroke-width="1.5"/>
+  <text x="60" y="622" font-size="13.5" fill="#2D3436" font-weight="700">入口</text>
+  <text x="144" y="622" font-size="11.5" fill="#7F8C8D">helpers.php のグローバル関数、すぐに使える</text>
+  <rect x="60" y="629" width="121.2" height="26" rx="13" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <text x="120.6" y="646.14" font-size="11.5" fill="#2D3436" text-anchor="middle">captcha_create()</text>
+  <rect x="189.2" y="629" width="121.2" height="26" rx="13" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <text x="249.8" y="646.14" font-size="11.5" fill="#2D3436" text-anchor="middle">captcha_verify()</text>
+  <rect x="318.4" y="629" width="114.88" height="26" rx="13" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <text x="375.84" y="646.14" font-size="11.5" fill="#2D3436" text-anchor="middle">poster_create()</text>
+  <text x="470" y="644" font-size="11.5" fill="#7F8C8D">addXxx() は任意の順で連結可、要素は呼び出し順に描画</text>
+</svg>

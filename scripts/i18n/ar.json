@@ -1,0 +1,119 @@
+{
+  "meta": {
+    "lang": "ar",
+    "langName": "العربية"
+  },
+  "architecture": {
+    "title": "بنية نظام poster-php",
+    "subtitle": "نواة مستقلة عن الأطر + 4 محولات · كل طبقة تعتمد فقط على الواجهات أسفلها",
+    "layerApi": "طبقة الواجهة",
+    "layerBusiness": "طبقة الأعمال",
+    "layerCore": "الطبقة الأساسية",
+    "layerFoundation": "البنية التحتية",
+    "api": [
+      ["helpers.php", "captcha_* · poster_*"],
+      ["Laravel", "Facade · Provider"],
+      ["ThinkPHP", "CaptchaService"],
+      ["Webman", "CaptchaPlugin"],
+      ["Hyperf", "ConfigProvider"]
+    ],
+    "business": [
+      ["وحدة التحقق", "CaptchaManager → CaptchaFactory", ["نقر", "تدوير", "سحب", "عشوائي"]],
+      ["وحدة الملصق", "PosterBuilder → 14 عنصرًا → PosterTemplate", ["نص 5", "صورة 5", "بيانات 3", "تراكب 1"]]
+    ],
+    "core": [
+      ["مشغل الصور", "ImageDriverInterface", ["GdDriver · ImagickDriver", "كشف تلقائي وتراجع إلى GD", "يمكن إضافة مشغل خاص"]],
+      ["التخزين", "StorageInterface", ["FileStorage · Session", "RedisStorage موزّع", "يراعي ttl / attempts"]],
+      ["رمز QR", "QrcodeGenerator", ["PHP خالص بلا إضافات", "Model 2 · v1-40", "شعار في الوسط · نص سفلي"]],
+      ["الإعدادات", "load / get / merge / reset", ["captcha.* · image.*", "يحمل إعدادات الإطار", "قيم افتراضية آمنة"]]
+    ],
+    "foundation": {
+      "required": ["PHP ≥ 8.0", "ext-gd", "ext-mbstring"],
+      "requiredLabel": "مطلوب",
+      "optional": ["ext-imagick اختياري", "ext-redis اختياري"]
+    },
+    "arrowCall": "استدعاء",
+    "arrowDraw": "رسم",
+    "arrowRequire": "اعتماد",
+    "footer": "استبدل مشغل الصور أو مخزن البيانات دون لمس كود الأعمال أو الواجهة"
+  },
+  "features": {
+    "title": "التصميم الوظيفي لـ poster-php",
+    "subtitle": "وحدتان: التحقق البشري وتركيب الصور — لكل منهما دوال مساعدة وواجهة كاملة ومحولات للأطر",
+    "modules": [
+      ["ت", "التحقق", "3 أنماط تفاعل + عشوائي"],
+      ["م", "الملصق", "باني متسلسل · 14 عنصرًا"]
+    ],
+    "captchaTypes": [
+      ["click", "النقر", "انقر الأحرف الهدف بالترتيب", "2-4 أهداف · ±18px"],
+      ["rotate", "التدوير", "اسحب المؤشر لإعادة الصورة لوضعها", "30°-330° · ±5°"],
+      ["slider", "السحب", "اسحب قطعة الأحجية إلى الفراغ", "±4px · مقاس مخصص"],
+      ["random", "عشوائي", "يختار واحدًا من الثلاثة عشوائيًا", "أصعب في التجاوز"]
+    ],
+    "security": {
+      "title": "الأمان والتخزين",
+      "chips1": ["مفتاح لمرة واحدة", "3 محاولات كحد أقصى", "صلاحية 300 ث"],
+      "chips2": ["خلفيات بثلاث طبقات", "هامش خطأ قابل للضبط", "File/Session/Redis"]
+    },
+    "elementCount": "%d أنواع",
+    "elementGroups": [
+      ["النصوص والتخطيط", "نص", "فني", "إيموجي", "أيقونة", "كاوموجي"],
+      ["الصور والأشكال", "صورة", "صورة رمزية", "رمز QR", "شكل", "فاصل"],
+      ["عرض البيانات", "جدول", "مخطط أعمدة/خطي/دائري", "تقويم"],
+      ["التراكب", "علامة مائية مبلّطة / زاوية / تباعد"]
+    ],
+    "template": {
+      "title": "نظام القوالب",
+      "chips1": ["تعريف JSON", "استبدال {{variable}}", "عرّف مرة وأعد الاستخدام"],
+      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf"]
+    },
+    "entry": {
+      "title": "نقاط الدخول",
+      "subtitle": "دوال helpers.php العامة جاهزة للاستخدام",
+      "chips": ["captcha_create()", "captcha_verify()", "poster_create()"],
+      "note": "تتسلسل addXxx() بأي ترتيب؛ وتُرسم العناصر بترتيب الاستدعاء"
+    }
+  },
+  "lifecycle": {
+    "title": "دورة حياة poster-php",
+    "subtitle": "رحلة تحقق كاملة وبناء ملصق واحد: من الإنشاء إلى الانتهاء / من التهيئة إلى الإخراج",
+    "lanes": [
+      {
+        "title": "① دورة حياة التحقق",
+        "sub": "create → generate → store → verify → expire",
+        "steps": [
+          ["الإنشاء", "create(type) — click/rotate/slider/random، صعوبة اختيارية"],
+          ["التوليد", "generate() — مفتاح وخلفية وأهداف (إحداثيات/زاوية/فراغ)"],
+          ["التخزين", "set(key, data, ttl) — File/Session/Redis، 300 ث ولمرة واحدة"],
+          ["الإرسال", "output('png') → صورة base64 + تلميحات، دون الإجابة"],
+          ["التحقق", "verify(key, type, data) — ±18px / ±5° / ±4px"],
+          ["القرار", "داخل الهامش → نجاح؛ خارجه → فشل؛ لا مفتاح → منتهٍ"]
+        ],
+        "branchTitle": "النتائج",
+        "branches": [
+          ["نجاح", "del(key) — لا يمكن إعادة استخدام المفتاح"],
+          ["فشل", "attempts+1 حتى 3 محاولات ثم يُبطَل"],
+          ["انتهاء", "تجاوز المدة أو مفتاح مجهول — أنشئ واحدًا جديدًا"]
+        ]
+      },
+      {
+        "title": "② دورة حياة الملصق",
+        "sub": "new → background → addXxx → render → save",
+        "steps": [
+          ["التهيئة", "new PosterBuilder(driver) أو poster_create(w, h)"],
+          ["الخلفية", "background() — لون / صورة (بتحجيم تلقائي) / تدرّج"],
+          ["العناصر", "addText / addImage / addQrcode … 14 نوعًا، متسلسلة"],
+          ["القالب", "useTemplate($t)->with($vars) — استبدال {{variable}}"],
+          ["الرسم", "المشغلات ترسم على اللوحة؛ الأصل أعلى اليسار والمقاسات تتحجم"],
+          ["الإخراج", "save(path, quality) للملف أو output('png'|'jpg') كـ data URL"]
+        ],
+        "branchTitle": "النتائج",
+        "branches": [
+          ["ملف صورة", "save() يكتب على القرص لـ CDN أو التخزين"],
+          ["رد API", "output() يعيد base64 جاهزًا للواجهة"],
+          ["قالب متكرر", "نفس القالب بمتغيرات جديدة — إخراج دفعي"]
+        ]
+      }
+    ]
+  }
+}

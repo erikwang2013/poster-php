@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 748" width="1040" height="748" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei','Noto Sans CJK SC',sans-serif" role="img" aria-label="poster-php Functional Design">
+  <title>poster-php Functional Design</title>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#B2BEC3"/></marker></defs>
+  <rect width="1040" height="748" fill="#FFFFFF"/>
+  <text x="520" y="42" font-size="23" fill="#2D3436" font-weight="700" text-anchor="middle">poster-php Functional Design</text>
+  <text x="520" y="66" font-size="13" fill="#7F8C8D" text-anchor="middle">Two modules: human verification and image composition — each with helpers, a full API and framework facades</text>
+  <rect x="40" y="88" width="470" height="54" rx="14" fill="#FFF6F6" stroke="#FF6B6B" stroke-width="1.5"/>
+  <circle cx="78" cy="115" r="14" fill="#FF6B6B"/>
+  <text x="78" y="120" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">C</text>
+  <text x="102" y="112" font-size="15.5" fill="#2D3436" font-weight="700">Captcha</text>
+  <text x="102" y="130" font-size="11.5" fill="#7F8C8D">3 interaction types + random</text>
+  <rect x="530" y="88" width="470" height="54" rx="14" fill="#F2FBF9" stroke="#4ECDC4" stroke-width="1.5"/>
+  <circle cx="568" cy="115" r="14" fill="#4ECDC4"/>
+  <text x="568" y="120" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">P</text>
+  <text x="592" y="112" font-size="15.5" fill="#2D3436" font-weight="700">Poster</text>
+  <text x="592" y="130" font-size="11.5" fill="#7F8C8D">Fluent builder · 14 elements</text>
+  <rect x="40" y="154" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="40" y="164" width="4" height="44" rx="2" fill="#FF6B6B"/>
+  <circle cx="74" cy="186" r="14" fill="#FFF0F0" stroke="#FF6B6B" stroke-width="1.5"/>
+  <text x="74" y="191" font-size="13" fill="#FF6B6B" font-weight="700" text-anchor="middle">1</text>
+  <text x="100" y="182" font-size="14" fill="#2D3436" font-weight="600">Click</text>
+  <text x="146.81" y="182" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">click</text>
+  <text x="100" y="202" font-size="11.5" fill="#7F8C8D">Click the target characters in order</text>
+  <text x="490" y="186" font-size="11" fill="#7F8C8D" text-anchor="end">2-4 targets · ±18px</text>
+  <rect x="40" y="230" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="40" y="240" width="4" height="44" rx="2" fill="#FF6B6B"/>
+  <circle cx="74" cy="262" r="14" fill="#FFF0F0" stroke="#FF6B6B" stroke-width="1.5"/>
+  <text x="74" y="267" font-size="13" fill="#FF6B6B" font-weight="700" text-anchor="middle">2</text>
+  <text x="100" y="258" font-size="14" fill="#2D3436" font-weight="600">Rotate</text>
+  <text x="154.97" y="258" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">rotate</text>
+  <text x="100" y="278" font-size="11.5" fill="#7F8C8D">Drag the slider to rotate the image back</text>
+  <text x="490" y="262" font-size="11" fill="#7F8C8D" text-anchor="end">30°-330° · ±5°</text>
+  <rect x="40" y="306" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="40" y="316" width="4" height="44" rx="2" fill="#FF6B6B"/>
+  <circle cx="74" cy="338" r="14" fill="#FFF0F0" stroke="#FF6B6B" stroke-width="1.5"/>
+  <text x="74" y="343" font-size="13" fill="#FF6B6B" font-weight="700" text-anchor="middle">3</text>
+  <text x="100" y="334" font-size="14" fill="#2D3436" font-weight="600">Slider</text>
+  <text x="154.97" y="334" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">slider</text>
+  <text x="100" y="354" font-size="11.5" fill="#7F8C8D">Drag the puzzle piece into the gap</text>
+  <text x="490" y="338" font-size="11" fill="#7F8C8D" text-anchor="end">±4px · custom size</text>
+  <rect x="40" y="382" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="40" y="392" width="4" height="44" rx="2" fill="#FF6B6B"/>
+  <circle cx="74" cy="414" r="14" fill="#FFF0F0" stroke="#FF6B6B" stroke-width="1.5"/>
+  <text x="74" y="419" font-size="13" fill="#FF6B6B" font-weight="700" text-anchor="middle">4</text>
+  <text x="100" y="410" font-size="14" fill="#2D3436" font-weight="600">Random</text>
+  <text x="154.97" y="410" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">random</text>
+  <text x="100" y="430" font-size="11.5" fill="#7F8C8D">Picks one of the three at random</text>
+  <text x="490" y="414" font-size="11" fill="#7F8C8D" text-anchor="end">harder to bypass</text>
+  <rect x="40" y="458" width="470" height="122" rx="12" fill="#FFF6F6" stroke="#FF6B6B" stroke-width="1.5"/>
+  <text x="60" y="486" font-size="14" fill="#2D3436" font-weight="700">Security &amp; Storage</text>
+  <rect x="60" y="500" width="95.9" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="107.95" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">One-shot key</text>
+  <rect x="163.9" y="500" width="108.55" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="218.18" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Max 3 attempts</text>
+  <rect x="280.45" y="500" width="70.6" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="315.75" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">TTL 300s</text>
+  <rect x="60" y="538" width="133.85" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="126.93" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">3-tier backgrounds</text>
+  <rect x="201.85" y="538" width="121.2" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="262.45" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Custom tolerance</text>
+  <rect x="331.05" y="538" width="133.85" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="397.98" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">File/Session/Redis</text>
+  <rect x="530" y="154" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="530" y="164" width="4" height="44" rx="2" fill="#4ECDC4"/>
+  <text x="550" y="182" font-size="14" fill="#2D3436" font-weight="600">Text &amp; Layout</text>
+  <text x="662.11" y="182" font-size="11" fill="#4ECDC4" font-weight="700">5 types</text>
+  <rect x="550" y="188" width="42.2" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="571.1" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Text</text>
+  <rect x="598.2" y="188" width="66.4" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="631.4" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Artistic</text>
+  <rect x="670.6" y="188" width="48.25" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="694.73" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Emoji</text>
+  <rect x="724.85" y="188" width="42.2" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="745.95" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Icon</text>
+  <rect x="773.05" y="188" width="60.35" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="803.23" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Kaomoji</text>
+  <rect x="530" y="230" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="530" y="240" width="4" height="44" rx="2" fill="#45B7D1"/>
+  <text x="550" y="258" font-size="14" fill="#2D3436" font-weight="600">Image &amp; Shape</text>
+  <text x="662.11" y="258" font-size="11" fill="#45B7D1" font-weight="700">5 types</text>
+  <rect x="550" y="264" width="48.25" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="574.13" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Image</text>
+  <rect x="604.25" y="264" width="54.3" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="631.4" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Avatar</text>
+  <rect x="664.55" y="264" width="60.35" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="694.73" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">QR Code</text>
+  <rect x="730.9" y="264" width="48.25" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="755.03" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Shape</text>
+  <rect x="785.15" y="264" width="60.35" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="815.33" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Divider</text>
+  <rect x="530" y="306" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="530" y="316" width="4" height="44" rx="2" fill="#FF8E53"/>
+  <text x="550" y="334" font-size="14" fill="#2D3436" font-weight="600">Data Display</text>
+  <text x="653.94" y="334" font-size="11" fill="#FF8E53" font-weight="700">3 types</text>
+  <rect x="550" y="340" width="48.25" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
+  <text x="574.13" y="355.96" font-size="11" fill="#2D3436" text-anchor="middle">Table</text>
+  <rect x="604.25" y="340" width="126.9" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
+  <text x="667.7" y="355.96" font-size="11" fill="#2D3436" text-anchor="middle">Chart bar/line/pie</text>
+  <rect x="737.15" y="340" width="66.4" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
+  <text x="770.35" y="355.96" font-size="11" fill="#2D3436" text-anchor="middle">Calendar</text>
+  <rect x="530" y="382" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="530" y="392" width="4" height="44" rx="2" fill="#96CEB4"/>
+  <text x="550" y="410" font-size="14" fill="#2D3436" font-weight="600">Overlay</text>
+  <text x="613.13" y="410" font-size="11" fill="#96CEB4" font-weight="700">1 types</text>
+  <rect x="550" y="416" width="193.45" height="24" rx="12" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
+  <text x="646.73" y="431.96" font-size="11" fill="#2D3436" text-anchor="middle">Watermark tiled / angle / gap</text>
+  <rect x="530" y="458" width="470" height="122" rx="12" fill="#F2FBF9" stroke="#4ECDC4" stroke-width="1.5"/>
+  <text x="550" y="486" font-size="14" fill="#2D3436" font-weight="700">Template System</text>
+  <rect x="550" y="500" width="114.88" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="607.44" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">JSON definition</text>
+  <rect x="672.88" y="500" width="146.5" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="746.13" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">{{variable}} replace</text>
+  <rect x="827.38" y="500" width="133.85" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="894.3" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">define once, reuse</text>
+  <rect x="550" y="538" width="64.28" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="582.14" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Laravel</text>
+  <rect x="622.28" y="538" width="70.6" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="657.58" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">ThinkPHP</text>
+  <rect x="700.88" y="538" width="57.95" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="729.85" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Webman</text>
+  <rect x="766.83" y="538" width="57.95" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="795.8" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Hyperf</text>
+  <rect x="40" y="594" width="960" height="68" rx="12" fill="#F8FAFC" stroke="#D8E0E6" stroke-width="1.5"/>
+  <text x="60" y="622" font-size="13.5" fill="#2D3436" font-weight="700">Entry Points</text>
+  <text x="144" y="622" font-size="11.5" fill="#7F8C8D">helpers.php global functions, ready to use</text>
+  <rect x="60" y="629" width="121.2" height="26" rx="13" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <text x="120.6" y="646.14" font-size="11.5" fill="#2D3436" text-anchor="middle">captcha_create()</text>
+  <rect x="189.2" y="629" width="121.2" height="26" rx="13" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <text x="249.8" y="646.14" font-size="11.5" fill="#2D3436" text-anchor="middle">captcha_verify()</text>
+  <rect x="318.4" y="629" width="114.88" height="26" rx="13" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <text x="375.84" y="646.14" font-size="11.5" fill="#2D3436" text-anchor="middle">poster_create()</text>
+  <text x="470" y="644" font-size="11.5" fill="#7F8C8D">addXxx() chains in any order; elements are painted in call order</text>
+</svg>

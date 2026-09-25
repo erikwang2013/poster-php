@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 748" width="1040" height="748" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei','Noto Sans CJK SC',sans-serif" role="img" aria-label="Design Funcional do poster-php">
+  <title>Design Funcional do poster-php</title>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#B2BEC3"/></marker></defs>
+  <rect width="1040" height="748" fill="#FFFFFF"/>
+  <text x="520" y="42" font-size="23" fill="#2D3436" font-weight="700" text-anchor="middle">Design Funcional do poster-php</text>
+  <text x="520" y="66" font-size="13" fill="#7F8C8D" text-anchor="middle">Dois módulos: verificação humana e composição de imagens — cada um com helpers, API completa e facades</text>
+  <rect x="40" y="88" width="470" height="54" rx="14" fill="#FFF6F6" stroke="#FF6B6B" stroke-width="1.5"/>
+  <circle cx="78" cy="115" r="14" fill="#FF6B6B"/>
+  <text x="78" y="120" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">C</text>
+  <text x="102" y="112" font-size="15.5" fill="#2D3436" font-weight="700">Captcha</text>
+  <text x="102" y="130" font-size="11.5" fill="#7F8C8D">3 tipos de interação + aleatório</text>
+  <rect x="530" y="88" width="470" height="54" rx="14" fill="#F2FBF9" stroke="#4ECDC4" stroke-width="1.5"/>
+  <circle cx="568" cy="115" r="14" fill="#4ECDC4"/>
+  <text x="568" y="120" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">P</text>
+  <text x="592" y="112" font-size="15.5" fill="#2D3436" font-weight="700">Pôster</text>
+  <text x="592" y="130" font-size="11.5" fill="#7F8C8D">Builder fluente · 14 elementos</text>
+  <rect x="40" y="154" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="40" y="164" width="4" height="44" rx="2" fill="#FF6B6B"/>
+  <circle cx="74" cy="186" r="14" fill="#FFF0F0" stroke="#FF6B6B" stroke-width="1.5"/>
+  <text x="74" y="191" font-size="13" fill="#FF6B6B" font-weight="700" text-anchor="middle">1</text>
+  <text x="100" y="182" font-size="14" fill="#2D3436" font-weight="600">Clique</text>
+  <text x="154.97" y="182" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">click</text>
+  <text x="100" y="202" font-size="11.5" fill="#7F8C8D">Clique nos caracteres-alvo na ordem</text>
+  <text x="490" y="186" font-size="11" fill="#7F8C8D" text-anchor="end">2-4 alvos · ±18px</text>
+  <rect x="40" y="230" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="40" y="240" width="4" height="44" rx="2" fill="#FF6B6B"/>
+  <circle cx="74" cy="262" r="14" fill="#FFF0F0" stroke="#FF6B6B" stroke-width="1.5"/>
+  <text x="74" y="267" font-size="13" fill="#FF6B6B" font-weight="700" text-anchor="middle">2</text>
+  <text x="100" y="258" font-size="14" fill="#2D3436" font-weight="600">Rotação</text>
+  <text x="163.13" y="258" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">rotate</text>
+  <text x="100" y="278" font-size="11.5" fill="#7F8C8D">Arraste o slider até a imagem ficar reta</text>
+  <text x="490" y="262" font-size="11" fill="#7F8C8D" text-anchor="end">30°-330° · ±5°</text>
+  <rect x="40" y="306" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="40" y="316" width="4" height="44" rx="2" fill="#FF6B6B"/>
+  <circle cx="74" cy="338" r="14" fill="#FFF0F0" stroke="#FF6B6B" stroke-width="1.5"/>
+  <text x="74" y="343" font-size="13" fill="#FF6B6B" font-weight="700" text-anchor="middle">3</text>
+  <text x="100" y="334" font-size="14" fill="#2D3436" font-weight="600">Deslizar</text>
+  <text x="171.3" y="334" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">slider</text>
+  <text x="100" y="354" font-size="11.5" fill="#7F8C8D">Arraste a peça até encaixar na lacuna</text>
+  <text x="490" y="338" font-size="11" fill="#7F8C8D" text-anchor="end">±4px · tamanho livre</text>
+  <rect x="40" y="382" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="40" y="392" width="4" height="44" rx="2" fill="#FF6B6B"/>
+  <circle cx="74" cy="414" r="14" fill="#FFF0F0" stroke="#FF6B6B" stroke-width="1.5"/>
+  <text x="74" y="419" font-size="13" fill="#FF6B6B" font-weight="700" text-anchor="middle">4</text>
+  <text x="100" y="410" font-size="14" fill="#2D3436" font-weight="600">Aleatório</text>
+  <text x="179.46" y="410" font-size="11" fill="#FF6B6B" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">random</text>
+  <text x="100" y="430" font-size="11.5" fill="#7F8C8D">Sorteia um dos três aleatoriamente</text>
+  <text x="490" y="414" font-size="11" fill="#7F8C8D" text-anchor="end">mais difícil de burlar</text>
+  <rect x="40" y="458" width="470" height="122" rx="12" fill="#FFF6F6" stroke="#FF6B6B" stroke-width="1.5"/>
+  <text x="60" y="486" font-size="14" fill="#2D3436" font-weight="700">Segurança e Armazenamento</text>
+  <rect x="60" y="500" width="133.85" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="126.93" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Chave de uso único</text>
+  <rect x="201.85" y="500" width="127.53" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="265.61" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Máx. 3 tentativas</text>
+  <rect x="337.38" y="500" width="70.6" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="372.68" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">TTL 300s</text>
+  <rect x="60" y="538" width="127.53" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="123.76" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">3 níveis de fundo</text>
+  <rect x="195.53" y="538" width="146.5" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="268.78" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Tolerância ajustável</text>
+  <rect x="350.03" y="538" width="133.85" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="416.95" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">File/Session/Redis</text>
+  <rect x="530" y="154" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="530" y="164" width="4" height="44" rx="2" fill="#4ECDC4"/>
+  <text x="550" y="182" font-size="14" fill="#2D3436" font-weight="600">Texto</text>
+  <text x="596.81" y="182" font-size="11" fill="#4ECDC4" font-weight="700">5 tipos</text>
+  <rect x="550" y="188" width="48.25" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="574.13" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Texto</text>
+  <rect x="604.25" y="188" width="72.45" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="640.48" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Artístico</text>
+  <rect x="682.7" y="188" width="48.25" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="706.83" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Emoji</text>
+  <rect x="736.95" y="188" width="48.25" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="761.08" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Ícone</text>
+  <rect x="791.2" y="188" width="60.35" height="24" rx="12" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="821.38" y="203.96" font-size="11" fill="#2D3436" text-anchor="middle">Kaomoji</text>
+  <rect x="530" y="230" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="530" y="240" width="4" height="44" rx="2" fill="#45B7D1"/>
+  <text x="550" y="258" font-size="14" fill="#2D3436" font-weight="600">Imagem</text>
+  <text x="604.97" y="258" font-size="11" fill="#45B7D1" font-weight="700">5 tipos</text>
+  <rect x="550" y="264" width="54.3" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="577.15" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Imagem</text>
+  <rect x="610.3" y="264" width="54.3" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="637.45" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Avatar</text>
+  <rect x="670.6" y="264" width="60.35" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="700.78" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">QR Code</text>
+  <rect x="736.95" y="264" width="48.25" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="761.08" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Forma</text>
+  <rect x="791.2" y="264" width="60.35" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
+  <text x="821.38" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Divisor</text>
+  <rect x="530" y="306" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="530" y="316" width="4" height="44" rx="2" fill="#FF8E53"/>
+  <text x="550" y="334" font-size="14" fill="#2D3436" font-weight="600">Dados</text>
+  <text x="596.81" y="334" font-size="11" fill="#FF8E53" font-weight="700">3 tipos</text>
+  <rect x="550" y="340" width="54.3" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
+  <text x="577.15" y="355.96" font-size="11" fill="#2D3436" text-anchor="middle">Tabela</text>
+  <rect x="610.3" y="340" width="169.25" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
+  <text x="694.93" y="355.96" font-size="11" fill="#2D3436" text-anchor="middle">Gráfico barra/linha/pizza</text>
+  <rect x="785.55" y="340" width="78.5" height="24" rx="12" fill="#FFFFFF" stroke="#FF8E53" stroke-width="1"/>
+  <text x="824.8" y="355.96" font-size="11" fill="#2D3436" text-anchor="middle">Calendário</text>
+  <rect x="530" y="382" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="530" y="392" width="4" height="44" rx="2" fill="#96CEB4"/>
+  <text x="550" y="410" font-size="14" fill="#2D3436" font-weight="600">Overlay</text>
+  <text x="613.13" y="410" font-size="11" fill="#96CEB4" font-weight="700">1 tipos</text>
+  <rect x="550" y="416" width="253.95" height="24" rx="12" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
+  <text x="676.98" y="431.96" font-size="11" fill="#2D3436" text-anchor="middle">Marca d&apos;água: mosaico / ângulo / espaço</text>
+  <rect x="530" y="458" width="470" height="122" rx="12" fill="#F2FBF9" stroke="#4ECDC4" stroke-width="1.5"/>
+  <text x="550" y="486" font-size="14" fill="#2D3436" font-weight="700">Sistema de Templates</text>
+  <rect x="550" y="500" width="108.55" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="604.28" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Definição JSON</text>
+  <rect x="666.55" y="500" width="152.83" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="742.96" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">troca de {{variable}}</text>
+  <rect x="827.38" y="500" width="133.85" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="894.3" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">defina e reutilize</text>
+  <rect x="550" y="538" width="64.28" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="582.14" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Laravel</text>
+  <rect x="622.28" y="538" width="70.6" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="657.58" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">ThinkPHP</text>
+  <rect x="700.88" y="538" width="57.95" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="729.85" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Webman</text>
+  <rect x="766.83" y="538" width="57.95" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="795.8" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Hyperf</text>
+  <rect x="40" y="594" width="960" height="68" rx="12" fill="#F8FAFC" stroke="#D8E0E6" stroke-width="1.5"/>
+  <text x="60" y="622" font-size="13.5" fill="#2D3436" font-weight="700">Entradas</text>
+  <text x="144" y="622" font-size="11.5" fill="#7F8C8D">funções globais em helpers.php, prontas para usar</text>
+  <rect x="60" y="629" width="121.2" height="26" rx="13" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <text x="120.6" y="646.14" font-size="11.5" fill="#2D3436" text-anchor="middle">captcha_create()</text>
+  <rect x="189.2" y="629" width="121.2" height="26" rx="13" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <text x="249.8" y="646.14" font-size="11.5" fill="#2D3436" text-anchor="middle">captcha_verify()</text>
+  <rect x="318.4" y="629" width="114.88" height="26" rx="13" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <text x="375.84" y="646.14" font-size="11.5" fill="#2D3436" text-anchor="middle">poster_create()</text>
+  <text x="470" y="644" font-size="11.5" fill="#7F8C8D">addXxx() em qualquer ordem; os elementos são pintados na ordem de chamada</text>
+</svg>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 812" width="1040" height="812" font-family="'Noto Sans Devanagari','Nirmala UI',sans-serif" role="img" aria-label="poster-php जीवनचक्र">
+  <title>poster-php जीवनचक्र</title>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#B2BEC3"/></marker></defs>
+  <rect width="1040" height="812" fill="#FFFFFF"/>
+  <text x="520" y="42" font-size="23" fill="#2D3436" font-weight="700" text-anchor="middle">poster-php जीवनचक्र</text>
+  <text x="520" y="66" font-size="13" fill="#7F8C8D" text-anchor="middle">एक कैप्चा राउंड-ट्रिप और एक पोस्टर बिल्ड: बनाने से समाप्ति तक / इनिट से आउटपुट तक</text>
+  <rect x="40" y="118" width="465" height="638" rx="16" fill="#FFF6F6" stroke="#FF6B6B" stroke-width="1.5"/>
+  <rect x="60" y="103" width="157.4" height="30" rx="15" fill="#FF6B6B"/>
+  <text x="138.7" y="123" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">① कैप्चा जीवनचक्र</text>
+  <text x="60" y="144" font-size="11.5" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">create → generate → store → verify → expire</text>
+  <rect x="60" y="160" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="88" cy="189" r="15" fill="#FF6B6B"/>
+  <text x="88" y="194" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">1</text>
+  <text x="114" y="185" font-size="14" fill="#2D3436" font-weight="700">बनाएँ</text>
+  <text x="114" y="204" font-size="11" fill="#7F8C8D">create(type) · click/rotate/slider/random · कठिनाई वैकल्पिक</text>
+  <line x1="272.5" y1="222" x2="272.5" y2="232" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="60" y="236" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="88" cy="265" r="15" fill="#FF6B6B"/>
+  <text x="88" y="270" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">2</text>
+  <text x="114" y="261" font-size="14" fill="#2D3436" font-weight="700">जनरेट</text>
+  <text x="114" y="280" font-size="11" fill="#7F8C8D">generate() — रैंडम key, बैकग्राउंड, टारगेट (x/y · कोण · गैप)</text>
+  <line x1="272.5" y1="298" x2="272.5" y2="308" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="60" y="312" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="88" cy="341" r="15" fill="#FF6B6B"/>
+  <text x="88" y="346" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">3</text>
+  <text x="114" y="337" font-size="14" fill="#2D3436" font-weight="700">स्टोर</text>
+  <text x="114" y="356" font-size="11" fill="#7F8C8D">set(key, data, ttl) — File / Session / Redis, 300s, वन-शॉट</text>
+  <line x1="272.5" y1="374" x2="272.5" y2="384" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="60" y="388" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="88" cy="417" r="15" fill="#FF6B6B"/>
+  <text x="88" y="422" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">4</text>
+  <text x="114" y="413" font-size="14" fill="#2D3436" font-weight="700">डिलीवर</text>
+  <text x="114" y="432" font-size="11" fill="#7F8C8D">output(&apos;png&apos;) → base64 इमेज + अतिरिक्त संकेत, उत्तर नहीं</text>
+  <line x1="272.5" y1="450" x2="272.5" y2="460" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="60" y="464" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="88" cy="493" r="15" fill="#FF6B6B"/>
+  <text x="88" y="498" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">5</text>
+  <text x="114" y="489" font-size="14" fill="#2D3436" font-weight="700">वेरिफ़ाई</text>
+  <text x="114" y="508" font-size="11" fill="#7F8C8D">verify(key, type, data) — ±18px / ±5° / ±4px</text>
+  <line x1="272.5" y1="526" x2="272.5" y2="536" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="60" y="540" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="88" cy="569" r="15" fill="#FF6B6B"/>
+  <text x="88" y="574" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">6</text>
+  <text x="114" y="565" font-size="14" fill="#2D3436" font-weight="700">निर्णय</text>
+  <text x="114" y="584" font-size="11" fill="#7F8C8D">सीमा के भीतर → पास; बाहर → फ़ेल; key नहीं → समाप्त</text>
+  <text x="60" y="630" font-size="12" fill="#2D3436" font-weight="700">परिणाम</text>
+  <rect x="60" y="642" width="425" height="92" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="80" cy="658" r="4.5" fill="#96CEB4"/>
+  <text x="94" y="662" font-size="12.5" fill="#96CEB4" font-weight="700">पास</text>
+  <text x="125.86" y="662" font-size="10.5" fill="#7F8C8D">del(key) — वही key दोबारा कभी उपयोग नहीं</text>
+  <circle cx="80" cy="684" r="4.5" fill="#FF8E53"/>
+  <text x="94" y="688" font-size="12.5" fill="#FF8E53" font-weight="700">फ़ेल</text>
+  <text x="133.15" y="688" font-size="10.5" fill="#7F8C8D">attempts+1, 3 प्रयास तक, फिर अमान्य</text>
+  <circle cx="80" cy="710" r="4.5" fill="#7F8C8D"/>
+  <text x="94" y="714" font-size="12.5" fill="#7F8C8D" font-weight="700">समाप्त</text>
+  <text x="147.73" y="714" font-size="10.5" fill="#7F8C8D">TTL पार या अज्ञात key — नया बनाएँ</text>
+  <rect x="535" y="118" width="465" height="638" rx="16" fill="#F2FBF9" stroke="#4ECDC4" stroke-width="1.5"/>
+  <rect x="555" y="103" width="157.4" height="30" rx="15" fill="#4ECDC4"/>
+  <text x="633.7" y="123" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">② पोस्टर जीवनचक्र</text>
+  <text x="555" y="144" font-size="11.5" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">new → background → addXxx → render → save</text>
+  <rect x="555" y="160" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="583" cy="189" r="15" fill="#4ECDC4"/>
+  <text x="583" y="194" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">1</text>
+  <text x="609" y="185" font-size="14" fill="#2D3436" font-weight="700">इनिट</text>
+  <text x="609" y="204" font-size="11" fill="#7F8C8D">new PosterBuilder(driver) या poster_create(w, h)</text>
+  <line x1="767.5" y1="222" x2="767.5" y2="232" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="555" y="236" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="583" cy="265" r="15" fill="#4ECDC4"/>
+  <text x="583" y="270" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">2</text>
+  <text x="609" y="261" font-size="14" fill="#2D3436" font-weight="700">बैकग्राउंड</text>
+  <text x="609" y="280" font-size="11" fill="#7F8C8D">background() — ठोस / इमेज (ऑटो-स्केल) / ग्रेडिएंट</text>
+  <line x1="767.5" y1="298" x2="767.5" y2="308" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="555" y="312" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="583" cy="341" r="15" fill="#4ECDC4"/>
+  <text x="583" y="346" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">3</text>
+  <text x="609" y="337" font-size="14" fill="#2D3436" font-weight="700">एलिमेंट</text>
+  <text x="609" y="356" font-size="11" fill="#7F8C8D">addText / addImage / addQrcode … 14 प्रकार, चेन में</text>
+  <line x1="767.5" y1="374" x2="767.5" y2="384" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="555" y="388" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="583" cy="417" r="15" fill="#4ECDC4"/>
+  <text x="583" y="422" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">4</text>
+  <text x="609" y="413" font-size="14" fill="#2D3436" font-weight="700">टेम्पलेट</text>
+  <text x="609" y="432" font-size="11" fill="#7F8C8D">useTemplate($t)-&gt;with($vars) · {{variable}} रिप्लेस, वैकल्पिक</text>
+  <line x1="767.5" y1="450" x2="767.5" y2="460" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="555" y="464" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="583" cy="493" r="15" fill="#4ECDC4"/>
+  <text x="583" y="498" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">5</text>
+  <text x="609" y="489" font-size="14" fill="#2D3436" font-weight="700">रेंडर</text>
+  <text x="609" y="508" font-size="11" fill="#7F8C8D">ड्राइवर कैनवास बनाते हैं; मूल बिंदु ऊपर-बाएँ, साइज़ स्केल</text>
+  <line x1="767.5" y1="526" x2="767.5" y2="536" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="555" y="540" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="583" cy="569" r="15" fill="#4ECDC4"/>
+  <text x="583" y="574" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">6</text>
+  <text x="609" y="565" font-size="14" fill="#2D3436" font-weight="700">आउटपुट</text>
+  <text x="609" y="584" font-size="11" fill="#7F8C8D">save(path, quality) → डिस्क, output(&apos;png&apos;|&apos;jpg&apos;) → data URL</text>
+  <text x="555" y="630" font-size="12" fill="#2D3436" font-weight="700">परिणाम</text>
+  <rect x="555" y="642" width="425" height="92" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <circle cx="575" cy="658" r="4.5" fill="#45B7D1"/>
+  <text x="589" y="662" font-size="12.5" fill="#45B7D1" font-weight="700">इमेज फ़ाइल</text>
+  <text x="671.88" y="662" font-size="10.5" fill="#7F8C8D">save() → डिस्क, CDN / ऑब्जेक्ट स्टोरेज हेतु</text>
+  <circle cx="575" cy="684" r="4.5" fill="#FF6B6B"/>
+  <text x="589" y="688" font-size="12.5" fill="#FF6B6B" font-weight="700">API रिस्पॉन्स</text>
+  <text x="693.74" y="688" font-size="10.5" fill="#7F8C8D">output() base64 देता है, फ़्रंटएंड हेतु तैयार</text>
+  <circle cx="575" cy="710" r="4.5" fill="#4ECDC4"/>
+  <text x="589" y="714" font-size="12.5" fill="#4ECDC4" font-weight="700">टेम्पलेट पुनः उपयोग</text>
+  <text x="737.46" y="714" font-size="10.16" fill="#7F8C8D">एक ही टेम्पलेट, नए वेरिएबल — बैच आउटपुट</text>
+</svg>

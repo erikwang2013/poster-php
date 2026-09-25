@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 700" width="1040" height="700" font-family="'Hiragino Sans','Yu Gothic','Noto Sans JP','Meiryo',sans-serif" role="img" aria-label="poster-php システムアーキテクチャ">
+  <title>poster-php システムアーキテクチャ</title>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#B2BEC3"/></marker></defs>
+  <rect width="1040" height="700" fill="#FFFFFF"/>
+  <text x="520" y="42" font-size="23" fill="#2D3436" font-weight="700" text-anchor="middle">poster-php システムアーキテクチャ</text>
+  <text x="520" y="66" font-size="13" fill="#7F8C8D" text-anchor="middle">フレームワーク非依存のコア + 4 つのアダプタ · 各層は下位のインターフェースだけに依存</text>
+  <rect x="40" y="88" width="960" height="92" rx="16" fill="#FFF6F6" stroke="#FF6B6B" stroke-width="1.5"/>
+  <rect x="60" y="73" width="110.6" height="30" rx="15" fill="#FF6B6B"/>
+  <text x="115.3" y="93" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">API レイヤー</text>
+  <rect x="64" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="64" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="148" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">helpers.php</text>
+  <text x="148" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">captcha_* · poster_*</text>
+  <rect x="250" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="250" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="334" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">Laravel</text>
+  <text x="334" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">Facade · Provider</text>
+  <rect x="436" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="436" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="520" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">ThinkPHP</text>
+  <text x="520" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">CaptchaService</text>
+  <rect x="622" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="622" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="706" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">Webman</text>
+  <text x="706" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">CaptchaPlugin</text>
+  <rect x="808" y="118" width="168" height="50" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="808" y="128" width="4" height="30" rx="2" fill="#FF6B6B"/>
+  <text x="892" y="142" font-size="13.5" fill="#2D3436" font-weight="600" text-anchor="middle">Hyperf</text>
+  <text x="892" y="160" font-size="11" fill="#7F8C8D" text-anchor="middle">ConfigProvider</text>
+  <rect x="40" y="236" width="960" height="140" rx="16" fill="#F2FBF9" stroke="#4ECDC4" stroke-width="1.5"/>
+  <rect x="60" y="221" width="95" height="30" rx="15" fill="#4ECDC4"/>
+  <text x="107.5" y="241" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">ビジネス層</text>
+  <rect x="64" y="264" width="447" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="64" y="274" width="4" height="76" rx="2" fill="#4ECDC4"/>
+  <text x="82" y="286" font-size="14" fill="#2D3436" font-weight="600">CAPTCHA モジュール</text>
+  <text x="82" y="304" font-size="12" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">CaptchaManager → CaptchaFactory</text>
+  <rect x="82" y="316" width="51.63" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="107.81" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Click</text>
+  <rect x="141.63" y="316" width="57.95" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="170.6" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Rotate</text>
+  <rect x="207.58" y="316" width="57.95" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="236.55" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Slider</text>
+  <rect x="273.53" y="316" width="57.95" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="302.5" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Random</text>
+  <rect x="529" y="264" width="447" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="529" y="274" width="4" height="76" rx="2" fill="#4ECDC4"/>
+  <text x="547" y="286" font-size="14" fill="#2D3436" font-weight="600">ポスターモジュール</text>
+  <text x="547" y="304" font-size="12" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">PosterBuilder → 14 要素 → PosterTemplate</text>
+  <rect x="547" y="316" width="78.65" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="586.33" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">テキスト 5</text>
+  <rect x="633.65" y="316" width="55.65" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="661.48" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">画像 5</text>
+  <rect x="697.3" y="316" width="67.15" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="730.88" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">データ 3</text>
+  <rect x="772.45" y="316" width="101.65" height="30" rx="15" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="823.28" y="335.14" font-size="11.5" fill="#2D3436" text-anchor="middle">オーバーレイ 1</text>
+  <rect x="40" y="404" width="960" height="140" rx="16" fill="#F4FAFD" stroke="#45B7D1" stroke-width="1.5"/>
+  <rect x="60" y="389" width="69" height="30" rx="15" fill="#45B7D1"/>
+  <text x="94.5" y="409" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">コア層</text>
+  <rect x="64" y="432" width="219" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="64" y="442" width="4" height="76" rx="2" fill="#45B7D1"/>
+  <text x="82" y="454" font-size="13" fill="#2D3436" font-weight="600">画像ドライバ</text>
+  <text x="82" y="471" font-size="10" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">ImageDriverInterface</text>
+  <text x="82" y="490" font-size="11" fill="#7F8C8D">· GdDriver · ImagickDriver</text>
+  <text x="82" y="505" font-size="11" fill="#7F8C8D">· 自動検出、GD にフォールバック</text>
+  <text x="82" y="520" font-size="11" fill="#7F8C8D">· 独自ドライバも利用可</text>
+  <rect x="295" y="432" width="219" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="295" y="442" width="4" height="76" rx="2" fill="#45B7D1"/>
+  <text x="313" y="454" font-size="13" fill="#2D3436" font-weight="600">ストレージ</text>
+  <text x="313" y="471" font-size="10" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">StorageInterface</text>
+  <text x="313" y="490" font-size="11" fill="#7F8C8D">· FileStorage · Session</text>
+  <text x="313" y="505" font-size="11" fill="#7F8C8D">· RedisStorage 分散対応</text>
+  <text x="313" y="520" font-size="11" fill="#7F8C8D">· ttl / attempts に対応</text>
+  <rect x="526" y="432" width="219" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="526" y="442" width="4" height="76" rx="2" fill="#45B7D1"/>
+  <text x="544" y="454" font-size="13" fill="#2D3436" font-weight="600">QR コード</text>
+  <text x="544" y="471" font-size="10" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">QrcodeGenerator</text>
+  <text x="544" y="490" font-size="11" fill="#7F8C8D">· 純 PHP・拡張機能ゼロ</text>
+  <text x="544" y="505" font-size="11" fill="#7F8C8D">· Model 2 · v1-40</text>
+  <text x="544" y="520" font-size="11" fill="#7F8C8D">· 中央ロゴ・ラベル</text>
+  <rect x="757" y="432" width="219" height="96" rx="10" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <rect x="757" y="442" width="4" height="76" rx="2" fill="#45B7D1"/>
+  <text x="775" y="454" font-size="13" fill="#2D3436" font-weight="600">設定</text>
+  <text x="775" y="471" font-size="10" fill="#7F8C8D" font-family="'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">load / get / merge / reset</text>
+  <text x="775" y="490" font-size="11" fill="#7F8C8D">· captcha.* · image.*</text>
+  <text x="775" y="505" font-size="11" fill="#7F8C8D">· フレームワーク設定を読込</text>
+  <text x="775" y="520" font-size="11" fill="#7F8C8D">· 安全なデフォルト値</text>
+  <rect x="40" y="572" width="960" height="80" rx="16" fill="#F5FBF7" stroke="#96CEB4" stroke-width="1.5"/>
+  <rect x="60" y="557" width="69" height="30" rx="15" fill="#96CEB4"/>
+  <text x="94.5" y="577" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">基盤層</text>
+  <rect x="64" y="598" width="95.5" height="34" rx="17" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
+  <text x="111.75" y="619.5" font-size="12.5" fill="#2D3436" font-weight="600" text-anchor="middle">PHP ≥ 8.0</text>
+  <rect x="171.5" y="598" width="69.25" height="34" rx="17" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
+  <text x="206.13" y="619.5" font-size="12.5" fill="#2D3436" font-weight="600" text-anchor="middle">ext-gd</text>
+  <rect x="252.75" y="598" width="110.5" height="34" rx="17" fill="#FFFFFF" stroke="#96CEB4" stroke-width="1"/>
+  <text x="308" y="619.5" font-size="12.5" fill="#2D3436" font-weight="600" text-anchor="middle">ext-mbstring</text>
+  <text x="383.25" y="620" font-size="11" fill="#7F8C8D">必須</text>
+  <rect x="459.25" y="598" width="135.5" height="34" rx="17" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <text x="527" y="619.5" font-size="12.5" fill="#7F8C8D" text-anchor="middle">ext-imagick 任意</text>
+  <rect x="606.75" y="598" width="121.75" height="34" rx="17" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
+  <text x="667.63" y="619.5" font-size="12.5" fill="#7F8C8D" text-anchor="middle">ext-redis 任意</text>
+  <line x1="520" y1="184" x2="520" y2="232" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="532" y="213" font-size="11.5" fill="#7F8C8D">呼び出し</text>
+  <line x1="520" y1="380" x2="520" y2="400" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="532" y="395" font-size="11.5" fill="#7F8C8D">描画</text>
+  <line x1="520" y1="548" x2="520" y2="568" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="532" y="563" font-size="11.5" fill="#7F8C8D">依存</text>
+  <text x="520" y="684" font-size="11.5" fill="#7F8C8D" text-anchor="middle">画像ドライバやストレージを差し替えても、ビジネス層と API のコードは変更不要</text>
+</svg>

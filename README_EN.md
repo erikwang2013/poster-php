@@ -1,8 +1,77 @@
 # poster-php
 
+<p align="center">
+  <img src="assets/pet.svg" width="200" alt="poster-php mascot Posty" />
+</p>
+
 PHP image captcha & poster generation toolkit — framework-agnostic core with Laravel / ThinkPHP / Webman / Hyperf adapters.
 
-[中文文档](README.md) | [Architecture Diagrams](docs/architecture.md)
+[中文文档](README.md) | [Architecture Diagrams](docs/architecture.md) | [All languages](docs/i18n/README.md)
+
+[中文](README.md) | English | [日本語](docs/i18n/ja/README.md) | [한국어](docs/i18n/ko/README.md) | [Русский](docs/i18n/ru/README.md) | [Deutsch](docs/i18n/de/README.md) | [Français](docs/i18n/fr/README.md) | [Español](docs/i18n/es/README.md) | [Português](docs/i18n/pt/README.md) | [हिन्दी](docs/i18n/hi/README.md) | [العربية](docs/i18n/ar/README.md) | [বাংলা](docs/i18n/bn/README.md) | [Bahasa Indonesia](docs/i18n/id/README.md)
+
+## Overview
+
+poster-php is a PHP image toolkit that does two things, and does them well:
+
+| Capability | Description |
+|------------|-------------|
+| **Captcha** | Click / rotate / slider human verification plus a random mode — images and answers generated in pure PHP, no third-party service |
+| **Poster generation** | Fluent Builder API with 14 element types covering text, images, QR codes, tables, charts and calendars |
+| **Framework-agnostic** | Core requires only PHP >= 8.0 + GD; use it as a plain Composer package |
+| **Batteries included** | 3 global helper functions + 4 framework adapters (Laravel / ThinkPHP / Webman / Hyperf) |
+| **Swappable** | Image drivers (GD / ImageMagick) and storage backends (File / Session / Redis) are interface implementations |
+
+> Project mascot **Posty** — a poster body carrying a QR card and a slider puzzle, matching the two sides of the package: rendering and verification. It ships with the package ([`assets/pet.svg`](assets/pet.svg) / `assets/pet.png`): draw it with `->addPet()`, or set it as the placeholder for missing images.
+
+## Project Structure
+
+```
+poster-php/
+├── src/                        # core: 56 PHP files / ~4250 lines
+│   ├── Captcha/                # captcha module: interface + abstract base + 3 impls + factory + manager
+│   ├── Poster/                 # poster module
+│   │   ├── PosterBuilder.php   # fluent builder, 14 addXxx() methods
+│   │   ├── PosterTemplate.php  # JSON template → {{variable}} substitution
+│   │   └── Elements/           # 14 element renderers + ElementInterface + abstract base
+│   ├── Drivers/                # image drivers: ImageDriverInterface / GdDriver / ImagickDriver
+│   ├── Storage/                # captcha storage: File / Session / Redis
+│   ├── Qrcode/                 # pure PHP QR code generator (Model 2, v1-40, no extension needed)
+│   ├── Adapters/               # framework adapters: Laravel / ThinkPHP / Webman / Hyperf
+│   ├── PosterConfig.php        # config loading (defaults + framework config merge)
+│   └── Installer.php           # copies config file on composer install
+├── config/
+│   └── poster.php              # default config (captcha / image driver)
+├── assets/
+│   ├── backgrounds/            # 6 bundled captcha backgrounds (400×250 PNG)
+│   ├── pet.svg                 # project mascot Posty (vector source)
+│   └── pet.png                 # rasterized from pet.svg: used by addPet() and the placeholder
+├── helpers.php                 # global functions: captcha_create / captcha_verify / poster_create
+├── tests/                      # PHPUnit tests, 41 files mirroring the src/ layout
+├── examples/                   # runnable example scripts
+├── docs/                       # architecture docs, design & lifecycle diagrams (SVG)
+└── composer.json               # PSR-4: Erikwang2013\Poster\ → src/
+```
+
+## Architecture & Design
+
+### System Architecture
+
+Layered dependencies: each layer only calls the interfaces below it, so swapping a driver or storage backend requires no changes to business code.
+
+![poster-php system architecture](docs/i18n/en/architecture.svg)
+
+### Functional Design
+
+Feature breakdown of both modules: the four captcha interactions with their security properties, and the 14 poster elements with the template system.
+
+![poster-php functional design](docs/i18n/en/feature-design.svg)
+
+### Lifecycle
+
+Full chain of one captcha verification (create → generate → store → deliver → verify → pass / fail / expire) and one poster generation (init → background → elements → template → render → output).
+
+![poster-php lifecycle](docs/i18n/en/lifecycle.svg)
 
 ## Features
 
@@ -236,6 +305,9 @@ $builder->addArtisticText('HOT', 'neon', ['x'=>80,'y'=>120,'size'=>56,'color'=>'
 $builder->addEmoji('😀', ['x'=>100,'y'=>100,'size'=>64]);
 $builder->addEmoji('🎉', ['x'=>180,'y'=>100,'size'=>64]);
 // or by codepoint: 'codepoint'=>'U+1F600'
+// Note: rendering depends on the font. `NotoColorEmoji.ttf` (common on Linux) is a CBDT
+// bitmap color font that GD's FreeType backend cannot load (`imagettftext()` fails), so the
+// emoji is simply not drawn — use an emoji font FreeType can load instead.
 
 // Icon — requires FontAwesome TTF font file
 $builder->addIcon('heart', ['x'=>20,'y'=>40,'size'=>32,'color'=>'#E74C3C','font'=>'/path/to/fa-solid-900.ttf']);
@@ -245,6 +317,32 @@ $builder->addIcon('heart', ['x'=>20,'y'=>40,'size'=>32,'color'=>'#E74C3C','font'
 $builder->addEmoticon('happy', ['x'=>20,'y'=>40,'size'=>24]);  // (｡•̀ᴗ-)✧
 $builder->addEmoticon('cry', ['x'=>20,'y'=>80,'size'=>24]);    // (╥﹏╥)
 // Expressions: happy, love, cry, angry, surprised, cool, sleepy, wave, think, shrug, tableflip, lenny
+```
+
+#### Project Mascot `addPet()`
+
+The bundled mascot Posty (`assets/pet.png`, rasterized from `assets/pet.svg`) can be drawn straight onto a poster — shorthand for `addImage(PosterBuilder::petPath(), $options)`:
+
+```php
+$builder->addPet([
+    'x'      => 555,
+    'y'      => 140,
+    'width'  => 150,
+    'height' => 130,   // scaled to the given box; keep the 600:520 ratio
+    'radius' => 0,     // accepts every addImage() option
+]);
+
+// Or grab the path yourself (e.g. as a QR code center logo)
+$logo = PosterBuilder::petPath();
+```
+
+**Placeholder for missing images**: `addImage()` / `addAvatar()` skip a non-existent file by default. Point `poster.placeholder` at the mascot and Posty is drawn wherever an image is missing, so broken paths are obvious at a glance:
+
+```php
+// config/poster.php
+'poster' => [
+    'placeholder' => dirname(__DIR__) . '/assets/pet.png',
+],
 ```
 
 ### Template System
@@ -316,6 +414,7 @@ Key config options:
 | `captcha.max_attempts` | `3` | Max verification attempts |
 | `captcha.tolerance` | `{click:18,rotate:5,slider:4}` | Per-type tolerance |
 | `image.driver` | `auto` | Image driver: `auto` / `gd` / `imagick` |
+| `poster.placeholder` | `null` | Placeholder path for missing images; `null` skips them, point it at the mascot to draw Posty instead |
 
 ## Support Open Source
 

@@ -27,23 +27,22 @@ class CaptchaFactoryTest extends TestCase
         $this->storage = $this->createMock(StorageInterface::class);
     }
 
-    public static function typeProvider(): array
-    {
-        return [
-            'click'  => ['click', ClickCaptcha::class],
-            'rotate' => ['rotate', RotateCaptcha::class],
-            'slider' => ['slider', SliderCaptcha::class],
-        ];
-    }
-
     /** 测试：工厂对每种类型返回对应实现类，且符合 CaptchaInterface 契约
-     * @dataProvider typeProvider
+     * 数据内联为循环而非 @dataProvider：doc-comment 元数据在 PHPUnit 11 已废弃，
+     * 而 PHP 8.0 只能配 PHPUnit 9（不支持 attributes），内联两者都兼容。
      */
-    public function testCreateReturnsCorrectImplementation(string $type, string $expectedClass): void
+    public function testCreateReturnsCorrectImplementation(): void
     {
-        $captcha = CaptchaFactory::create($type, $this->driver, $this->storage);
-        $this->assertInstanceOf($expectedClass, $captcha);
-        $this->assertInstanceOf(CaptchaInterface::class, $captcha);
+        $map = [
+            'click'  => ClickCaptcha::class,
+            'rotate' => RotateCaptcha::class,
+            'slider' => SliderCaptcha::class,
+        ];
+        foreach ($map as $type => $expectedClass) {
+            $captcha = CaptchaFactory::create($type, $this->driver, $this->storage);
+            $this->assertInstanceOf($expectedClass, $captcha);
+            $this->assertInstanceOf(CaptchaInterface::class, $captcha);
+        }
     }
 
     /** 测试：random 类型返回 click/rotate/slider 三者之一 */

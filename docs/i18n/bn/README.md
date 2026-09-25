@@ -47,6 +47,7 @@ poster-php/
 │   ├── pet.svg                 # মাসকট Posty (ভেক্টর সোর্স)
 │   └── pet.png                 # pet.svg থেকে রাস্টারাইজড: addPet() ও প্লেসহোল্ডারে ব্যবহৃত
 ├── helpers.php                 # গ্লোবাল ফাংশন: captcha_create / captcha_verify / poster_create
+├── native.php                  # নেটিভ PHP এন্ট্রি — শুধু require, Composer লাগবে না
 ├── tests/                      # PHPUnit টেস্ট, 41টি ফাইল, কাঠামো src/-এর অনুরূপ
 ├── examples/                   # সরাসরি চালানো যায় এমন উদাহরণ স্ক্রিপ্ট
 ├── docs/                       # আর্কিটেকচার ডক, ডিজাইন ও লাইফসাইকেল ডায়াগ্রাম (SVG), ডোনেশন QR
@@ -116,6 +117,19 @@ composer require erikwang2013/poster-php
 ঐচ্ছিক এক্সটেনশন:
 - `ext-imagick`: ImageMagick ইমেজ ড্রাইভার (দ্রুততর, বেশি ফিচার)
 - `ext-redis`: Redis ক্যাপচা স্টোরেজ (ডিস্ট্রিবিউটেড ডিপ্লয়মেন্ট)
+
+### Composer ছাড়া (নেটিভ PHP)
+
+পুরো `poster-php/` ডিরেক্টরিটি প্রজেক্টে রেখে সরাসরি `native.php` ইনক্লুড করলেই হয়: এটি PSR-4 অটোলোড রেজিস্টার করে ও গ্লোবাল ফাংশন লোড করে — Composer লাগে না, কোনো ফ্রেমওয়ার্কও লাগে না।
+
+```php
+require '/path/to/poster-php/native.php';   // অটোলোড + গ্লোবাল ফাংশন রেজিস্টার করে
+
+$result  = captcha_create('click');
+$builder = poster_create(750, 1334);
+```
+
+`native.php` বারবার ইনক্লুড করা যায়, Composer বা প্রজেক্টের নিজস্ব অটোলোডারের সাথেও সহাবস্থান করতে পারে (একাধিক ইনস্টল থাকলে `vendor/autoload.php`-কে প্রায়োরিটি দিলেই হবে)।
 
 ## ব্যবহারবিধি
 

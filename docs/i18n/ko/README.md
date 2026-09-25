@@ -47,6 +47,7 @@ poster-php/
 │   ├── pet.svg                 # 프로젝트 마스코트 Posty (벡터 원본)
 │   └── pet.png                 # pet.svg를 래스터화: addPet()과 누락 이미지 플레이스홀더에 사용
 ├── helpers.php                 # 전역 함수: captcha_create / captcha_verify / poster_create
+├── native.php                  # 네이티브 PHP 진입점: Composer 없이 require만 하면 사용
 ├── tests/                      # PHPUnit 테스트 41개 파일, 디렉터리 구조는 src/와 동일
 ├── examples/                   # 바로 실행 가능한 예제 스크립트
 ├── docs/                       # 아키텍처 문서, 설계·라이프사이클 도표(SVG), 후원 QR
@@ -116,6 +117,19 @@ composer require erikwang2013/poster-php
 선택 확장:
 - `ext-imagick`: ImageMagick 이미지 드라이버 (성능이 더 좋고 기능이 더 강력)
 - `ext-redis`: Redis 캡차 스토리지 (분산 배포)
+
+### Composer 없이 사용 (네이티브 PHP)
+
+`poster-php/` 디렉터리 전체를 프로젝트에 넣고 `native.php`를 바로 require 하면 됩니다. PSR-4 오토로더를 등록하고 전역 함수를 로드하므로 Composer도, 프레임워크도 필요 없습니다.
+
+```php
+require '/path/to/poster-php/native.php';   // 오토로더 등록 + 전역 함수
+
+$result  = captcha_create('click');
+$builder = poster_create(750, 1334);
+```
+
+`native.php`는 여러 번 require 해도 되고, Composer나 프로젝트 자체 오토로더와도 함께 쓸 수 있습니다(중복 설치 시 `vendor/autoload.php`를 우선 사용하면 됩니다).
 
 ## 사용 설명
 

@@ -9,7 +9,7 @@
 ```mermaid
 graph TB
     subgraph "API Layer 接口层"
-        HELPERS["helpers.php<br/>captcha_create / captcha_verify / poster_create"]
+        HELPERS["helpers.php + native.php<br/>captcha_create / captcha_verify / poster_create<br/>原生 PHP 入口，无需 Composer"]
         FACADES["Framework Facades<br/>Laravel / ThinkPHP / Webman / Hyperf"]
     end
 
@@ -540,14 +540,14 @@ graph LR
     SRC --> ADAPTERS_DIR["Adapters/"]
 
     CAPTCHA_DIR --> C_FILES["7 files<br/>Interface + Abstract + 3 impl + Factory + Manager"]
-    POSTER_DIR --> P_FILES["17 files<br/>Builder + Template + 14 elements + Interface + Abstract"]
-    DRIVERS_DIR --> D_FILES["3 files<br/>Interface + Gd + Imagick"]
+    POSTER_DIR --> P_FILES["18 files<br/>Builder + Template + 14 elements + Interface + Abstract"]
+    DRIVERS_DIR --> D_FILES["5 files<br/>Interface + Gd + Imagick + TextTrait + DriverFactory"]
     QRCODE_DIR --> Q_FILES["1 file<br/>Pure PHP QR Code Generator"]
-    STORAGE_DIR --> S_FILES["4 files<br/>Interface + File + Session + Redis"]
-    ADAPTERS_DIR --> A_FILES["16 files<br/>Laravel / ThinkPHP / Webman / Hyperf"]
+    STORAGE_DIR --> S_FILES["5 files<br/>Interface + File + Session + Redis + StorageFactory"]
+    ADAPTERS_DIR --> A_FILES["18 files<br/>Laravel / ThinkPHP / Webman / Hyperf"]
 
-    TESTS --> T_DIRS["5 test suites<br/>Drivers / Storage / Captcha / Poster / QR"]
-    DOCS --> DOC_FILES["specs/ + plans/ + architecture.md"]
+    TESTS --> T_DIRS["6 test suites<br/>Drivers / Storage / Captcha / Poster / QR / Helpers"]
+    DOCS --> DOC_FILES["architecture.md + i18n/（12 语言 README 与图表）+ 收款码"]
 ```
 
 ---

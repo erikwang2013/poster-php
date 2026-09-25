@@ -47,6 +47,7 @@ poster-php/
 │   ├── pet.svg                 # 项目宠物 Posty（矢量源文件）
 │   └── pet.png                 # 由 pet.svg 栅格化：addPet() 与缺图占位图使用
 ├── helpers.php                 # 全局函数：captcha_create / captcha_verify / poster_create
+├── native.php                  # 原生 PHP 入口：无需 Composer，require 即用
 ├── tests/                      # PHPUnit 测试，41 个文件，目录结构与 src/ 镜像
 ├── examples/                   # 可直接运行的示例脚本
 ├── docs/                       # 架构文档、设计与生命周期图（SVG）、收款码
@@ -116,6 +117,19 @@ composer require erikwang2013/poster-php
 可选扩展：
 - `ext-imagick`：ImageMagick 图像驱动（性能更好，功能更强）
 - `ext-redis`：Redis 验证码存储（分布式部署）
+
+### 不用 Composer（原生 PHP）
+
+把 `poster-php/` 整个目录放进项目，直接引入 `native.php` 即可：它会注册 PSR-4 自动加载并载入全局函数，不需要 Composer、也不需要任何框架。
+
+```php
+require '/path/to/poster-php/native.php';   // 注册自动加载 + 全局函数
+
+$result  = captcha_create('click');
+$builder = poster_create(750, 1334);
+```
+
+`native.php` 可重复引入，也能与 Composer 或项目自带的自动加载器共存（重复安装时优先用 `vendor/autoload.php` 即可）。
 
 ## 使用说明
 

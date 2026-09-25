@@ -47,6 +47,7 @@ poster-php/
 │   ├── pet.svg                 # प्रोजेक्ट शुभंकर Posty (वेक्टर सोर्स फ़ाइल)
 │   └── pet.png                 # pet.svg से रास्टराइज़: addPet() और गुम इमेज प्लेसहोल्डर के लिए
 ├── helpers.php                 # ग्लोबल फ़ंक्शन: captcha_create / captcha_verify / poster_create
+├── native.php                  # नेटिव PHP एंट्री — सिर्फ require, Composer की ज़रूरत नहीं
 ├── tests/                      # PHPUnit टेस्ट, 41 फ़ाइलें, संरचना src/ के समान
 ├── examples/                   # सीधे चलाई जा सकने वाली उदाहरण स्क्रिप्ट
 ├── docs/                       # आर्किटेक्चर दस्तावेज़, डिज़ाइन व लाइफ़साइकल चार्ट (SVG), डोनेशन QR
@@ -116,6 +117,19 @@ composer require erikwang2013/poster-php
 वैकल्पिक एक्सटेंशन:
 - `ext-imagick`: ImageMagick इमेज ड्राइवर (बेहतर परफ़ॉर्मेंस, ज़्यादा फ़ीचर)
 - `ext-redis`: Redis कैप्चा स्टोरेज (डिस्ट्रीब्यूटेड डिप्लॉयमेंट)
+
+### Composer के बिना (नेटिव PHP)
+
+पूरी `poster-php/` डिरेक्टरी प्रोजेक्ट में रखें और सीधे `native.php` इन्क्लूड करें: यह PSR-4 ऑटोलोडिंग रजिस्टर करता है और ग्लोबल फ़ंक्शन लोड करता है — न Composer चाहिए, न कोई फ़्रेमवर्क।
+
+```php
+require '/path/to/poster-php/native.php';   // ऑटोलोड + ग्लोबल फ़ंक्शन रजिस्टर करें
+
+$result  = captcha_create('click');
+$builder = poster_create(750, 1334);
+```
+
+`native.php` को बार-बार इन्क्लूड किया जा सकता है, और यह Composer या प्रोजेक्ट के अपने ऑटोलोडर के साथ भी चलता है (दोहरे इंस्टॉल की स्थिति में `vendor/autoload.php` को प्राथमिकता दें)।
 
 ## उपयोग गाइड
 

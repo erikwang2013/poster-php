@@ -47,6 +47,7 @@ poster-php/
 │   ├── pet.svg                 # maskot proyek Posty (sumber vektor)
 │   └── pet.png                 # hasil raster pet.svg: dipakai addPet() dan placeholder
 ├── helpers.php                 # fungsi global: captcha_create / captcha_verify / poster_create
+├── native.php                  # entri PHP native — cukup require, tanpa Composer
 ├── tests/                      # tes PHPUnit, 41 file, struktur direktori mencerminkan src/
 ├── examples/                   # skrip contoh yang bisa langsung dijalankan
 ├── docs/                       # dokumen arsitektur, diagram desain & siklus hidup (SVG), kode donasi
@@ -116,6 +117,19 @@ Persyaratan sistem: PHP >= 8.0, ekstensi GD.
 Ekstensi opsional:
 - `ext-imagick`: driver gambar ImageMagick (performa lebih baik, fitur lebih lengkap)
 - `ext-redis`: penyimpanan captcha Redis (deployment terdistribusi)
+
+### Tanpa Composer (PHP native)
+
+Letakkan seluruh direktori `poster-php/` ke dalam proyek Anda, lalu cukup sertakan `native.php`: file ini mendaftarkan autoload PSR-4 dan memuat fungsi global, tanpa perlu Composer dan tanpa framework apa pun.
+
+```php
+require '/path/to/poster-php/native.php';   // daftarkan autoload + fungsi global
+
+$result  = captcha_create('click');
+$builder = poster_create(750, 1334);
+```
+
+`native.php` bisa disertakan berulang kali dan juga hidup berdampingan dengan Composer atau autoloader bawaan proyek (bila terpasang ganda, utamakan `vendor/autoload.php`).
 
 ## Panduan Penggunaan
 

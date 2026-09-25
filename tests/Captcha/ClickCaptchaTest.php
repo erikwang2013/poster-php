@@ -67,23 +67,17 @@ class ClickCaptchaTest extends TestCase
         }
     }
 
-    public static function difficultyProvider(): array
-    {
-        return [
-            'easy'   => ['easy', 2],
-            'medium' => ['medium', 3],
-            'hard'   => ['hard', 4],
-        ];
-    }
-
     /** 测试：不同难度对应不同目标数量（easy=2 / medium=3 / hard=4）
-     * @dataProvider difficultyProvider
+     * 数据内联为循环而非 @dataProvider：doc-comment 元数据在 PHPUnit 11 已废弃，
+     * 而 PHP 8.0 只能配 PHPUnit 9（不支持 attributes），内联两者都兼容。
      */
-    public function testTargetCountByDifficulty(string $difficulty, int $expected): void
+    public function testTargetCountByDifficulty(): void
     {
-        $result = $this->generate($difficulty);
-        $targets = $this->storage->get($result['key'])['targets'];
-        $this->assertCount($expected, $targets);
+        foreach (['easy' => 2, 'medium' => 3, 'hard' => 4] as $difficulty => $expected) {
+            $result = $this->generate($difficulty);
+            $targets = $this->storage->get($result['key'])['targets'];
+            $this->assertCount($expected, $targets, "难度 {$difficulty} 应生成 {$expected} 个目标");
+        }
     }
 
     /** 测试：默认难度为 medium，生成 3 个目标 */

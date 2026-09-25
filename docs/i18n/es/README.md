@@ -47,6 +47,7 @@ poster-php/
 │   ├── pet.svg                 # Mascota del proyecto Posty (archivo vectorial original)
 │   └── pet.png                 # rasterizado desde pet.svg: lo usan addPet() y el relleno de imágenes faltantes
 ├── helpers.php                 # Funciones globales: captcha_create / captcha_verify / poster_create
+├── native.php                  # entrada PHP nativa: basta un require, sin Composer
 ├── tests/                      # Pruebas PHPUnit, 41 archivos, con la misma estructura de directorios que src/
 ├── examples/                   # Scripts de ejemplo ejecutables directamente
 ├── docs/                       # Documento de arquitectura, diagramas de diseño y ciclo de vida (SVG), códigos de donación
@@ -116,6 +117,19 @@ Requisitos del sistema: PHP >= 8.0, extensión GD.
 Extensiones opcionales:
 - `ext-imagick`: driver de imagen ImageMagick (mejor rendimiento, más funciones)
 - `ext-redis`: almacenamiento de captchas en Redis (despliegue distribuido)
+
+### Sin Composer (PHP nativo)
+
+Coloca el directorio completo `poster-php/` dentro de tu proyecto e incluye `native.php` directamente: registra la autocarga PSR-4 y carga las funciones globales, sin necesidad de Composer ni de ningún framework.
+
+```php
+require '/path/to/poster-php/native.php';   // registra la autocarga + las funciones globales
+
+$result  = captcha_create('click');
+$builder = poster_create(750, 1334);
+```
+
+`native.php` se puede incluir varias veces y también convive con Composer o con el autocargador propio del proyecto (si se instala por duplicado, basta con dar prioridad a `vendor/autoload.php`).
 
 ## Guía de uso
 

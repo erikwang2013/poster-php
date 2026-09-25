@@ -1,14 +1,14 @@
 # poster-php
 
 <p align="center">
-  <img src="assets/pet.svg" width="200" alt="poster-php mascot Posty" />
+  <img src="../../../assets/pet.svg" width="200" alt="poster-php mascot Posty" />
 </p>
 
 PHP image captcha & poster generation toolkit — framework-agnostic core with Laravel / ThinkPHP / Webman / Hyperf adapters.
 
-[中文文档](README.md) | [Architecture Diagrams](docs/architecture.md) | [All languages](docs/i18n/README.md)
+[中文文档](../../../README.md) | [Architecture Diagrams](../../architecture.md) | [All languages](../README.md)
 
-[中文](README.md) | English | [日本語](docs/i18n/ja/README.md) | [한국어](docs/i18n/ko/README.md) | [Русский](docs/i18n/ru/README.md) | [Deutsch](docs/i18n/de/README.md) | [Français](docs/i18n/fr/README.md) | [Español](docs/i18n/es/README.md) | [Português](docs/i18n/pt/README.md) | [हिन्दी](docs/i18n/hi/README.md) | [العربية](docs/i18n/ar/README.md) | [বাংলা](docs/i18n/bn/README.md) | [Bahasa Indonesia](docs/i18n/id/README.md)
+[中文](../../../README.md) | English | [日本語](../ja/README.md) | [한국어](../ko/README.md) | [Русский](../ru/README.md) | [Deutsch](../de/README.md) | [Français](../fr/README.md) | [Español](../es/README.md) | [Português](../pt/README.md) | [हिन्दी](../hi/README.md) | [العربية](../ar/README.md) | [বাংলা](../bn/README.md) | [Bahasa Indonesia](../id/README.md)
 
 ## Overview
 
@@ -22,7 +22,7 @@ poster-php is a PHP image toolkit that does two things, and does them well:
 | **Batteries included** | 3 global helper functions + 4 framework adapters (Laravel / ThinkPHP / Webman / Hyperf) |
 | **Swappable** | Image drivers (GD / ImageMagick) and storage backends (File / Session / Redis) are interface implementations |
 
-> Project mascot **Posty** — a poster body carrying a QR card and a slider puzzle, matching the two sides of the package: rendering and verification. It ships with the package ([`assets/pet.svg`](assets/pet.svg) / `assets/pet.png`): draw it with `->addPet()`, or set it as the placeholder for missing images.
+> Project mascot **Posty** — a poster body carrying a QR card and a slider puzzle, matching the two sides of the package: rendering and verification. It ships with the package ([`assets/pet.svg`](../../../assets/pet.svg) / `assets/pet.png`): draw it with `->addPet()`, or set it as the placeholder for missing images.
 
 ## Project Structure
 
@@ -60,19 +60,19 @@ poster-php/
 
 Layered dependencies: each layer only calls the interfaces below it, so swapping a driver or storage backend requires no changes to business code.
 
-![poster-php system architecture](docs/i18n/en/architecture.svg)
+![poster-php system architecture](architecture.svg)
 
 ### Functional Design
 
 Feature breakdown of both modules: the four captcha interactions with their security properties, and the 14 poster elements with the template system.
 
-![poster-php functional design](docs/i18n/en/feature-design.svg)
+![poster-php functional design](feature-design.svg)
 
 ### Lifecycle
 
 Full chain of one captcha verification (create → generate → store → deliver → verify → pass / fail / expire) and one poster generation (init → background → elements → template → render → output).
 
-![poster-php lifecycle](docs/i18n/en/lifecycle.svg)
+![poster-php lifecycle](lifecycle.svg)
 
 ## Features
 
@@ -437,7 +437,7 @@ If you find this project useful, your support is greatly appreciated!
 
 | WeChat | Alipay |
 |:---:|:---:|
-| <img src="./docs/weixinpay.png" width="130" height="130" alt="WeChat Pay"> | <img src="./docs/alipay.png" width="130" height="130" alt="Alipay"> |
+| <img src="../../weixinpay.png" width="130" height="130" alt="WeChat Pay"> | <img src="../../alipay.png" width="130" height="130" alt="Alipay"> |
 
 ---
 

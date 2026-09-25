@@ -11,50 +11,98 @@
     "layerCore": "Core Layer",
     "layerFoundation": "Foundation",
     "api": [
-      ["helpers.php", "captcha_* · poster_*"],
-      ["Laravel", "Facade · Provider"],
-      ["ThinkPHP", "CaptchaService"],
-      ["Webman", "CaptchaPlugin"],
-      ["Hyperf", "ConfigProvider"]
+      [
+        "helpers.php",
+        "captcha_* · poster_*"
+      ],
+      [
+        "Laravel",
+        "Facade · Provider"
+      ],
+      [
+        "ThinkPHP",
+        "CaptchaService"
+      ],
+      [
+        "Webman",
+        "CaptchaPlugin"
+      ],
+      [
+        "Hyperf",
+        "ConfigProvider"
+      ]
     ],
     "business": [
       [
         "Captcha Module",
         "CaptchaManager → CaptchaFactory",
-        ["Click", "Rotate", "Slider", "Random"]
+        [
+          "Click",
+          "Rotate",
+          "Slider",
+          "Random"
+        ]
       ],
       [
         "Poster Module",
         "PosterBuilder → 14 elements → PosterTemplate",
-        ["Text 5", "Image 5", "Data 3", "Overlay 1"]
+        [
+          "Text 5",
+          "Image 5",
+          "Data 3",
+          "Overlay 1"
+        ]
       ]
     ],
     "core": [
       [
         "Image Driver",
         "ImageDriverInterface",
-        ["GdDriver · ImagickDriver", "auto-detect, falls back to GD", "bring your own driver"]
+        [
+          "GdDriver · ImagickDriver",
+          "auto-detect, falls back to GD",
+          "bring your own driver"
+        ]
       ],
       [
         "Storage",
         "StorageInterface",
-        ["FileStorage · Session", "RedisStorage distributed", "ttl / attempts aware"]
+        [
+          "FileStorage · Session",
+          "RedisStorage distributed",
+          "ttl / attempts aware"
+        ]
       ],
       [
         "QR Code",
         "QrcodeGenerator",
-        ["pure PHP, zero extensions", "Model 2 · v1-40", "center logo · label"]
+        [
+          "pure PHP, zero extensions",
+          "Model 2 · v1-40",
+          "center logo · label"
+        ]
       ],
       [
         "Config",
         "load / get / merge / reset",
-        ["captcha.* · image.*", "loads framework config", "safe defaults"]
+        [
+          "captcha.* · image.*",
+          "loads framework config",
+          "safe defaults"
+        ]
       ]
     ],
     "foundation": {
-      "required": ["PHP ≥ 8.0", "ext-gd", "ext-mbstring"],
+      "required": [
+        "PHP ≥ 8.0",
+        "ext-gd",
+        "ext-mbstring"
+      ],
       "requiredLabel": "required",
-      "optional": ["ext-imagick optional", "ext-redis optional"]
+      "optional": [
+        "ext-imagick optional",
+        "ext-redis optional"
+      ]
     },
     "arrowCall": "Call",
     "arrowDraw": "Draw",
@@ -65,36 +113,107 @@
     "title": "poster-php Functional Design",
     "subtitle": "Two modules: human verification and image composition — each with helpers, a full API and framework facades",
     "modules": [
-      ["C", "Captcha", "3 interaction types + random"],
-      ["P", "Poster", "Fluent builder · 14 elements"]
+      [
+        "C",
+        "Captcha",
+        "3 interaction types + random"
+      ],
+      [
+        "P",
+        "Poster",
+        "Fluent builder · 14 elements"
+      ]
     ],
     "captchaTypes": [
-      ["click", "Click", "Click the target characters in order", "2-4 targets · ±18px"],
-      ["rotate", "Rotate", "Drag the slider to rotate the image back", "30°-330° · ±5°"],
-      ["slider", "Slider", "Drag the puzzle piece into the gap", "±4px · custom size"],
-      ["random", "Random", "Picks one of the three at random", "harder to bypass"]
+      [
+        "click",
+        "Click",
+        "Click the target characters in order",
+        "2-4 targets · ±18px"
+      ],
+      [
+        "rotate",
+        "Rotate",
+        "Drag the slider to rotate the image back",
+        "30°-330° · ±5°"
+      ],
+      [
+        "slider",
+        "Slider",
+        "Drag the puzzle piece into the gap",
+        "±4px · custom size"
+      ],
+      [
+        "random",
+        "Random",
+        "Picks one of the three at random",
+        "harder to bypass"
+      ]
     ],
     "security": {
       "title": "Security & Storage",
-      "chips1": ["One-shot key", "Max 3 attempts", "TTL 300s"],
-      "chips2": ["3-tier backgrounds", "Custom tolerance", "File/Session/Redis"]
+      "chips1": [
+        "One-shot key",
+        "Max 3 attempts",
+        "TTL 300s"
+      ],
+      "chips2": [
+        "3-tier backgrounds",
+        "Custom tolerance",
+        "File/Session/Redis"
+      ]
     },
     "elementCount": "%d types",
     "elementGroups": [
-      ["Text & Layout", "Text", "Artistic", "Emoji", "Icon", "Kaomoji"],
-      ["Image & Shape", "Image", "Avatar", "QR Code", "Shape", "Divider"],
-      ["Data Display", "Table", "Chart bar/line/pie", "Calendar"],
-      ["Overlay", "Watermark tiled / angle / gap"]
+      [
+        "Text & Layout",
+        "Text",
+        "Artistic",
+        "Emoji",
+        "Icon",
+        "Kaomoji"
+      ],
+      [
+        "Image & Shape",
+        "Image",
+        "Avatar",
+        "QR Code",
+        "Shape",
+        "Divider"
+      ],
+      [
+        "Data Display",
+        "Table",
+        "Chart bar/line/pie",
+        "Calendar"
+      ],
+      [
+        "Overlay",
+        "Watermark tiled / angle / gap"
+      ]
     ],
     "template": {
       "title": "Template System",
-      "chips1": ["JSON definition", "{{variable}} replace", "define once, reuse"],
-      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf"]
+      "chips1": [
+        "JSON definition",
+        "{{variable}} replace",
+        "define once, reuse"
+      ],
+      "chips2": [
+        "Laravel",
+        "ThinkPHP",
+        "Webman",
+        "Hyperf"
+      ]
     },
     "entry": {
       "title": "Entry Points",
       "subtitle": "helpers.php global functions, ready to use",
-      "chips": ["captcha_create()", "captcha_verify()", "poster_create()"],
+      "chips": [
+        "captcha_create()",
+        "captcha_verify()",
+        "poster_create()"
+      ],
       "note": "addXxx() chains in any order; elements are painted in call order"
     }
   },
@@ -106,36 +225,90 @@
         "title": "① Captcha Lifecycle",
         "sub": "create → generate → store → verify → expire",
         "steps": [
-          ["Create", "create(type) — click / rotate / slider / random, difficulty optional"],
-          ["Generate", "generate() — random key + background + targets (coords / angle / gap)"],
-          ["Store", "set(key, data, ttl) — File / Session / Redis, 300s and one-shot"],
-          ["Deliver", "output('png') → base64 image + extra hints, never the answer"],
-          ["Verify", "verify(key, type, data) — ±18px / ±5° / ±4px"],
-          ["Decide", "inside tolerance → pass; outside → fail; no key → expired"]
+          [
+            "Create",
+            "create(type) — click/rotate/slider/random"
+          ],
+          [
+            "Generate",
+            "generate() — random key + background + target coords"
+          ],
+          [
+            "Store",
+            "set(key, data, ttl) — File/Session/Redis, 300s one-shot"
+          ],
+          [
+            "Deliver",
+            "output('png') → base64 image + hints, never the answer"
+          ],
+          [
+            "Verify",
+            "verify(key, type, data) — ±18px / ±5° / ±4px"
+          ],
+          [
+            "Decide",
+            "inside tolerance → pass; outside → fail; missing → expired"
+          ]
         ],
         "branchTitle": "Outcomes",
         "branches": [
-          ["Pass", "del(key) — the same key can never be reused"],
-          ["Fail", "attempts+1, up to 3 retries, then invalidated"],
-          ["Expired", "past TTL or unknown key — generate a new one"]
+          [
+            "Pass",
+            "del(key) — the same key can never be reused"
+          ],
+          [
+            "Fail",
+            "attempts+1, up to 3 retries, then invalidated"
+          ],
+          [
+            "Expired",
+            "past TTL or unknown key — generate a new one"
+          ]
         ]
       },
       {
         "title": "② Poster Lifecycle",
         "sub": "new → background → addXxx → render → save",
         "steps": [
-          ["Init", "new PosterBuilder(driver) or poster_create(w, h)"],
-          ["Background", "background() — solid / image (auto-scaled) / gradient"],
-          ["Elements", "addText / addImage / addQrcode … 14 types, chained"],
-          ["Template", "useTemplate($t)->with($vars) — {{variable}} substitution (optional)"],
-          ["Render", "drivers paint the canvas; origin is top-left, sizes scale"],
-          ["Output", "save(path, quality) to disk or output('png'|'jpg') as data URL"]
+          [
+            "Init",
+            "new PosterBuilder(driver) or poster_create(w, h)"
+          ],
+          [
+            "Background",
+            "background() — solid / image (auto-scaled) / gradient"
+          ],
+          [
+            "Elements",
+            "addText / addImage / addQrcode … 14 types, chained"
+          ],
+          [
+            "Template",
+            "useTemplate($t)->with($vars) — {{variable}} replace"
+          ],
+          [
+            "Render",
+            "drivers paint the canvas; origin is top-left, sizes scale"
+          ],
+          [
+            "Output",
+            "save(path, quality) or output('png'|'jpg') data URL"
+          ]
         ],
         "branchTitle": "Outcomes",
         "branches": [
-          ["Image file", "save() writes to disk for CDN / object storage"],
-          ["API response", "output() returns base64, ready for the frontend"],
-          ["Template reuse", "same template, new variables — batch output"]
+          [
+            "Image file",
+            "save() writes to disk for CDN / object storage"
+          ],
+          [
+            "API response",
+            "output() returns base64, ready for the frontend"
+          ],
+          [
+            "Template reuse",
+            "same template, new variables — batch output"
+          ]
         ]
       }
     ]

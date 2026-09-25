@@ -47,6 +47,7 @@ poster-php/
 │   ├── pet.svg                 # プロジェクトのマスコット Posty（ベクター原本）
 │   └── pet.png                 # pet.svg をラスタライズ：addPet() と画像欠損プレースホルダーで使用
 ├── helpers.php                 # グローバル関数：captcha_create / captcha_verify / poster_create
+├── native.php                  # ネイティブ PHP の入口：Composer 不要、require するだけ
 ├── tests/                      # PHPUnit テスト、41 ファイル、ディレクトリ構成は src/ とミラー
 ├── examples/                   # そのまま実行できるサンプルスクリプト
 ├── docs/                       # アーキテクチャ文書、設計・ライフサイクル図（SVG）、支援 QR コード
@@ -116,6 +117,19 @@ composer require erikwang2013/poster-php
 オプション拡張：
 - `ext-imagick`：ImageMagick 画像ドライバ（性能が高く、機能も豊富）
 - `ext-redis`：Redis による CAPTCHA ストレージ（分散構成）
+
+### Composer を使わない（ネイティブ PHP）
+
+`poster-php/` ディレクトリを丸ごとプロジェクトに置き、`native.php` を読み込むだけです。PSR-4 オートロードを登録してグローバル関数を読み込むので、Composer もフレームワークも不要です。
+
+```php
+require '/path/to/poster-php/native.php';   // オートロード + グローバル関数を登録
+
+$result  = captcha_create('click');
+$builder = poster_create(750, 1334);
+```
+
+`native.php` は何度読み込んでも問題なく、Composer やプロジェクト独自のオートローダーとも共存できます（重複してインストールされている場合は `vendor/autoload.php` を優先してください）。
 
 ## 使い方
 

@@ -13,25 +13,25 @@
   <circle cx="88" cy="189" r="15" fill="#FF6B6B"/>
   <text x="88" y="194" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">1</text>
   <text x="114" y="185" font-size="14" fill="#2D3436" font-weight="700">Create</text>
-  <text x="114" y="204" font-size="9.8" fill="#7F8C8D">create(type) — click / rotate / slider / random, difficulty optional</text>
+  <text x="114" y="204" font-size="11" fill="#7F8C8D">create(type) — click/rotate/slider/random</text>
   <line x1="272.5" y1="222" x2="272.5" y2="232" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
   <rect x="60" y="236" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <circle cx="88" cy="265" r="15" fill="#FF6B6B"/>
   <text x="88" y="270" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">2</text>
   <text x="114" y="261" font-size="14" fill="#2D3436" font-weight="700">Generate</text>
-  <text x="114" y="280" font-size="9.66" fill="#7F8C8D">generate() — random key + background + targets (coords / angle / gap)</text>
+  <text x="114" y="280" font-size="11" fill="#7F8C8D">generate() — random key + background + target coords</text>
   <line x1="272.5" y1="298" x2="272.5" y2="308" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
   <rect x="60" y="312" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <circle cx="88" cy="341" r="15" fill="#FF6B6B"/>
   <text x="88" y="346" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">3</text>
   <text x="114" y="337" font-size="14" fill="#2D3436" font-weight="700">Store</text>
-  <text x="114" y="356" font-size="10.57" fill="#7F8C8D">set(key, data, ttl) — File / Session / Redis, 300s and one-shot</text>
+  <text x="114" y="356" font-size="11" fill="#7F8C8D">set(key, data, ttl) — File/Session/Redis, 300s one-shot</text>
   <line x1="272.5" y1="374" x2="272.5" y2="384" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
   <rect x="60" y="388" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <circle cx="88" cy="417" r="15" fill="#FF6B6B"/>
   <text x="88" y="422" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">4</text>
   <text x="114" y="413" font-size="14" fill="#2D3436" font-weight="700">Deliver</text>
-  <text x="114" y="432" font-size="11" fill="#7F8C8D">output(&apos;png&apos;) → base64 image + extra hints, never the answer</text>
+  <text x="114" y="432" font-size="11" fill="#7F8C8D">output(&apos;png&apos;) → base64 image + hints, never the answer</text>
   <line x1="272.5" y1="450" x2="272.5" y2="460" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
   <rect x="60" y="464" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <circle cx="88" cy="493" r="15" fill="#FF6B6B"/>
@@ -43,7 +43,7 @@
   <circle cx="88" cy="569" r="15" fill="#FF6B6B"/>
   <text x="88" y="574" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">6</text>
   <text x="114" y="565" font-size="14" fill="#2D3436" font-weight="700">Decide</text>
-  <text x="114" y="584" font-size="11" fill="#7F8C8D">inside tolerance → pass; outside → fail; no key → expired</text>
+  <text x="114" y="584" font-size="11" fill="#7F8C8D">inside tolerance → pass; outside → fail; missing → expired</text>
   <text x="60" y="630" font-size="12" fill="#2D3436" font-weight="700">Outcomes</text>
   <rect x="60" y="642" width="425" height="92" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <circle cx="80" cy="658" r="4.5" fill="#96CEB4"/>
@@ -81,7 +81,7 @@
   <circle cx="583" cy="417" r="15" fill="#4ECDC4"/>
   <text x="583" y="422" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">4</text>
   <text x="609" y="413" font-size="14" fill="#2D3436" font-weight="700">Template</text>
-  <text x="609" y="432" font-size="9.95" fill="#7F8C8D">useTemplate($t)-&gt;with($vars) — {{variable}} substitution (optional)</text>
+  <text x="609" y="432" font-size="11" fill="#7F8C8D">useTemplate($t)-&gt;with($vars) — {{variable}} replace</text>
   <line x1="767.5" y1="450" x2="767.5" y2="460" stroke="#E1E8ED" stroke-width="2" marker-end="url(#arrow)"/>
   <rect x="555" y="464" width="425" height="58" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <circle cx="583" cy="493" r="15" fill="#4ECDC4"/>
@@ -93,7 +93,7 @@
   <circle cx="583" cy="569" r="15" fill="#4ECDC4"/>
   <text x="583" y="574" font-size="13" fill="#FFFFFF" font-weight="700" text-anchor="middle">6</text>
   <text x="609" y="565" font-size="14" fill="#2D3436" font-weight="700">Output</text>
-  <text x="609" y="584" font-size="10.88" fill="#7F8C8D">save(path, quality) to disk or output(&apos;png&apos;|&apos;jpg&apos;) as data URL</text>
+  <text x="609" y="584" font-size="11" fill="#7F8C8D">save(path, quality) or output(&apos;png&apos;|&apos;jpg&apos;) data URL</text>
   <text x="555" y="630" font-size="12" fill="#2D3436" font-weight="700">Outcomes</text>
   <rect x="555" y="642" width="425" height="92" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <circle cx="575" cy="658" r="4.5" fill="#45B7D1"/>

@@ -47,6 +47,7 @@ poster-php/
 │   ├── pet.svg                 # تميمة المشروع Posty (ملف مصدر متجهي)
 │   └── pet.png                 # مُشتق من pet.svg: يُستخدم في addPet() وكصورة بديلة
 ├── helpers.php                 # دوال عامة: captcha_create / captcha_verify / poster_create
+├── native.php                  # مدخل PHP الأصلي — يكفي require بدون Composer
 ├── tests/                      # اختبارات PHPUnit، 41 ملفًا، وبنية الأدلة تحاكي src/
 ├── examples/                   # أمثلة قابلة للتشغيل مباشرة
 ├── docs/                       # وثيقة المعمارية ومخططات التصميم ودورة الحياة (SVG) ورموز التبرع
@@ -116,6 +117,19 @@ composer require erikwang2013/poster-php
 إضافات اختيارية:
 - `ext-imagick`: مشغّل صور ImageMagick (أداء أفضل وإمكانات أوسع)
 - `ext-redis`: تخزين بيانات التحقق في Redis (للنشر الموزّع)
+
+### بدون Composer (PHP الأصلي)
+
+ضع دليل `poster-php/` كاملًا داخل مشروعك، ثم أدرج `native.php` مباشرة: فهو يسجّل التحميل التلقائي PSR-4 ويحمّل الدوال العامة، دون حاجة إلى Composer أو أي إطار.
+
+```php
+require '/path/to/poster-php/native.php';   // تسجيل التحميل التلقائي + الدوال العامة
+
+$result  = captcha_create('click');
+$builder = poster_create(750, 1334);
+```
+
+يمكن إدراج `native.php` أكثر من مرة، ويتعايش مع Composer أو مع محمّل التلقائي المرفق بمشروعك (وعند التثبيت المكرر، يُفضَّل `vendor/autoload.php`).
 
 ## دليل الاستخدام
 

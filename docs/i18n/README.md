@@ -8,7 +8,7 @@
 | 语言 | Language | 文档 | 图表 |
 |------|----------|------|------|
 | 中文（简体） | Chinese | [README.md](../../README.md) | [docs/](../) |
-| English | English | [README_EN.md](../../README_EN.md) | [docs/i18n/en](en/) |
+| English | English | [en/README.md](en/README.md)（镜像根目录 [README_EN.md](../../README_EN.md)） | [en/](en/) |
 | 日本語 | Japanese | [ja/README.md](ja/README.md) | [ja/](ja/) |
 | 한국어 | Korean | [ko/README.md](ko/README.md) | [ko/](ko/) |
 | Русский | Russian | [ru/README.md](ru/README.md) | [ru/](ru/) |

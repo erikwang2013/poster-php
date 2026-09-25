@@ -8,6 +8,7 @@ namespace Erikwang2013\Poster\Tests\Storage;
 
 use Erikwang2013\Poster\Storage\SessionStorage;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 /**
  * SessionStorage 边界/契约补充测试（基础路径见 SessionStorageTest.php）。
@@ -18,6 +19,7 @@ class SessionStorageEdgeTest extends TestCase
 
     protected function setUp(): void
     {
+        $this->startSession();
         $_SESSION = [];
         $this->storage = new SessionStorage();
     }
@@ -25,6 +27,41 @@ class SessionStorageEdgeTest extends TestCase
     protected function tearDown(): void
     {
         $_SESSION = [];
+    }
+
+    /** SessionStorage 现在要求会话已启动（否则抛异常），CLI 下需显式启动 */
+    private function startSession(): void
+    {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            return;
+        }
+        ini_set('session.cache_limiter', '');
+        ini_set('session.use_cookies', '0');
+        ini_set('session.save_path', sys_get_temp_dir());
+        if (!@session_start()) {
+            $this->markTestSkipped('当前环境无法启动会话，跳过 SessionStorage 行为测试');
+        }
+    }
+
+    /** 测试会话未启动时全部方法都抛明确异常（不再静默丢数据/读不到数据） */
+    public function testEveryMethodThrowsWhenSessionNotStarted(): void
+    {
+        @session_write_close();
+        $this->assertNotSame(PHP_SESSION_ACTIVE, session_status(), '前置条件：会话已关闭');
+        $storage = new SessionStorage();
+
+        foreach (['set', 'get', 'has', 'del', 'incrementAttempts'] as $method) {
+            try {
+                if ($method === 'set') {
+                    $storage->set('k1', ['foo' => 1], 60);
+                } else {
+                    $storage->$method('k1');
+                }
+                $this->fail("{$method}() 在会话未启动时应当抛出 RuntimeException");
+            } catch (RuntimeException $e) {
+                $this->assertStringContainsString('session_start()', $e->getMessage(), $method);
+            }
+        }
     }
 
     /** 测试 set() 返回 true 且数据写入会话的固定前缀命名空间下 */

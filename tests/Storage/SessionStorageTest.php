@@ -15,8 +15,28 @@ class SessionStorageTest extends TestCase
 
     protected function setUp(): void
     {
+        $this->startSession();
         $_SESSION = [];
         $this->storage = new SessionStorage();
+    }
+
+    protected function tearDown(): void
+    {
+        $_SESSION = [];
+    }
+
+    /** SessionStorage 现在要求会话已启动（否则抛异常），CLI 下需显式启动 */
+    private function startSession(): void
+    {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            return;
+        }
+        ini_set('session.cache_limiter', '');
+        ini_set('session.use_cookies', '0');
+        ini_set('session.save_path', sys_get_temp_dir());
+        if (!@session_start()) {
+            $this->markTestSkipped('当前环境无法启动会话，跳过 SessionStorage 行为测试');
+        }
     }
 
     public function testSetAndGet(): void

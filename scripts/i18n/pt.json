@@ -38,7 +38,7 @@
       [
         "Armazenamento",
         "StorageInterface",
-        ["FileStorage · Session", "RedisStorage distribuído", "respeita ttl / tentativas"]
+        ["FileStorage · Session", "RedisStorage · cache PSR-16", "respeita ttl / tentativas"]
       ],
       [
         "Código QR",
@@ -76,8 +76,8 @@
     ],
     "security": {
       "title": "Segurança e Armazenamento",
-      "chips1": ["Chave de uso único", "Máx. 3 tentativas", "TTL 300s"],
-      "chips2": ["3 níveis de fundo", "Tolerância ajustável", "File/Session/Redis"]
+      "chips1": ["Chave de uso único", "Máx. 3 tentativas", "Limite por sessão"],
+      "chips2": ["3 níveis de fundo", "Trajetória (opc.)", "File/Session/Redis"]
     },
     "elementCount": "%d tipos",
     "elementGroups": [

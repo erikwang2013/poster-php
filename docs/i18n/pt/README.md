@@ -269,14 +269,14 @@ $pass = $manager->verify($captcha['key'], [
 | Validade | 300 segundos por padrão (configurável) |
 | Aleatoriedade | A cor de fundo, o ruído e a posição dos alvos são sorteados a cada geração; no captcha de clique, cada alvo recebe matiz e ângulo de rotação aleatórios |
 | Limite de taxa por sessão | Limite de janela que vale entre keys (padrão: 30 vezes em 60 segundos), fechando a brecha de «trocar de key a cada tentativa para chutar de novo» |
-| Trajetória de comportamento | Opcional (desligado por padrão): valida o número de pontos, a duração e a linearidade do trajeto de arrasto; um script que envia a resposta por POST direto é recusado |
+| Trajetória de comportamento | Opcional (desligado por padrão): valida o número de pontos, a duração e a linearidade da trajetória de arrasto; um script que envia a resposta por POST direto é recusado |
 | Fundo embelezado | Fundo gradiente procedural com três estilos (minimalista / vibrante / natural) alternados aleatoriamente; diretório de imagens de fundo padrão configurável |
 | Canvas mínimo | Fundo pequeno demais gera erro em vez de degradar (captcha de clique mínimo 120×120; o deslize precisa comportar a peça 4×2) |
 
 
 #### Validação de trajetória de comportamento (opcional)
 
-Desligado por padrão (para não prejudicar telas de toque nem dispositivos de acessibilidade). Quando ativado, `slider` / `rotate` exigem que o frontend envie o trajeto do arrasto, e o servidor valida o número de pontos, a duração e a linearidade do trajeto:
+Desligado por padrão (para não prejudicar telas de toque nem dispositivos de acessibilidade). Quando ativado, `slider` / `rotate` exigem que o frontend envie a trajetória do arrasto, e o servidor valida o número de pontos, a duração e a linearidade:
 
 ```php
 // config/poster.php
@@ -292,7 +292,7 @@ Desligado por padrão (para não prejudicar telas de toque nem dispositivos de a
 
 // Envio pelo frontend: a forma antiga, com um número, continua compatível
 captcha_verify($key, 'slider', 173);
-// Com a validação de trajetória ativada, é preciso enviar o trajeto
+// Com a validação de trajetória ativada, é preciso enviar a trajetória
 captcha_verify($key, 'slider', ['x' => 173, 'trail' => [[12, 3, 0], [40, 9, 22], /* … */], 'duration' => 1200]);
 ```
 

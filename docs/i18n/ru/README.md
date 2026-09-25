@@ -8,7 +8,7 @@
 
 Набор инструментов для генерации капчи и постеров на PHP — ядро без привязки к фреймворку + адаптеры Laravel / ThinkPHP / Webman / Hyperf.
 
-[English Documentation](../../../README_EN.md) | [Архитектурная документация](../../../docs/architecture.md)
+[English Documentation](../../../README_EN.md) | [Архитектурная документация](../../../docs/architecture.md) | [Все языки](../../../docs/i18n/README.md)
 
 ## О проекте
 

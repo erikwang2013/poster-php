@@ -105,6 +105,19 @@ class TableElementTest extends TestCase
         }
     }
 
+    /** 验证 resolve() 递归替换 header 与 rows（嵌套二维数组）里的占位符 */
+    public function testResolveRecursesIntoHeadersAndRows(): void
+    {
+        $el = new TableElement([
+            'header' => ['{{c1}}', '金额'],
+            'rows' => [['{{item}}', '{{price}}'], ['B', 2]],
+        ]);
+        $el->resolve(['c1' => '项目', 'item' => '商品A', 'price' => '¥99']);
+        $arr = $el->toArray();
+        $this->assertSame(['项目', '金额'], $arr['header']);
+        $this->assertSame([['商品A', '¥99'], ['B', 2]], $arr['rows']);
+    }
+
     /** 验证单元格文本基线落在行内（imagettftext 按基线绘制，不能把 y 当顶部） */
     public function testCellBaselineStaysInsideRow(): void
     {

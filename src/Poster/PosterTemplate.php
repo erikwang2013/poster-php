@@ -6,12 +6,7 @@
 
 namespace Erikwang2013\Poster\Poster;
 
-use Erikwang2013\Poster\Poster\Elements\{
-    TextElement, ImageElement, QrcodeElement, AvatarElement,
-    ShapeElement, LineElement, WatermarkElement, TableElement,
-    ChartElement, CalendarElement, ArtisticTextElement,
-    EmojiElement, IconElement, EmoticonElement
-};
+use Erikwang2013\Poster\Poster\Elements\ElementRegistry;
 
 class PosterTemplate
 {
@@ -34,9 +29,9 @@ class PosterTemplate
     public static function fromJson(string $json): self
     {
         $data = json_decode($json, true);
-        if ($data === null) {
-            // 非法 JSON（解析失败）回退默认配置
-            return self::fromConfig([]);
+        // 解析失败必须报错：静默回退默认模板会渲染出一张空白海报
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \InvalidArgumentException('Invalid JSON: ' . json_last_error_msg());
         }
         if (!is_array($data)) {
             throw new \InvalidArgumentException(
@@ -49,32 +44,26 @@ class PosterTemplate
     public function getWidth(): int { return $this->width; }
     public function getHeight(): int { return $this->height; }
 
-    public function build(array $variables = []): array
+    /**
+     * 构建元素实例（类型映射查 ElementRegistry，未知 type 直接抛错而不是静默丢弃）。
+     *
+     * @param array $variables 占位符变量
+     * @param array $existing  追加模式：已有元素排在前（见 PosterBuilder::replaceElements()）
+     * @throws \InvalidArgumentException 未知 type / type 缺失
+     */
+    public function build(array $variables = [], array $existing = []): array
     {
-        $elements = [];
-        foreach ($this->elementDefs as $def) {
-            $type = $def['type'] ?? '';
-            $element = match ($type) {
-                'text'      => new TextElement($def),
-                'image'     => new ImageElement($def),
-                'qrcode'    => new QrcodeElement($def),
-                'avatar'    => new AvatarElement($def),
-                'shape'     => new ShapeElement($def),
-                'line'      => new LineElement($def),
-                'watermark' => new WatermarkElement($def),
-                'table'         => new TableElement($def),
-                'chart'         => new ChartElement($def),
-                'calendar'      => new CalendarElement($def),
-                'artistictext', 'artistic-text' => new ArtisticTextElement($def),
-                'emoji'         => new EmojiElement($def),
-                'icon'          => new IconElement($def),
-                'emoticon'      => new EmoticonElement($def),
-                default         => null,
-            };
-            if ($element !== null) {
-                if (method_exists($element, 'resolve')) $element->resolve($variables);
-                $elements[] = $element;
+        $elements = $existing;
+        foreach ($this->elementDefs as $i => $def) {
+            if (!is_array($def) || !isset($def['type']) || !is_string($def['type']) || $def['type'] === '') {
+                throw new \InvalidArgumentException(sprintf(
+                    'Template element #%d is missing a valid "type" key. Known types: %s',
+                    $i, implode(', ', ElementRegistry::types())
+                ));
             }
+            $element = ElementRegistry::create($def['type'], $def);
+            if (method_exists($element, 'resolve')) $element->resolve($variables);
+            $elements[] = $element;
         }
         return $elements;
     }

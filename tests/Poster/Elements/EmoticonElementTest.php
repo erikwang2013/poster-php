@@ -61,6 +61,14 @@ class EmoticonElementTest extends TestCase
     {
         $el = new EmoticonElement(['text' => '({{w}})']);
         $el->resolve(['w' => 'ok']);
-        $this->assertSame('(ok)', $el->toArray()['options']['text']);
+        $this->assertSame('(ok)', $el->toArray()['text']);
+    }
+
+    /** 验证 resolve() 同时替换 expression 占位符 */
+    public function testResolveReplacesExpressionPlaceholder(): void
+    {
+        $el = new EmoticonElement(['expression' => '{{mood}}']);
+        $el->resolve(['mood' => 'happy']);
+        $this->assertSame('happy', $el->toArray()['expression']);
     }
 }

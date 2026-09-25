@@ -10,6 +10,9 @@ use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 
 class CalendarElement extends AbstractElement
 {
+    /** highlights 为 日期 => 文案/['text'=>..,'bg'=>..]，嵌套值递归替换 */
+    protected array $resolveKeys = ['title', 'highlights'];
+
     public function render(ImageDriverInterface $canvas): void
     {
         $year     = intval($this->options['year'] ?? date('Y'));
@@ -69,9 +72,9 @@ class CalendarElement extends AbstractElement
                 $cx = $x + $col * $cellSize;
 
                 if (($row === 0 && $col < $adjustedDow) || $day > $daysInMonth) {
-                    // Empty cell
+                    // Empty cell：用 dimColor 而非 cellBg，让留白格与有值格拉开层次
                     $canvas->rectangle($cx, $rowY, $cellSize, $cellSize, [
-                        'color' => $cellBg, 'filled' => true,
+                        'color' => $dimColor, 'filled' => true,
                     ]);
                     $canvas->rectangle($cx, $rowY, $cellSize, $cellSize, [
                         'color' => $cellBorder, 'filled' => false, 'strokeWidth' => 1,

@@ -88,11 +88,101 @@ class ChartElementTest extends TestCase
         ]]))->render($canvas);
     }
 
-    /** 验证未知图表类型回退为 bar 图 */
-    public function testUnknownTypeFallsBackToBar(): void
+    /** 验证未知图表类型（'histogram'/'donut'/'BAR'/空串）抛 InvalidArgumentException，不再静默画柱状图 */
+    public function testUnknownTypeThrows(): void
+    {
+        foreach (['histogram', 'donut', 'BAR', ''] as $type) {
+            $canvas = $this->createMock(ImageDriverInterface::class);
+            $canvas->expects($this->never())->method('rectangle');
+            try {
+                (new ChartElement(['type' => $type, 'data' => [1, 2]]))->render($canvas);
+                $this->fail('未知图表类型应抛异常：' . var_export($type, true));
+            } catch (\InvalidArgumentException $e) {
+                $this->assertStringContainsString('Unknown chart type', $e->getMessage());
+                $this->assertStringContainsString('bar, pie, line', $e->getMessage());
+            }
+        }
+    }
+
+    /** 验证 colors 为空数组时回落默认调色板（此前会 DivisionByZeroError） */
+    public function testEmptyColorsFallsBackToDefaultPalette(): void
     {
         $canvas = $this->createMock(ImageDriverInterface::class);
-        $canvas->expects($this->exactly(2))->method('rectangle');
-        (new ChartElement(['type' => 'histogram', 'data' => [1, 2]]))->render($canvas);
+        $colors = [];
+        $canvas->expects($this->exactly(2))->method('rectangle')->with(
+            $this->anything(), $this->anything(), $this->anything(), $this->anything(),
+            $this->callback(function (array $o) use (&$colors) {
+                $colors[] = $o['color'];
+                return true;
+            })
+        );
+        (new ChartElement(['type' => 'bar', 'data' => [10, 20], 'colors' => []]))->render($canvas);
+        $this->assertSame(['#FF6B6B', '#4ECDC4'], $colors);
+    }
+
+    /** 验证 pie 图 colors 为空数组同样回落默认调色板 */
+    public function testEmptyColorsFallsBackForPie(): void
+    {
+        $canvas = $this->createMock(ImageDriverInterface::class);
+        $colors = [];
+        $canvas->expects($this->exactly(2))->method('filledArc')->with(
+            $this->anything(), $this->anything(), $this->anything(), $this->anything(),
+            $this->anything(), $this->anything(),
+            $this->callback(function (array $o) use (&$colors) {
+                $colors[] = $o['color'];
+                return true;
+            })
+        );
+        (new ChartElement(['type' => 'pie', 'data' => [1, 1], 'colors' => []]))->render($canvas);
+        $this->assertSame(['#FF6B6B', '#4ECDC4'], $colors);
+    }
+
+    /** 验证非数组 colors（字符串）也回落默认调色板 */
+    public function testNonArrayColorsFallsBack(): void
+    {
+        $canvas = $this->createMock(ImageDriverInterface::class);
+        $canvas->expects($this->exactly(2))->method('ellipse'); // line 图 2 个数据点各取 palette()[0]
+        (new ChartElement(['type' => 'line', 'data' => [1, 2], 'colors' => '#FF0000']))->render($canvas);
+    }
+
+    /** 验证自定义 colors 仍按序循环使用 */
+    public function testCustomColorsAreUsedInOrder(): void
+    {
+        $canvas = $this->createMock(ImageDriverInterface::class);
+        $colors = [];
+        $canvas->expects($this->exactly(3))->method('rectangle')->with(
+            $this->anything(), $this->anything(), $this->anything(), $this->anything(),
+            $this->callback(function (array $o) use (&$colors) {
+                $colors[] = $o['color'];
+                return true;
+            })
+        );
+        (new ChartElement(['type' => 'bar', 'data' => [1, 2, 3], 'colors' => ['#111111', '#222222']]))->render($canvas);
+        $this->assertSame(['#111111', '#222222', '#111111'], $colors);
+    }
+
+    /** 验证 width/height <= 0 抛 InvalidArgumentException 而不是画出畸形图表 */
+    public function testInvalidDimensionsThrow(): void
+    {
+        foreach ([['width' => 0], ['height' => -5]] as $bad) {
+            $canvas = $this->createMock(ImageDriverInterface::class);
+            $canvas->expects($this->never())->method('rectangle');
+            try {
+                (new ChartElement(['type' => 'bar', 'data' => [1, 2]] + $bad))->render($canvas);
+                $this->fail('非法尺寸应抛异常：' . json_encode($bad));
+            } catch (\InvalidArgumentException $e) {
+                $this->assertStringContainsString('must be greater than 0', $e->getMessage());
+            }
+        }
+    }
+
+    /** 验证 resolve() 递归替换 data 里的 label 等占位符 */
+    public function testResolveRecursesIntoData(): void
+    {
+        $el = new ChartElement(['type' => 'bar', 'data' => [
+            ['label' => '{{month}}', 'value' => 10],
+        ]]);
+        $el->resolve(['month' => '5月']);
+        $this->assertSame('5月', $el->toArray()['data'][0]['label']);
     }
 }

@@ -10,6 +10,8 @@ use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 
 class IconElement extends AbstractElement
 {
+    protected array $resolveKeys = ['icon', 'codepoint', 'color'];
+
     // FontAwesome 5/6 common icon unicode mappings
     private const FA_ICONS = [
         'heart'       => '\u{F004}',

@@ -92,6 +92,6 @@ class EmojiElementTest extends TestCase
     {
         $el = new EmojiElement(['emoji' => '{{e}}']);
         $el->resolve(['e' => '😀']);
-        $this->assertSame('😀', $el->toArray()['options']['emoji']);
+        $this->assertSame('😀', $el->toArray()['emoji']);
     }
 }

@@ -83,6 +83,6 @@ class ArtisticTextElementTest extends TestCase
     {
         $el = new ArtisticTextElement(['text' => '{{w}}!', 'style' => 'neon']);
         $el->resolve(['w' => 'Hey']);
-        $this->assertSame('Hey!', $el->toArray()['options']['text']);
+        $this->assertSame('Hey!', $el->toArray()['text']);
     }
 }

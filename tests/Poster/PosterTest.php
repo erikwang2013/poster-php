@@ -168,6 +168,57 @@ class PosterTest extends TestCase
         $builder->destroy();
     }
 
+    /** README 头像示例：缺省圆形裁剪 + border 生效（角上是背景、圆环上是边框色） */
+    public function testAvatarRendersCircularWithBorder(): void
+    {
+        $avatar = sys_get_temp_dir() . '/poster-avatar-' . uniqid() . '.png';
+        $src = imagecreatetruecolor(120, 120);
+        imagefilledrectangle($src, 0, 0, 119, 119, imagecolorallocate($src, 255, 0, 0));
+        imagepng($src, $avatar);
+        imagedestroy($src);
+
+        try {
+            $builder = new PosterBuilder();
+            $builder->width(200)->height(200)->background('#FFFFFF');
+            $builder->addAvatar($avatar, ['x' => 40, 'y' => 40, 'size' => 120, 'border' => '#0000FF', 'borderWidth' => 6]);
+            $img = imagecreatefromstring(base64_decode(explode(',', $builder->output('png'))[1]));
+
+            $this->assertSame(0xFFFFFF, $this->rgbAt($img, 40, 40), '圆形裁剪后左上角应是背景色');
+            $this->assertSame(0xFF0000, $this->rgbAt($img, 100, 100), '圆心应是头像本体');
+            $this->assertSame(0x0000FF, $this->rgbAt($img, 100, 37), '半径 60~66 的圆环应是边框色');
+
+            imagedestroy($img);
+            $builder->destroy();
+        } finally {
+            unlink($avatar);
+        }
+    }
+
+    /** 验证 save() 按扩展名写真实格式（此前恒写 JPEG，save('x.png') 得到的是 jpeg） */
+    public function testSaveHonorsExtensionFormat(): void
+    {
+        $png = sys_get_temp_dir() . '/poster-fmt-' . uniqid() . '.png';
+        $jpg = sys_get_temp_dir() . '/poster-fmt-' . uniqid() . '.jpg';
+        try {
+            $builder = new PosterBuilder();
+            $builder->width(60)->height(60)->background('#123456')->addText('x', ['x' => 5, 'y' => 30]);
+            $this->assertTrue($builder->save($png));
+            $this->assertTrue($builder->save($jpg));
+            $builder->destroy();
+
+            $this->assertSame("\x89PNG", substr((string) file_get_contents($png), 0, 4));
+            $this->assertSame("\xFF\xD8\xFF", substr((string) file_get_contents($jpg), 0, 3));
+        } finally {
+            @unlink($png);
+            @unlink($jpg);
+        }
+    }
+
+    private function rgbAt(\GdImage $img, int $x, int $y): int
+    {
+        return imagecolorat($img, $x, $y) & 0xFFFFFF;
+    }
+
     public function testImageElementPlacement(): void
     {
         $imgPath = sys_get_temp_dir() . '/poster-test-img-' . uniqid() . '.png';

@@ -13,17 +13,22 @@ use Erikwang2013\Poster\Poster\Elements\{
     TextElement, ImageElement, QrcodeElement, AvatarElement,
     ShapeElement, LineElement, WatermarkElement, TableElement,
     ChartElement, CalendarElement, ArtisticTextElement,
-    EmojiElement, IconElement, EmoticonElement
+    EmojiElement, IconElement, EmoticonElement, ElementRegistry
 };
 
 class PosterBuilder
 {
+    /** save() 支持按扩展名推断的输出格式，未知扩展名回落 jpg */
+    private const SAVE_FORMATS = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+
     private ImageDriverInterface $canvas;
     private int $width;
     private int $height;
     private array $elements = [];
     private ?PosterTemplate $template = null;
     private array $templateVars = [];
+    /** 模板元素是否整体替换手写元素（默认 true = 历史行为，见 replaceElements()） */
+    private bool $replaceElements = true;
     private ?string $pendingBgColor = null;
     private ?string $pendingBgImage = null;
     private ?array $pendingGradient = null;
@@ -71,10 +76,65 @@ class PosterBuilder
     public function addEmoji(string $emoji, array $options = []): static { $this->elements[] = new EmojiElement(array_merge($options, ['emoji'=>$emoji])); return $this; }
     public function addIcon(string $icon, array $options = []): static { $this->elements[] = new IconElement(array_merge($options, ['icon'=>$icon])); return $this; }
     public function addEmoticon(string $expression, array $options = []): static { $this->elements[] = new EmoticonElement(array_merge($options, ['expression'=>$expression])); return $this; }
+    /** 按类型名追加元素（类型见 ElementRegistry::types()），未知类型抛 InvalidArgumentException */
+    public function add(string $type, array $options = []): static { $this->elements[] = ElementRegistry::create($type, $options); return $this; }
+
+    /**
+     * 使用模板。注意渲染时模板元素会**整体替换** $this->elements，
+     * 此前 addXxx() 手写的元素不再绘制；需要两者共存请用 replaceElements(false)。
+     */
     public function useTemplate(PosterTemplate $template): static { $this->template = $template; return $this; }
+
+    /**
+     * 模板元素与手写元素的关系：
+     * true（默认，历史行为）= 模板整体替换手写元素；false = 追加，先手写元素后模板元素。
+     */
+    public function replaceElements(bool $replace = true): static { $this->replaceElements = $replace; return $this; }
+
     public function with(array $variables): static { $this->templateVars = $variables; return $this; }
 
-    public function save(string $path, int $quality = 90): bool { $this->render(); return $this->canvas->save($path, 'jpg', $quality); }
+    /**
+     * 导出为模板结构：PosterTemplate::fromConfig($builder->toArray()) 可还原等价模板。
+     * （元素以短类型名 + 拍平选项输出，见 AbstractElement::toArray()）
+     */
+    public function toArray(): array
+    {
+        $width  = $this->width ?? (int) PosterConfig::get('poster.default_width', 750);
+        $height = $this->height ?? (int) PosterConfig::get('poster.default_height', 1334);
+        $elements = $this->elements;
+
+        if ($this->template !== null) {
+            // 已渲染：$this->elements 就是最终结果；未渲染：按替换/追加语义现算一份
+            if (!$this->rendered) {
+                $elements = $this->template->build($this->templateVars, $this->replaceElements ? [] : $elements);
+            }
+            if (!isset($this->width))  $width  = $this->template->getWidth();
+            if (!isset($this->height)) $height = $this->template->getHeight();
+        }
+
+        return [
+            'width'    => $width,
+            'height'   => $height,
+            'elements' => array_map(static fn ($e) => $e->toArray(), $elements),
+        ];
+    }
+
+    /**
+     * 保存到文件：格式按扩展名推断（jpg/jpeg/png/webp/gif，未知扩展名回落 jpg）。
+     * $quality 为 null 时 JPEG 读配置 poster.jpeg_quality（PNG 压缩级别由驱动读 poster.png_compression）。
+     */
+    public function save(string $path, ?int $quality = null): bool
+    {
+        $this->render();
+        $format = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        if (!in_array($format, self::SAVE_FORMATS, true)) {
+            $format = 'jpg';
+        }
+        if ($quality === null) {
+            $quality = (int) PosterConfig::get('poster.jpeg_quality', 90);
+        }
+        return $this->canvas->save($path, $format, $quality);
+    }
     public function output(string $format = 'jpg', int $quality = 90): string { $this->render(); return $this->canvas->output($format, $quality); }
 
     private function render(): void
@@ -83,7 +143,10 @@ class PosterBuilder
             return;
         }
         if ($this->template !== null) {
-            $this->elements = $this->template->build($this->templateVars);
+            $this->elements = $this->template->build(
+                $this->templateVars,
+                $this->replaceElements ? [] : $this->elements
+            );
             $this->width = $this->template->getWidth();
             $this->height = $this->template->getHeight();
         }

@@ -10,7 +10,7 @@ use Erikwang2013\Poster\Drivers\ImageDriverInterface;
 
 class EmoticonElement extends AbstractElement
 {
-    protected array $resolveKeys = ['text'];
+    protected array $resolveKeys = ['text', 'expression'];
 
     // Common kaomoji / emoticons
     private const KAOMOJI = [

@@ -88,6 +88,21 @@ return [
             // 存储路径 / Storage path, null = system temp dir / 系统临时目录
             'path' => null,
         ],
+
+        // PSR-16 缓存池（storage=cache 时生效）/ PSR-16 pool (effective when storage=cache)
+        // pool：任何具备 get/set/delete 的对象（Laravel Cache::store()、Hyperf 缓存等）；
+        // 也可运行时用 StorageFactory::setPsr16Pool($pool) 注入，未注入时 storage=cache 抛异常
+        'cache' => [
+            'pool'   => null,
+            'prefix' => 'poster:captcha:',
+        ],
+
+        // Laravel 适配器：验证码图片路由（返回 PNG 而非 base64，可被浏览器/CDN 缓存）
+        // Captcha image route for the Laravel adapter (PNG endpoint instead of base64)
+        'route' => [
+            'enabled' => false,
+            'path'    => '/captcha',
+        ],
         'click_words' => [
             '合',
             '家',

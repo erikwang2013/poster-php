@@ -184,6 +184,9 @@ $pass = $manager->verify($result['key'], [
 ]);
 ```
 
+`setTargetType('icon')` troca o texto do alvo por formas vetoriais geradas por código (11 tipos, desenhados com primitivas do GD, sem precisar de arquivos de imagem):
+cada item de `extra['texts']` ganha um `thumb` (miniatura em base64 da forma), para o frontend exibir a dica de clique; a verificação continua sendo comparação de coordenadas.
+
 #### 2. Captcha de rotação (RotateCaptcha)
 
 O sistema gira a imagem aleatoriamente entre 30° e 330°, e o usuário arrasta o slider para endireitá-la.
@@ -271,6 +274,28 @@ $pass = $manager->verify($captcha['key'], [
 | Canvas mínimo | Fundo pequeno demais gera erro em vez de degradar (captcha de clique mínimo 120×120; o deslize precisa comportar a peça 4×2) |
 
 
+#### Validação de trajetória de comportamento (opcional)
+
+Desligado por padrão (para não prejudicar telas de toque nem dispositivos de acessibilidade). Quando ativado, `slider` / `rotate` exigem que o frontend envie o trajeto do arrasto, e o servidor valida o número de pontos, a duração e a linearidade do trajeto:
+
+```php
+// config/poster.php
+'captcha' => [
+    'trajectory' => [
+        'enabled'      => true,
+        'min_points'   => 4,      // mínimo de pontos amostrados
+        'min_duration' => 300,    // duração mínima (milissegundos)
+        'max_duration' => 5000,   // duração máxima (milissegundos)
+        'max_linearity' => 0.99,  // linearidade acima deste valor é considerada máquina (script arrasta em linha reta)
+    ],
+],
+
+// Envio pelo frontend: a forma antiga, com um número, continua compatível
+captcha_verify($key, 'slider', 173);
+// Com a validação de trajetória ativada, é preciso enviar o trajeto
+captcha_verify($key, 'slider', ['x' => 173, 'trail' => [[12, 3, 0], [40, 9, 22], /* … */], 'duration' => 1200]);
+```
+
 #### Configuração das imagens de fundo
 
 O fundo do captcha segue três níveis de prioridade:
@@ -327,6 +352,8 @@ $builder->backgroundGradient('#FF6B6B', '#FF8E53', 'vertical'); // fundo em grad
 
 // Saída
 $builder->save('/output/poster.jpg', 90);  // salva em arquivo (caminho, qualidade 0-100)
+                                           // formato inferido pela extensão: jpg/jpeg/png/webp/gif
+                                           // sem informar a qualidade, JPEG lê poster.jpeg_quality e PNG lê poster.png_compression
 $dataUrl = $builder->output('png', 90);    // obtém o data URL em base64
 ```
 
@@ -389,6 +416,8 @@ $builder->addQrcode('https://example.com/page/123', [
     'label_color' => '#999999',
 ]);
 ```
+
+Quando a capacidade ultrapassa o limite da versão (por exemplo, acima de ~1273 bytes no nível H) é lançada uma `InvalidArgumentException`, em vez de gerar em silêncio um código que não pode ser lido.
 
 #### Forma `addShape()`
 
@@ -688,6 +717,21 @@ $builder->useTemplate($template)->with([
 // Tipos de elemento suportados pelo template: text, image, qrcode, avatar, shape, line, watermark, table,
 //                      chart, calendar, artistic-text, emoji, icon, emoticon
 ```
+
+Por padrão, `useTemplate()` **substitui** os elementos criados antes com `addXxx()` (mantendo a semântica original); para «usar o template como base e depois sobrepor elementos escritos à mão», use o segundo parâmetro:
+
+```php
+$builder->replaceElements(false)->useTemplate($template)->with($vars)->addPet(['x' => 20, 'y' => 20, 'width' => 80]);
+
+// Exportação inversa: converte o builder atual (ou um elemento isolado) na estrutura de template, que pode ser passada de volta ao fromConfig()
+$config = $builder->toArray();          // ['width'=>…, 'height'=>…, 'elements'=>[…]]
+$template2 = PosterTemplate::fromConfig($config);   // exportar → importar de novo, estrutura idêntica
+
+// Basta registrar um novo tipo de elemento uma vez no ElementRegistry para valer no Builder e no template
+$builder->add('text', ['text' => 'hello', 'x' => 10, 'y' => 30, 'size' => 20]);
+```
+
+> Nota: a partir desta versão, `AbstractElement::toArray()` retorna «nome curto do tipo + opções achatadas» (antes era `['type' => nome da classe, 'options' => [...]]`), para que a ida e volta com a estrutura de template seja consistente.
 
 ## Integração com frameworks
 

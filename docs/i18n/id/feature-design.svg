@@ -53,14 +53,14 @@
   <text x="126.93" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Kunci sekali pakai</text>
   <rect x="201.85" y="500" width="121.2" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
   <text x="262.45" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Maks 3 percobaan</text>
-  <rect x="331.05" y="500" width="70.6" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
-  <text x="366.35" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">TTL 300s</text>
+  <rect x="331.05" y="500" width="108.55" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="385.33" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Batas per sesi</text>
   <rect x="60" y="538" width="114.88" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
   <text x="117.44" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Latar 3 tingkat</text>
-  <rect x="182.88" y="538" width="121.2" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
-  <text x="243.48" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Toleransi kustom</text>
-  <rect x="312.08" y="538" width="133.85" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
-  <text x="379" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">File/Session/Redis</text>
+  <rect x="182.88" y="538" width="146.5" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="256.13" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Cek jejak (opsional)</text>
+  <rect x="337.38" y="538" width="133.85" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <text x="404.3" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">File/Session/Redis</text>
   <rect x="530" y="154" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="530" y="164" width="4" height="44" rx="2" fill="#4ECDC4"/>
   <text x="550" y="182" font-size="14" fill="#2D3436" font-weight="600">Teks &amp; Layout</text>

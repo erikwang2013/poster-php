@@ -717,6 +717,21 @@ $builder->useTemplate($template)->with([
 //                      chart, calendar, artistic-text, emoji, icon, emoticon
 ```
 
+`useTemplate()` por defecto **reemplaza** los elementos `addXxx()` anteriores (mantiene la semántica original); para «usar la plantilla como base y superponer elementos escritos a mano» usa el segundo parámetro:
+
+```php
+$builder->replaceElements(false)->useTemplate($template)->with($vars)->addPet(['x' => 20, 'y' => 20, 'width' => 80]);
+
+// exportación inversa: convierte el builder actual (o un solo elemento) en una estructura de plantilla que se puede volver a pasar a fromConfig()
+$config = $builder->toArray();          // ['width'=>…, 'height'=>…, 'elements'=>[…]]
+$template2 = PosterTemplate::fromConfig($config);   // exportar → importar de nuevo, misma estructura
+
+// para añadir un tipo de elemento basta con registrarlo una vez en ElementRegistry, y surte efecto tanto en el Builder como en la plantilla
+$builder->add('text', ['text' => 'hello', 'x' => 10, 'y' => 30, 'size' => 20]);
+```
+
+> Nota: desde esta versión, `AbstractElement::toArray()` devuelve «nombre corto del tipo + opciones aplanadas» (antes era `['type' => nombre de clase, 'options' => [...]]`), para que el ida y vuelta con la estructura de plantilla sea consistente.
+
 ## Integración con frameworks
 
 ### Laravel
@@ -788,6 +803,10 @@ Opciones principales:
 | `captcha.tolerance` | `{click:18,rotate:5,slider:4}` | Tolerancia de cada tipo |
 | `image.driver` | `auto` | Driver de imagen: `auto` / `gd` / `imagick` |
 | `poster.placeholder` | `null` | Ruta de la imagen de relleno para imágenes ausentes; con `null` no se dibuja nada; si se apunta a la mascota, se dibuja Posty donde falta una imagen |
+| `captcha.rate_limit` | `{max:30,window:60}` | Límite de ventana por sesión o cuenta; la identidad usa session_id por defecto y, si no hay sesión, la IP del cliente |
+| `captcha.trajectory` | `{enabled:false,…}` | Verificación de la trayectoria de comportamiento (desactivada por defecto) |
+| `captcha.cache.pool` | `null` | Objeto de pool PSR-16 (se usa con `storage=cache`); también en tiempo de ejecución con `StorageFactory::setPsr16Pool()` |
+| `captcha.route` | `{enabled:false,path:'/captcha'}` | Adaptador de Laravel: registra el endpoint de imagen `GET {path}/{key}`, que devuelve el PNG directamente |
 
 ## El código abierto no es fácil, se agradece el apoyo
 

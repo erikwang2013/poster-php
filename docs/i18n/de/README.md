@@ -803,6 +803,10 @@ Wichtige Optionen:
 | `captcha.tolerance` | `{click:18,rotate:5,slider:4}` | Toleranzen je Typ |
 | `image.driver` | `auto` | Bildtreiber: `auto` / `gd` / `imagick` |
 | `poster.placeholder` | `null` | Pfad zum Platzhalterbild für fehlende Bilder, bei `null` wird nichts gezeichnet; mit dem Maskottchen-Pfad wird an fehlenden Stellen Posty gezeichnet |
+| `captcha.rate_limit` | `{max:30,window:60}` | Fenster-Limitierung je Sitzung/Konto; als Identität dient standardmäßig die session_id, ohne Sitzung die Client-IP |
+| `captcha.trajectory` | `{enabled:false,…}` | Trajektorien-Prüfung (standardmäßig aus) |
+| `captcha.cache.pool` | `null` | PSR-16-Pool-Objekt (bei `storage=cache`), alternativ zur Laufzeit `StorageFactory::setPsr16Pool()` |
+| `captcha.route` | `{enabled:false,path:'/captcha'}` | Laravel-Adapter: registriert den Bild-Endpunkt `GET {path}/{key}`, der direkt PNG liefert |
 
 ## Open Source ist nicht einfach — Unterstützung willkommen
 

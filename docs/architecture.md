@@ -118,6 +118,8 @@ graph LR
 
 ```mermaid
 graph TB
+    CM["CaptchaManager<br/>验证码管理器"] --> RL["RateLimiter<br/>窗口限流"]
+    CM --> TV["TrajectoryVerifier<br/>轨迹校验（可选）"]
     CM["CaptchaManager<br/>验证码管理器"] --> CF["CaptchaFactory<br/>验证码工厂"]
     CF --> CC["ClickCaptcha<br/>点击验证"]
     CF --> RC["RotateCaptcha<br/>旋转验证"]
@@ -221,34 +223,44 @@ sequenceDiagram
     participant Client as 前端
     participant Helper as captcha_verify()
     participant Manager as CaptchaManager
+    participant Limiter as RateLimiter
     participant Storage as FileStorage
     participant Config as PosterConfig
 
     Client->>Helper: captcha_verify(key, type, data)
     Helper->>Manager: verify(key, ['type'=>type, 'data'=>data])
-    
+
+    Note over Manager,Limiter: ① 跨 key 窗口限流（单 key 计数挡不住「每次换新 key 再猜一次」）
+    Manager->>Config: get('captcha.rate_limit')
+    Config-->>Manager: ['max'=>30, 'window'=>60]
+    Manager->>Limiter: allow(identity)
+    Note over Limiter: identity 默认 session_id，<br/>无会话时取客户端 IP，可注入 resolver
+    alt 窗口内超限
+        Limiter-->>Manager: false
+        Manager-->>Helper: false（不抛异常，避免暴露限流状态）
+    end
+
     Manager->>Storage: get(key)
-    
-    alt key not found / expired
+    alt key 不存在 / 已过期
         Storage-->>Manager: null
         Manager-->>Helper: false
     end
-    
     Storage-->>Manager: stored data
-    
-    Manager->>Config: get('captcha.max_attempts', 3)
-    Config-->>Manager: 3
-    
-    alt attempts >= max_attempts
+
+    Note over Manager,Storage: ② 先原子自增、再以返回值为本次尝试序号<br/>（旧的「读计数 → 校验 → 累加」在 40 并发下曾放行 9~24 次）
+    Manager->>Storage: incrementAttempts(key) → n
+    alt n <= 0（键已过期/被并发删除/写失败）
+        Manager-->>Helper: false（拿不到可信序号时失败关闭）
+    else n > max_attempts（默认 3）
         Manager->>Storage: del(key)
         Manager-->>Helper: false
     end
-    
+
     Manager->>Manager: check(type, stored, userData)
-    
+
     alt type === 'click'
         Manager->>Manager: checkClick(stored, data, tolerance)
-        Note over Manager: 逐点检查距离 ≤ 18px
+        Note over Manager: 逐点距离 ≤ 18px；坐标必须是标量，<br/>畸形数据返回 false 而非 TypeError
     else type === 'rotate'
         Manager->>Manager: checkRotate(stored, data, tolerance)
         Note over Manager: |用户角度 - 实际角度| ≤ 5°<br/>提交的是你施加的反向旋转角度<br/>（差值超过 180° 时按 360-差值 折回，以代码与测试为准）
@@ -256,16 +268,19 @@ sequenceDiagram
         Manager->>Manager: checkSlider(stored, data, tolerance)
         Note over Manager: |用户x - 实际x| ≤ 4px
     end
-    
+    opt captcha.trajectory.enabled
+        Manager->>Manager: TrajectoryVerifier::pass(data)
+        Note over Manager: 点数 ≥ min_points、耗时在窗口内、<br/>轨迹线性度 ≤ max_linearity（默认关闭）
+    end
+
     alt check passed
         Manager->>Storage: del(key)
         Manager-->>Helper: true
     else check failed
-        Manager->>Storage: incrementAttempts(key)
-        Note over Manager,Storage: 保留 key 允许重试<br/>(最多 max_attempts 次)
         Manager-->>Helper: false
+        Note over Manager,Storage: key 保留，允许重试至 max_attempts 次
     end
-    
+
     Helper-->>Client: true / false
 ```
 

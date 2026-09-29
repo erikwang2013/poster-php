@@ -6,7 +6,7 @@
   <img src="../../../assets/pet.svg" width="200" alt="poster-php प्रोजेक्ट शुभंकर Posty" />
 </p>
 
-PHP इमेज कैप्चा और पोस्टर जनरेशन टूलकिट —— फ़्रेमवर्क-स्वतंत्र कोर + Laravel / ThinkPHP / Webman / Hyperf अडैप्टर।
+PHP इमेज कैप्चा और पोस्टर जनरेशन टूलकिट —— फ़्रेमवर्क-स्वतंत्र कोर + Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3 अडैप्टर।
 
 [English Documentation](../../../README_EN.md) | [आर्किटेक्चर डिज़ाइन दस्तावेज़](../../../docs/architecture.md) | [सभी भाषाएँ](../README.md)
 
@@ -19,7 +19,7 @@ poster-php एक PHP इमेज टूलकिट है, जो सिर�
 | **कैप्चा** | क्लिक / रोटेट / स्लाइडर तीन मानव-सत्यापन + रैंडम स्विच; शुद्ध PHP में इमेज और उत्तर बनते हैं, किसी थर्ड-पार्टी सेवा पर निर्भरता नहीं |
 | **पोस्टर जनरेशन** | चेन बिल्डर API, 14 एलिमेंट — टेक्स्ट, इमेज, QR कोड, टेबल, चार्ट, कैलेंडर जैसी सभी लेआउट ज़रूरतें |
 | **फ़्रेमवर्क-स्वतंत्र** | कोर को केवल PHP ≥ 8.0 + GD चाहिए; सामान्य Composer पैकेज की तरह बिना फ़्रेमवर्क भी उपयोग करें |
-| **तुरंत उपयोग** | 3 ग्लोबल हेल्पर फ़ंक्शन + 4 फ़्रेमवर्क अडैप्टर (Laravel / ThinkPHP / Webman / Hyperf) |
+| **तुरंत उपयोग** | 3 ग्लोबल हेल्पर फ़ंक्शन + 6 फ़्रेमवर्क अडैप्टर (Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3) |
 | **बदलने योग्य** | इमेज ड्राइवर (GD / ImageMagick) और स्टोरेज बैकएंड (File / Session / Redis) इंटरफ़ेस इम्प्लीमेंटेशन हैं, ज़रूरत के अनुसार बदलें |
 
 > प्रोजेक्ट शुभंकर **Posty** —— पोस्टर, QR कार्ड और स्लाइडर पहेली से बना शुभंकर, जो इस पैकेज की दो बड़ी क्षमताओं को दर्शाता है: इमेज बनाना और सत्यापन। यह पैकेज के साथ आता है ([`assets/pet.svg`](../../../assets/pet.svg) / `assets/pet.png`), `->addPet()` से पोस्टर में बनाया जा सकता है, और गुम इमेज के प्लेसहोल्डर के रूप में भी कॉन्फ़िगर किया जा सकता है।
@@ -28,7 +28,7 @@ poster-php एक PHP इमेज टूलकिट है, जो सिर�
 
 ```
 poster-php/
-├── src/                        # कोर कोड: 64 PHP फ़ाइलें / लगभग 6093 लाइनें
+├── src/                        # कोर कोड: 70 PHP फ़ाइलें / लगभग 6355 लाइनें
 │   ├── Captcha/                # कैप्चा मॉड्यूल: इंटरफ़ेस + एब्सट्रैक्ट बेस क्लास + 3 इम्प्लीमेंटेशन + फ़ैक्टरी + मैनेजर
 │   │                           #   + RateLimiter (रेट लिमिट) / TrajectoryVerifier (ट्रैजेक्टरी जाँच)
 │   ├── Poster/                 # पोस्टर मॉड्यूल (Elements/ElementRegistry.php एलिमेंट की सिंगल-पॉइंट रजिस्ट्री)
@@ -38,7 +38,7 @@ poster-php/
 │   ├── Drivers/                # इमेज ड्राइवर: ImageDriverInterface / GdDriver / ImagickDriver
 │   ├── Storage/                # कैप्चा डेटा स्टोरेज: File / Session / Redis / PSR-16 कैश
 │   ├── Qrcode/                 # शुद्ध PHP QR कोड जेनरेटर (Model 2, v1-40, शून्य एक्सटेंशन निर्भरता)
-│   ├── Adapters/               # फ़्रेमवर्क अडैप्टर: Laravel / ThinkPHP / Webman / Hyperf
+│   ├── Adapters/               # फ़्रेमवर्क अडैप्टर: Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3
 │   ├── PosterConfig.php        # कॉन्फ़िग पढ़ना (डिफ़ॉल्ट फ़ॉलबैक + फ़्रेमवर्क कॉन्फ़िग मर्ज)
 │   └── Installer.php           # composer इंस्टॉल के बाद कॉन्फ़िग फ़ाइल कॉपी करता है
 ├── config/
@@ -786,9 +786,59 @@ return [
 
 ConfigProvider के ज़रिए अपने आप रजिस्टर हो जाता है।
 
+### Yii2
+
+`config/web.php`:
+```php
+'components' => [
+    'poster' => ['class' => Erikwang2013\Poster\Adapters\Yii2\PosterComponent::class],
+],
+```
+
+```php
+Yii::$app->poster->captcha->create('click')->generate();   // getCaptcha() मैजिक एक्सेस के ज़रिए
+Yii::$app->poster->builder->width(750)->save('poster.jpg');
+```
+
+वैकल्पिक: `Erikwang2013\Poster\Adapters\Yii2\Bootstrap::class` को `'bootstrap'` में जोड़ें, तो कंट्रोलर में `CaptchaManager` कंस्ट्रक्टर इंजेक्शन से मिल जाता है।
+
+> `builder` को हर बार एक्सेस करने पर नया इंस्टेंस मिलता है (यह स्टेटफ़ुल है, `width()`/`add()` जमा होते जाते हैं); `captcha` स्टेटलेस है। कॉन्फ़िग ऐप की `config/poster.php` से पढ़ा जाता है और `@app` एलियस से लोकेट होता है —— cwd से नहीं, क्योंकि php-fpm में cwd अक्सर `web/` होता है, जिससे कॉन्फ़िग चुपचाप बेअसर हो जाता है।
+
+### Yii3
+
+`composer require` के बाद `yiisoft/config` से अपने आप असेंबल हो जाता है (`extra.config-plugin` पहले से घोषित है, मैन्युअल वायरिंग की ज़रूरत नहीं):
+
+```php
+use Erikwang2013\Poster\Adapters\Yii3\PosterBuilderFactory;
+use Erikwang2013\Poster\Adapters\Yii3\CaptchaManagerFactory;
+
+final class PosterController
+{
+    public function __construct(private PosterBuilderFactory $builders) {}
+
+    public function action(): void
+    {
+        ($this->builders)()->width(750)->background('#FFF')->save('/tmp/poster.jpg');
+    }
+}
+```
+
+डिफ़ॉल्ट मान ओवरराइड करने के लिए ऐप की `config/params.php`:
+
+```php
+return [
+    'erikwang2013/poster-php' => [
+        'image'   => ['driver' => 'imagick'],
+        'captcha' => ['storage' => 'cache', 'ttl' => 600],
+    ],
+];
+```
+
+> कंटेनर में सिर्फ़ स्टेटलेस चीज़ें रखी जाती हैं: `StorageInterface` और दोनों फ़ैक्टरी। इमेज ड्राइवर / `CaptchaManager` / `PosterBuilder` कंटेनर में नहीं जाते —— `yiisoft/di` केवल शेयर्ड इंस्टेंस मैनेज करता है, और ये अपना मौजूदा कैनवास रखते हैं (`GdDriver::$resource`, `ImagickDriver::$imagick`), जिन्हें शेयर करने पर RoadRunner / Swoole के लॉन्ग-रनिंग प्रोसेस में रिक्वेस्ट्स के बीच स्टेट मिल जाती।
+
 ## कॉन्फ़िगरेशन
 
-`composer require` के बाद `config/poster.php` अपने आप प्रोजेक्ट की `config/` डिरेक्टरी में कॉपी हो जाता है (पहले से मौजूद हो तो छोड़ दिया जाता है)। Laravel / ThinkPHP / Webman (`config/poster.php`) और Hyperf (`config/autoload/poster.php`) के साथ संगत।
+`composer require` के बाद `config/poster.php` अपने आप प्रोजेक्ट की `config/` डिरेक्टरी में कॉपी हो जाता है (पहले से मौजूद हो तो छोड़ दिया जाता है)। Laravel / ThinkPHP / Webman / Yii2 (`config/poster.php`) और Hyperf (`config/autoload/poster.php`) के साथ संगत। Yii3 ऐप की `config/params.php` में `erikwang2013/poster-php` नेमस्पेस से ओवरराइड करता है, ऊपर देखें।
 
 मुख्य कॉन्फ़िग आइटम:
 

@@ -5,7 +5,7 @@
   },
   "architecture": {
     "title": "poster-php Systemarchitektur",
-    "subtitle": "Framework-unabhängiger Kern + 4 Framework-Adapter · jede Schicht nutzt nur die Interfaces darunter",
+    "subtitle": "Framework-unabhängiger Kern + 6 Framework-Adapter · jede Schicht nutzt nur die Interfaces darunter",
     "layerApi": "API-Schicht",
     "layerBusiness": "Business-Schicht",
     "layerCore": "Kern-Schicht",
@@ -15,7 +15,9 @@
       ["Laravel", "Facade · Provider"],
       ["ThinkPHP", "CaptchaService"],
       ["Webman", "CaptchaPlugin"],
-      ["Hyperf", "ConfigProvider"]
+      ["Hyperf", "ConfigProvider"],
+      ["Yii2", "PosterComponent"],
+      ["Yii3", "config-plugin"]
     ],
     "business": [
       [
@@ -89,7 +91,7 @@
     "template": {
       "title": "Template-System",
       "chips1": ["JSON-Definition", "{{variable}} ersetzen", "einmal definieren"],
-      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf"]
+      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf", "Yii2", "Yii3"]
     },
     "entry": {
       "title": "Einstieg",

@@ -5,7 +5,7 @@
   },
   "architecture": {
     "title": "poster-php 系统架构设计",
-    "subtitle": "框架无关核心 + 4 种框架适配 · 上层只依赖下层接口，驱动与存储可替换",
+    "subtitle": "框架无关核心 + 6 种框架适配 · 上层只依赖下层接口，驱动与存储可替换",
     "layerApi": "接口层 API",
     "api": [
       [
@@ -27,6 +27,14 @@
       [
         "Hyperf",
         "ConfigProvider"
+      ],
+      [
+        "Yii2",
+        "PosterComponent"
+      ],
+      [
+        "Yii3",
+        "config-plugin"
       ]
     ],
     "layerBusiness": "业务层 Business",
@@ -203,7 +211,9 @@
         "Laravel",
         "ThinkPHP",
         "Webman",
-        "Hyperf"
+        "Hyperf",
+        "Yii2",
+        "Yii3"
       ]
     },
     "entry": {

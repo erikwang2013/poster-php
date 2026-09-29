@@ -5,7 +5,7 @@
   },
   "architecture": {
     "title": "Arquitetura do Sistema poster-php",
-    "subtitle": "Núcleo agnóstico de framework + 4 adaptadores · cada camada depende só das interfaces abaixo",
+    "subtitle": "Núcleo agnóstico de framework + 6 adaptadores · cada camada depende só das interfaces abaixo",
     "layerApi": "Camada de API",
     "layerBusiness": "Camada de Negócio",
     "layerCore": "Camada de Núcleo",
@@ -15,7 +15,9 @@
       ["Laravel", "Facade · Provider"],
       ["ThinkPHP", "CaptchaService"],
       ["Webman", "CaptchaPlugin"],
-      ["Hyperf", "ConfigProvider"]
+      ["Hyperf", "ConfigProvider"],
+      ["Yii2", "PosterComponent"],
+      ["Yii3", "config-plugin"]
     ],
     "business": [
       [
@@ -89,7 +91,7 @@
     "template": {
       "title": "Sistema de Templates",
       "chips1": ["Definição JSON", "troca de {{variable}}", "defina e reutilize"],
-      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf"]
+      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf", "Yii2", "Yii3"]
     },
     "entry": {
       "title": "Entradas",

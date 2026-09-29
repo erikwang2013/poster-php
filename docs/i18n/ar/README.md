@@ -6,7 +6,7 @@
   <img src="../../../assets/pet.svg" width="200" alt="شعار مشروع poster-php: Posty" />
 </p>
 
-مجموعة أدوات PHP لصور التحقق وتوليد الملصقات —— نواة مستقلة عن الأطر + محوّلات Laravel / ThinkPHP / Webman / Hyperf.
+مجموعة أدوات PHP لصور التحقق وتوليد الملصقات —— نواة مستقلة عن الأطر + محوّلات Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3.
 
 [التوثيق الإنجليزي](../../../README_EN.md) | [وثيقة التصميم المعماري](../../../docs/architecture.md) | [جميع اللغات](../README.md)
 
@@ -19,7 +19,7 @@ poster-php مجموعة أدوات PHP للصور تفعل شيئين فقط، �
 | **التحقق** | ثلاث طرق للتحقق البشري (النقر / التدوير / السحب) مع تبديل عشوائي؛ توليد الصور والأجوبة بـ PHP خالص دون خدمات خارجية |
 | **توليد الملصقات** | واجهة Builder متسلسلة، و14 نوعًا من العناصر تغطي النصوص والصور ورموز QR والجداول والمخططات والتقويم وغيرها |
 | **مستقل عن الأطر** | تعتمد النواة على PHP ≥ 8.0 + GD فقط، وتُستخدم كحزمة Composer عادية بلا أي إطار |
-| **جاهز للاستخدام** | 3 دوال مساعدة عامة + 4 محوّلات أطر (Laravel / ThinkPHP / Webman / Hyperf) |
+| **جاهز للاستخدام** | 3 دوال مساعدة عامة + 6 محوّلات أطر (Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3) |
 | **قابل للاستبدال** | مشغّل الصور (GD / ImageMagick) ومخزن البيانات (File / Session / Redis) تطبيقاتٌ لواجهات، تُستبدل حسب الحاجة |
 
 > تميمة المشروع **Posty** —— مخلوق مكوّن من الملصق نفسه وبطاقة رمز QR وقطعة أحجية السحب، وهي تجسّد قدرتَي الحزمة: إخراج الصور والتحقق. تُوزَّع مع الحزمة ([`assets/pet.svg`](../../../assets/pet.svg) / `assets/pet.png`)، ويمكن رسمها داخل الملصق عبر `->addPet()` أو ضبطها كصورة بديلة عند فقدان الصور.
@@ -28,7 +28,7 @@ poster-php مجموعة أدوات PHP للصور تفعل شيئين فقط، �
 
 ```
 poster-php/
-├── src/                        # الكود الأساسي: 64 ملف PHP / نحو 6093 سطرًا
+├── src/                        # الكود الأساسي: 70 ملف PHP / نحو 6355 سطرًا
 │   ├── Captcha/                # وحدة التحقق: واجهة + صنف أساسي مجرّد + 3 تطبيقات + مصنع + مدير
 │   │                           #   + RateLimiter (تحديد المعدل) / TrajectoryVerifier (التحقق من المسار)
 │   ├── Poster/                 # وحدة الملصق (Elements/ElementRegistry.php سجل التسجيل الموحّد للعناصر)
@@ -38,7 +38,7 @@ poster-php/
 │   ├── Drivers/                # مشغّلات الصور: ImageDriverInterface / GdDriver / ImagickDriver
 │   ├── Storage/                # تخزين بيانات التحقق: File / Session / Redis / ذاكرة PSR-16
 │   ├── Qrcode/                 # مولّد رموز QR بـ PHP خالص (Model 2، v1-40، بلا إضافات)
-│   ├── Adapters/               # محوّلات الأطر: Laravel / ThinkPHP / Webman / Hyperf
+│   ├── Adapters/               # محوّلات الأطر: Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3
 │   ├── PosterConfig.php        # قراءة الإعدادات (قيم افتراضية + دمج إعدادات الإطار)
 │   └── Installer.php           # نسخ ملف الإعدادات تلقائيًا بعد تثبيت composer
 ├── config/
@@ -786,9 +786,59 @@ return [
 
 يُسجَّل تلقائيًا عبر ConfigProvider.
 
+### Yii2
+
+`config/web.php`:
+```php
+'components' => [
+    'poster' => ['class' => Erikwang2013\Poster\Adapters\Yii2\PosterComponent::class],
+],
+```
+
+```php
+Yii::$app->poster->captcha->create('click')->generate();   // عبر الوصول السحري getCaptcha()
+Yii::$app->poster->builder->width(750)->save('poster.jpg');
+```
+
+اختياري: أضف `Erikwang2013\Poster\Adapters\Yii2\Bootstrap::class` إلى `'bootstrap'`، فيستطيع المتحكم حقن `CaptchaManager` عبر الباني.
+
+> يعيد `builder` كائنًا جديدًا في كل وصول (فهو ذو حالة، و`width()`/`add()` تتراكم فيه)؛ أما `captcha` فبلا حالة. تُقرأ الإعدادات من `config/poster.php` في التطبيق، وتُحدَّد موقعها عبر الاسم المستعار `@app` —— لا عبر cwd، لأن cwd غالبًا ما يكون `web/` تحت php-fpm، ما يُبطل الإعدادات بصمت.
+
+### Yii3
+
+بعد `composer require` يتم التجميع التلقائي عبر `yiisoft/config` (فقد صُرِّح عن `extra.config-plugin`، دون حاجة إلى ربط يدوي):
+
+```php
+use Erikwang2013\Poster\Adapters\Yii3\PosterBuilderFactory;
+use Erikwang2013\Poster\Adapters\Yii3\CaptchaManagerFactory;
+
+final class PosterController
+{
+    public function __construct(private PosterBuilderFactory $builders) {}
+
+    public function action(): void
+    {
+        ($this->builders)()->width(750)->background('#FFF')->save('/tmp/poster.jpg');
+    }
+}
+```
+
+يتم تجاوز القيم الافتراضية عبر `config/params.php` في التطبيق:
+
+```php
+return [
+    'erikwang2013/poster-php' => [
+        'image'   => ['driver' => 'imagick'],
+        'captcha' => ['storage' => 'cache', 'ttl' => 600],
+    ],
+];
+```
+
+> لا يوضع في الحاوية إلا ما هو بلا حالة: `StorageInterface` والمصنعان. أما مشغّل الصور و`CaptchaManager` و`PosterBuilder` فلا تدخل الحاوية —— لأن `yiisoft/di` لا يدير إلا المثيلات المشتركة، وهذه تحمل اللوحة الحالية (`GdDriver::$resource`، `ImagickDriver::$imagick`)، فتؤدي مشاركتها في عمليات RoadRunner / Swoole الدائمة إلى تسرّب الحالة بين الطلبات.
+
 ## الإعدادات
 
-بعد `composer require` يُنسخ `config/poster.php` تلقائيًا إلى دليل `config/` في مشروعك (ويُتجاوز إن كان موجودًا). متوافق مع Laravel / ThinkPHP / Webman (`config/poster.php`) وHyperf (`config/autoload/poster.php`).
+بعد `composer require` يُنسخ `config/poster.php` تلقائيًا إلى دليل `config/` في مشروعك (ويُتجاوز إن كان موجودًا). متوافق مع Laravel / ThinkPHP / Webman / Yii2 (`config/poster.php`) وHyperf (`config/autoload/poster.php`). ويُمكن لـ Yii3 تجاوز القيم الافتراضية عبر نطاق `erikwang2013/poster-php` في `config/params.php`، انظر أعلاه.
 
 أهم الإعدادات:
 

@@ -4,7 +4,7 @@
   <img src="../../../assets/pet.svg" width="200" alt="poster-php mascot Posty" />
 </p>
 
-PHP image captcha & poster generation toolkit — framework-agnostic core with Laravel / ThinkPHP / Webman / Hyperf adapters.
+PHP image captcha & poster generation toolkit — framework-agnostic core with Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3 adapters.
 
 [中文文档](../../../README.md) | [Architecture Diagrams](../../architecture.md) | [All languages](../README.md)
 
@@ -19,7 +19,7 @@ poster-php is a PHP image toolkit that does two things, and does them well:
 | **Captcha** | Click / rotate / slider human verification plus a random mode — images and answers generated in pure PHP, no third-party service |
 | **Poster generation** | Fluent Builder API with 14 element types covering text, images, QR codes, tables, charts and calendars |
 | **Framework-agnostic** | Core requires only PHP >= 8.0 + GD; use it as a plain Composer package |
-| **Batteries included** | 3 global helper functions + 4 framework adapters (Laravel / ThinkPHP / Webman / Hyperf) |
+| **Batteries included** | 3 global helper functions + 6 framework adapters (Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3) |
 | **Swappable** | Image drivers (GD / ImageMagick) and storage backends (File / Session / Redis) are interface implementations |
 
 > Project mascot **Posty** — a poster body carrying a QR card and a slider puzzle, matching the two sides of the package: rendering and verification. It ships with the package ([`assets/pet.svg`](../../../assets/pet.svg) / `assets/pet.png`): draw it with `->addPet()`, or set it as the placeholder for missing images.
@@ -28,7 +28,7 @@ poster-php is a PHP image toolkit that does two things, and does them well:
 
 ```
 poster-php/
-├── src/                        # core: 56 PHP files / ~4250 lines
+├── src/                        # core: 70 PHP files / ~6355 lines
 │   ├── Captcha/                # captcha module: interface + abstract base + 3 impls + factory + manager
 │   ├── Poster/                 # poster module
 │   │   ├── PosterBuilder.php   # fluent builder, 14 addXxx() methods
@@ -37,7 +37,7 @@ poster-php/
 │   ├── Drivers/                # image drivers: ImageDriverInterface / GdDriver / ImagickDriver
 │   ├── Storage/                # captcha storage: File / Session / Redis
 │   ├── Qrcode/                 # pure PHP QR code generator (Model 2, v1-40, no extension needed)
-│   ├── Adapters/               # framework adapters: Laravel / ThinkPHP / Webman / Hyperf
+│   ├── Adapters/               # framework adapters: Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3
 │   ├── PosterConfig.php        # config loading (defaults + framework config merge)
 │   └── Installer.php           # copies config file on composer install
 ├── config/
@@ -413,9 +413,59 @@ return [
 
 Auto-registered via ConfigProvider.
 
+### Yii2
+
+`config/web.php`:
+```php
+'components' => [
+    'poster' => ['class' => Erikwang2013\Poster\Adapters\Yii2\PosterComponent::class],
+],
+```
+
+```php
+Yii::$app->poster->captcha->create('click')->generate();   // via getCaptcha() magic getter
+Yii::$app->poster->builder->width(750)->save('poster.jpg');
+```
+
+Optional: add `Erikwang2013\Poster\Adapters\Yii2\Bootstrap::class` to `'bootstrap'` to make `CaptchaManager` constructor-injectable in controllers.
+
+> `builder` returns a new instance on every access (it is stateful — `width()`/`add()` accumulate); `captcha` is stateless. Config is read from your app's `config/poster.php`, located through the `@app` alias rather than cwd — under php-fpm cwd is often `web/`, which would make the config silently fall back to package defaults.
+
+### Yii3
+
+After `composer require`, `yiisoft/config` wires it up automatically (`extra.config-plugin` is declared, no manual setup):
+
+```php
+use Erikwang2013\Poster\Adapters\Yii3\PosterBuilderFactory;
+use Erikwang2013\Poster\Adapters\Yii3\CaptchaManagerFactory;
+
+final class PosterController
+{
+    public function __construct(private PosterBuilderFactory $builders) {}
+
+    public function action(): void
+    {
+        ($this->builders)()->width(750)->background('#FFF')->save('/tmp/poster.jpg');
+    }
+}
+```
+
+Override defaults from your app's `config/params.php`:
+
+```php
+return [
+    'erikwang2013/poster-php' => [
+        'image'   => ['driver' => 'imagick'],
+        'captcha' => ['storage' => 'cache', 'ttl' => 600],
+    ],
+];
+```
+
+> Only stateless things go into the container: `StorageInterface` and the two factories. The image drivers, `CaptchaManager` and `PosterBuilder` deliberately do not — `yiisoft/di` manages shared instances only, and these hold the current canvas (`GdDriver::$resource`, `ImagickDriver::$imagick`). Sharing them leaks state across requests under RoadRunner / Swoole.
+
 ## Configuration
 
-After `composer require`, `config/poster.php` is auto-copied to your project's `config/` directory (skipped if already exists). Compatible with Laravel / ThinkPHP / Webman (`config/poster.php`) and Hyperf (`config/autoload/poster.php`).
+After `composer require`, `config/poster.php` is auto-copied to your project's `config/` directory (skipped if already exists). Compatible with Laravel / ThinkPHP / Webman / Yii2 (`config/poster.php`) and Hyperf (`config/autoload/poster.php`). Yii3 overrides via the `erikwang2013/poster-php` namespace in `config/params.php`, see above.
 
 Key config options:
 

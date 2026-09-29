@@ -5,7 +5,7 @@
   },
   "architecture": {
     "title": "poster-php システムアーキテクチャ",
-    "subtitle": "フレームワーク非依存のコア + 4 つのアダプタ · 各層は下位のインターフェースだけに依存",
+    "subtitle": "フレームワーク非依存のコア + 6 つのアダプタ · 各層は下位のインターフェースだけに依存",
     "layerApi": "API レイヤー",
     "layerBusiness": "ビジネス層",
     "layerCore": "コア層",
@@ -15,7 +15,9 @@
       ["Laravel", "Facade · Provider"],
       ["ThinkPHP", "CaptchaService"],
       ["Webman", "CaptchaPlugin"],
-      ["Hyperf", "ConfigProvider"]
+      ["Hyperf", "ConfigProvider"],
+      ["Yii2", "PosterComponent"],
+      ["Yii3", "config-plugin"]
     ],
     "business": [
       [
@@ -89,7 +91,7 @@
     "template": {
       "title": "テンプレートシステム",
       "chips1": ["JSON 定義", "{{variable}} 置換", "1 度定義して再利用"],
-      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf"]
+      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf", "Yii2", "Yii3"]
     },
     "entry": {
       "title": "入口",

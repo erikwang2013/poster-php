@@ -212,22 +212,46 @@ function tArr(array $lang, array $en, string $path): array
 
 function drawArchitecture(array $L, array $EN, string $font, string $out): void
 {
-    $W = 1040; $H = 700; $CX = 520;
-    $A = 88; $B = 236; $C = 404; $D = 572;
+    $W = 1040; $CX = 520;
+    $A = 88;
+
+    // 接口层：框宽与行数随条数自适应。面板内容区 64..976（912 宽），间距 18。
+    // 每行至少 $minW 宽，放不下就折行 —— 否则框架数增加到 6+ 时会把框挤出画布右缘
+    // （第 7 个框右缘曾到 1348，画布只有 1040）。N=5 时精确退化成原来的 168/186/92。
+    $api = tArr($L, $EN, 'architecture.api');
+    $apiGap = 18; $apiContent = 912; $apiMinW = 150; $apiBoxH = 50; $apiRowGap = 12;
+    $apiN = count($api);
+    $perRow = max(1, (int) floor(($apiContent + $apiGap) / ($apiMinW + $apiGap)));
+    $rowCount = max(1, (int) ceil($apiN / $perRow));
+    $perRow = max(1, (int) ceil($apiN / $rowCount));   // 均分，避免 5+2 这种尾巴
+    $apiRows = $apiN ? array_chunk($api, $perRow) : [[]];
+    $widest = max(array_map('count', $apiRows));
+    $apiBoxW = $widest > 1 ? ($apiContent - ($widest - 1) * $apiGap) / $widest : $apiContent;
+    $apiH = 30 + count($apiRows) * $apiBoxH + (count($apiRows) - 1) * $apiRowGap + 12;
+
+    // 各层纵向位置由接口层高度顺推（层间距沿用原值：56 / 28 / 28，页脚留白 48）
+    $B = $A + $apiH + 56;
+    $C = $B + 140 + 28;
+    $D = $C + 140 + 28;
+    $H = $D + 80 + 48;
 
     titleBlock(t($L, $EN, 'architecture.title'), t($L, $EN, 'architecture.subtitle'));
 
     // 接口层
-    panel(40, $A, 960, 92, CORAL, t($L, $EN, 'architecture.layerApi'));
-    $api = tArr($L, $EN, 'architecture.api');
-    foreach ($api as $i => $box) {
-        $x = 64 + $i * 186;
-        rect($x, $A + 30, 168, 50, 10, '#FFFFFF', LINE, 1);
-        rect($x, $A + 40, 4, 30, 2, CORAL);
-        $t = fitSize($box[0] ?? '', 140, 13.5, 'api-title');
-        $s = fitSize($box[1] ?? '', 140, 11, 'api-sub');
-        text($x + 84, $A + 54, $box[0] ?? '', $t, INK, 'middle', '600');
-        text($x + 84, $A + 72, $box[1] ?? '', $s, MUTED, 'middle');
+    panel(40, $A, 960, $apiH, CORAL, t($L, $EN, 'architecture.layerApi'));
+    foreach ($apiRows as $r => $row) {
+        $y = $A + 30 + $r * ($apiBoxH + $apiRowGap);
+        $rowW = count($row) * $apiBoxW + (count($row) - 1) * $apiGap;
+        $x = 64 + ($apiContent - $rowW) / 2;   // 行内居中（单行时即原 64）
+        foreach ($row as $box) {
+            rect($x, $y, $apiBoxW, $apiBoxH, 10, '#FFFFFF', LINE, 1);
+            rect($x, $y + 10, 4, 30, 2, CORAL);
+            $t = fitSize($box[0] ?? '', $apiBoxW - 28, 13.5, 'api-title');
+            $s = fitSize($box[1] ?? '', $apiBoxW - 28, 11, 'api-sub');
+            text($x + $apiBoxW / 2, $y + 24, $box[0] ?? '', $t, INK, 'middle', '600');
+            text($x + $apiBoxW / 2, $y + 42, $box[1] ?? '', $s, MUTED, 'middle');
+            $x += $apiBoxW + $apiGap;
+        }
     }
 
     // 业务层
@@ -260,7 +284,7 @@ function drawArchitecture(array $L, array $EN, string $font, string $out): void
     text($x + 8, $D + 48, t($L, $EN, 'architecture.foundation.requiredLabel'), 11, MUTED);
     chipRow($x + 84, $D + 26, tArr($L, $EN, 'architecture.foundation.optional'), 12.5, '#FFFFFF', MUTED, LINE, 12, 34, 14);
 
-    foreach ([[$A + 92, $B, t($L, $EN, 'architecture.arrowCall')], [$B + 140, $C, t($L, $EN, 'architecture.arrowDraw')], [$C + 140, $D, t($L, $EN, 'architecture.arrowRequire')]] as $ar) {
+    foreach ([[$A + $apiH, $B, t($L, $EN, 'architecture.arrowCall')], [$B + 140, $C, t($L, $EN, 'architecture.arrowDraw')], [$C + 140, $D, t($L, $EN, 'architecture.arrowRequire')]] as $ar) {
         line($CX, $ar[0] + 4, $CX, $ar[1] - 4, LINE, 2, true);
         text($CX + 12, ($ar[0] + $ar[1]) / 2 + 5, $ar[2], 11.5, MUTED);
     }

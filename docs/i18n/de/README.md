@@ -6,7 +6,7 @@
   <img src="../../../assets/pet.svg" width="200" alt="poster-php Maskottchen Posty" />
 </p>
 
-PHP-Toolkit für Bild-Captchas und Poster-Generierung — framework-unabhängiger Kern + Adapter für Laravel / ThinkPHP / Webman / Hyperf.
+PHP-Toolkit für Bild-Captchas und Poster-Generierung — framework-unabhängiger Kern + Adapter für Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3.
 
 [Englische Dokumentation](../../../README_EN.md) | [Architektur-Dokumentation](../../../docs/architecture.md) | [Alle Sprachen](../README.md)
 
@@ -19,7 +19,7 @@ poster-php ist ein PHP-Bild-Toolkit, das genau zwei Dinge tut — und zwar gut g
 | **Captcha** | Drei Mensch-Verifikationen (Klick / Drehen / Slider) plus Zufallsauswahl; Bilder und Antworten entstehen in reinem PHP, ohne Dienste von Drittanbietern |
 | **Poster-Generierung** | Fluent-Builder-API mit 14 Elementtypen für Text, Bilder, QR-Codes, Tabellen, Diagramme, Kalender und weitere Layout-Aufgaben |
 | **Framework-unabhängig** | Der Kern braucht nur PHP ≥ 8.0 + GD und lässt sich als normales Composer-Paket ohne Framework nutzen |
-| **Sofort einsatzbereit** | 3 globale Hilfsfunktionen + 4 Framework-Adapter (Laravel / ThinkPHP / Webman / Hyperf) |
+| **Sofort einsatzbereit** | 3 globale Hilfsfunktionen + 6 Framework-Adapter (Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3) |
 | **Austauschbar** | Bildtreiber (GD / ImageMagick) und Speicher-Backend (File / Session / Redis) sind Interface-Implementierungen und lassen sich nach Bedarf ersetzen |
 
 > Das Projekt-Maskottchen **Posty** — ein Maskottchen aus Poster, QR-Karten-Element und Slider-Puzzle, das genau die beiden Kernfähigkeiten des Pakets abbildet: Bilder erzeugen und verifizieren. Es wird mitgeliefert ([`assets/pet.svg`](../../../assets/pet.svg) / `assets/pet.png`), lässt sich per `->addPet()` in ein Poster zeichnen und als Platzhalter für fehlende Bilder konfigurieren.
@@ -28,7 +28,7 @@ poster-php ist ein PHP-Bild-Toolkit, das genau zwei Dinge tut — und zwar gut g
 
 ```
 poster-php/
-├── src/                        # Kerncode: 64 PHP-Dateien / ca. 6093 Zeilen
+├── src/                        # Kerncode: 70 PHP-Dateien / ca. 6355 Zeilen
 │   ├── Captcha/                # Captcha-Modul: Interface + abstrakte Basisklasse + 3 Implementierungen + Factory + Manager
 │   │                           #   + RateLimiter (Limitierung) / TrajectoryVerifier (Trajektorien-Prüfung)
 │   ├── Poster/                 # Poster-Modul (Elements/ElementRegistry.php als zentrale Element-Registry)
@@ -38,7 +38,7 @@ poster-php/
 │   ├── Drivers/                # Bildtreiber: ImageDriverInterface / GdDriver / ImagickDriver
 │   ├── Storage/                # Speicher für Verifikationsdaten: File / Session / Redis / PSR-16-Cache
 │   ├── Qrcode/                 # QR-Code-Generator in reinem PHP (Modell 2, v1-40, ohne Extensions)
-│   ├── Adapters/               # Framework-Adapter: Laravel / ThinkPHP / Webman / Hyperf
+│   ├── Adapters/               # Framework-Adapter: Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3
 │   ├── PosterConfig.php        # Konfiguration lesen (Defaults als Fallback + Merge der Framework-Konfig)
 │   └── Installer.php           # kopiert die Konfigurationsdatei nach der Composer-Installation
 ├── config/
@@ -786,9 +786,59 @@ return [
 
 Die Registrierung erfolgt automatisch über den ConfigProvider.
 
+### Yii2
+
+`config/web.php`:
+```php
+'components' => [
+    'poster' => ['class' => Erikwang2013\Poster\Adapters\Yii2\PosterComponent::class],
+],
+```
+
+```php
+Yii::$app->poster->captcha->create('click')->generate();   // Zugriff über den Magic-Getter getCaptcha()
+Yii::$app->poster->builder->width(750)->save('poster.jpg');
+```
+
+Optional: `Erikwang2013\Poster\Adapters\Yii2\Bootstrap::class` in `'bootstrap'` eintragen, dann kann der Controller einen `CaptchaManager` per Konstruktor injizieren.
+
+> `builder` liefert bei jedem Zugriff eine neue Instanz (er ist zustandsbehaftet, `width()`/`add()` akkumulieren); `captcha` ist zustandslos. Die Konfiguration liest die `config/poster.php` der Anwendung, lokalisiert über den `@app`-Alias —— nicht über das cwd, denn unter php-fpm ist das cwd oft `web/`, wodurch die Konfiguration still wirkungslos würde.
+
+### Yii3
+
+Nach `composer require` übernimmt `yiisoft/config` die automatische Verdrahtung (`extra.config-plugin` ist bereits deklariert, manuelles Verdrahten entfällt):
+
+```php
+use Erikwang2013\Poster\Adapters\Yii3\PosterBuilderFactory;
+use Erikwang2013\Poster\Adapters\Yii3\CaptchaManagerFactory;
+
+final class PosterController
+{
+    public function __construct(private PosterBuilderFactory $builders) {}
+
+    public function action(): void
+    {
+        ($this->builders)()->width(750)->background('#FFF')->save('/tmp/poster.jpg');
+    }
+}
+```
+
+Zum Überschreiben der Standardwerte dient die `config/params.php` der Anwendung:
+
+```php
+return [
+    'erikwang2013/poster-php' => [
+        'image'   => ['driver' => 'imagick'],
+        'captcha' => ['storage' => 'cache', 'ttl' => 600],
+    ],
+];
+```
+
+> In den Container gehören nur zustandslose Dinge: `StorageInterface` und die beiden Factories. Bildtreiber / `CaptchaManager` / `PosterBuilder` kommen nicht in den Container —— `yiisoft/di` verwaltet nur geteilte Instanzen, diese aber halten die aktuelle Zeichenfläche (`GdDriver::$resource`, `ImagickDriver::$imagick`); geteilt würden sie unter RoadRunner / Swoole in Dauerprozessen Zustand über Requests hinweg vermischen.
+
 ## Konfiguration
 
-Nach `composer require` wird `config/poster.php` automatisch in das `config/`-Verzeichnis des Projekts kopiert (vorhandene Dateien werden übersprungen). Kompatibel mit Laravel / ThinkPHP / Webman (`config/poster.php`) und Hyperf (`config/autoload/poster.php`).
+Nach `composer require` wird `config/poster.php` automatisch in das `config/`-Verzeichnis des Projekts kopiert (vorhandene Dateien werden übersprungen). Kompatibel mit Laravel / ThinkPHP / Webman / Yii2 (`config/poster.php`) und Hyperf (`config/autoload/poster.php`). Yii3 überschreibt über den Namespace `erikwang2013/poster-php` in `config/params.php`, siehe oben.
 
 Wichtige Optionen:
 

@@ -6,7 +6,7 @@
   <img src="../../../assets/pet.svg" width="200" alt="poster-php 프로젝트 마스코트 Posty" />
 </p>
 
-PHP 이미지 캡차 · 포스터 생성 툴킷 — 프레임워크 독립 코어 + Laravel / ThinkPHP / Webman / Hyperf 어댑터.
+PHP 이미지 캡차 · 포스터 생성 툴킷 — 프레임워크 독립 코어 + Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3 어댑터.
 
 [English Documentation](../../../README_EN.md) | [아키텍처 설계 문서](../../../docs/architecture.md) | [모든 언어](../README.md)
 
@@ -19,7 +19,7 @@ poster-php는 PHP 이미지 툴킷으로, 두 가지만 하고 그것을 충분�
 | **캡차** | 클릭 / 회전 / 슬라이더 세 가지 사람 확인 + 랜덤 전환, 순수 PHP로 이미지와 정답을 생성하며 외부 서비스에 의존하지 않음 |
 | **포스터 생성** | 체이닝 Builder API, 14가지 요소로 텍스트·이미지·QR 코드·표·차트·캘린더 등 레이아웃 요구를 커버 |
 | **프레임워크 독립** | 코어는 PHP ≥ 8.0 + GD만 요구, 일반 Composer 패키지로 사용 가능하며 프레임워크가 필요 없음 |
-| **바로 사용** | 전역 헬퍼 함수 3개 + 프레임워크 어댑터 4종 (Laravel / ThinkPHP / Webman / Hyperf) |
+| **바로 사용** | 전역 헬퍼 함수 3개 + 프레임워크 어댑터 6종 (Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3) |
 | **교체 가능** | 이미지 드라이버(GD / ImageMagick)와 스토리지 백엔드(File / Session / Redis)가 모두 인터페이스 구현체라 필요에 따라 교체 |
 
 > 프로젝트 마스코트 **Posty** — 포스터 본체와 QR 카드, 슬라이더 퍼즐로 이루어진 마스코트로, 이 패키지의 두 가지 능력인 이미지 출력과 검증에 그대로 대응합니다. 패키지에 함께 배포되며([`assets/pet.svg`](../../../assets/pet.svg) / `assets/pet.png`), `->addPet()`으로 포스터에 그릴 수 있고 누락 이미지의 플레이스홀더로도 설정할 수 있습니다.
@@ -28,7 +28,7 @@ poster-php는 PHP 이미지 툴킷으로, 두 가지만 하고 그것을 충분�
 
 ```
 poster-php/
-├── src/                        # 코어 코드: PHP 파일 64개 / 약 6093줄
+├── src/                        # 코어 코드: PHP 파일 70개 / 약 6355줄
 │   ├── Captcha/                # 캡차 모듈: 인터페이스 + 추상 기반 클래스 + 구현 3종 + 팩토리 + 매니저
 │   │                           #   + RateLimiter(레이트 리밋) / TrajectoryVerifier(궤적 검증)
 │   ├── Poster/                 # 포스터 모듈 (Elements/ElementRegistry.php가 요소 단일 등록 지점)
@@ -38,7 +38,7 @@ poster-php/
 │   ├── Drivers/                # 이미지 드라이버: ImageDriverInterface / GdDriver / ImagickDriver
 │   ├── Storage/                # 검증 데이터 저장: File / Session / Redis / PSR-16 캐시
 │   ├── Qrcode/                 # 순수 PHP QR 코드 생성기 (Model 2, v1-40, 확장 의존 없음)
-│   ├── Adapters/               # 프레임워크 어댑터: Laravel / ThinkPHP / Webman / Hyperf
+│   ├── Adapters/               # 프레임워크 어댑터: Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3
 │   ├── PosterConfig.php        # 설정 읽기 (기본값 폴백 + 프레임워크 설정 병합)
 │   └── Installer.php           # composer 설치 후 설정 파일 자동 복사
 ├── config/
@@ -787,9 +787,59 @@ return [
 
 ConfigProvider를 통해 자동 등록됩니다.
 
+### Yii2
+
+`config/web.php`:
+```php
+'components' => [
+    'poster' => ['class' => Erikwang2013\Poster\Adapters\Yii2\PosterComponent::class],
+],
+```
+
+```php
+Yii::$app->poster->captcha->create('click')->generate();   // getCaptcha() 매직 접근 경유
+Yii::$app->poster->builder->width(750)->save('poster.jpg');
+```
+
+선택 사항: `Erikwang2013\Poster\Adapters\Yii2\Bootstrap::class`를 `'bootstrap'`에 추가하면 컨트롤러에서 `CaptchaManager`를 생성자 주입할 수 있습니다.
+
+> `builder`는 접근할 때마다 새 인스턴스를 반환하고(상태를 가져 `width()`/`add()`가 누적됨), `captcha`는 무상태입니다. 설정은 애플리케이션의 `config/poster.php`를 읽으며 `@app` 별칭으로 찾습니다 — cwd를 쓰지 않는데, php-fpm에서는 cwd가 흔히 `web/`라서 설정이 조용히 무효화되기 때문입니다.
+
+### Yii3
+
+`composer require` 후 `yiisoft/config`가 자동으로 조립합니다(`extra.config-plugin`이 이미 선언되어 있어 수동 배선이 필요 없음):
+
+```php
+use Erikwang2013\Poster\Adapters\Yii3\PosterBuilderFactory;
+use Erikwang2013\Poster\Adapters\Yii3\CaptchaManagerFactory;
+
+final class PosterController
+{
+    public function __construct(private PosterBuilderFactory $builders) {}
+
+    public function action(): void
+    {
+        ($this->builders)()->width(750)->background('#FFF')->save('/tmp/poster.jpg');
+    }
+}
+```
+
+기본값을 덮어쓰려면 애플리케이션의 `config/params.php`를 사용합니다:
+
+```php
+return [
+    'erikwang2013/poster-php' => [
+        'image'   => ['driver' => 'imagick'],
+        'captcha' => ['storage' => 'cache', 'ttl' => 600],
+    ],
+];
+```
+
+> 컨테이너에는 무상태인 것만 넣습니다: `StorageInterface`와 두 팩토리. 이미지 드라이버 / `CaptchaManager` / `PosterBuilder`는 모두 컨테이너에 넣지 않는데 — `yiisoft/di`는 공유 인스턴스만 관리하고, 이들은 현재 캔버스(`GdDriver::$resource`, `ImagickDriver::$imagick`)를 들고 있어 공유하면 RoadRunner / Swoole 상주 프로세스에서 요청 간 상태가 섞입니다.
+
 ## 설정
 
-`composer require` 후 `config/poster.php`가 프로젝트 `config/` 디렉터리로 자동 복사됩니다(이미 있으면 건너뜀). Laravel / ThinkPHP / Webman(`config/poster.php`)과 Hyperf(`config/autoload/poster.php`)를 지원합니다.
+`composer require` 후 `config/poster.php`가 프로젝트 `config/` 디렉터리로 자동 복사됩니다(이미 있으면 건너뜀). Laravel / ThinkPHP / Webman / Yii2(`config/poster.php`)과 Hyperf(`config/autoload/poster.php`)를 지원합니다. Yii3는 `config/params.php`의 `erikwang2013/poster-php` 네임스페이스로 덮어쓰며, 위를 참고하세요.
 
 주요 설정 항목:
 

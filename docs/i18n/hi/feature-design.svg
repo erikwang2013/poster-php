@@ -88,7 +88,7 @@
   <rect x="712.75" y="264" width="36.15" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
   <text x="730.83" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">शेप</text>
   <rect x="754.9" y="264" width="60.35" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
-  <text x="785.08" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">डिवाइडर</text>
+  <text x="785.07" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">डिवाइडर</text>
   <rect x="530" y="306" width="470" height="64" rx="12" fill="#FFFFFF" stroke="#E1E8ED" stroke-width="1"/>
   <rect x="530" y="316" width="4" height="44" rx="2" fill="#FF8E53"/>
   <text x="550" y="334" font-size="14" fill="#2D3436" font-weight="600">डेटा डिस्प्ले</text>
@@ -116,11 +116,15 @@
   <rect x="550" y="538" width="64.28" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
   <text x="582.14" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Laravel</text>
   <rect x="622.28" y="538" width="70.6" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
-  <text x="657.58" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">ThinkPHP</text>
+  <text x="657.57" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">ThinkPHP</text>
   <rect x="700.88" y="538" width="57.95" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
   <text x="729.85" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Webman</text>
   <rect x="766.83" y="538" width="57.95" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
   <text x="795.8" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Hyperf</text>
+  <rect x="832.78" y="538" width="45.3" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="855.43" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Yii2</text>
+  <rect x="886.08" y="538" width="45.3" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="908.73" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Yii3</text>
   <rect x="40" y="594" width="960" height="68" rx="12" fill="#F8FAFC" stroke="#D8E0E6" stroke-width="1.5"/>
   <text x="60" y="622" font-size="13.5" fill="#2D3436" font-weight="700">एंट्री पॉइंट</text>
   <text x="144" y="622" font-size="11.5" fill="#7F8C8D">helpers.php ग्लोबल फ़ंक्शन, सीधे उपयोग के लिए तैयार</text>

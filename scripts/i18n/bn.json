@@ -5,7 +5,7 @@
   },
   "architecture": {
     "title": "poster-php সিস্টেম আর্কিটেকচার",
-    "subtitle": "ফ্রেমওয়ার্ক-নিরপেক্ষ কোর + 4টি অ্যাডাপ্টার · স্তর শুধু নিচের ইন্টারফেস-নির্ভর",
+    "subtitle": "ফ্রেমওয়ার্ক-নিরপেক্ষ কোর + 6টি অ্যাডাপ্টার · স্তর শুধু নিচের ইন্টারফেস-নির্ভর",
     "layerApi": "API স্তর",
     "layerBusiness": "বিজনেস স্তর",
     "layerCore": "কোর স্তর",
@@ -30,6 +30,14 @@
       [
         "Hyperf",
         "ConfigProvider"
+      ],
+      [
+        "Yii2",
+        "PosterComponent"
+      ],
+      [
+        "Yii3",
+        "config-plugin"
       ]
     ],
     "business": [
@@ -203,7 +211,9 @@
         "Laravel",
         "ThinkPHP",
         "Webman",
-        "Hyperf"
+        "Hyperf",
+        "Yii2",
+        "Yii3"
       ]
     },
     "entry": {

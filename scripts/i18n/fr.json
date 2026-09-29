@@ -5,7 +5,7 @@
   },
   "architecture": {
     "title": "Architecture de poster-php",
-    "subtitle": "Cœur agnostique + 4 adaptateurs de frameworks · chaque couche ne dépend que des interfaces situées en dessous",
+    "subtitle": "Cœur agnostique + 6 adaptateurs de frameworks · chaque couche ne dépend que des interfaces situées en dessous",
     "layerApi": "Couche API",
     "layerBusiness": "Couche métier",
     "layerCore": "Couche cœur",
@@ -30,6 +30,14 @@
       [
         "Hyperf",
         "ConfigProvider"
+      ],
+      [
+        "Yii2",
+        "PosterComponent"
+      ],
+      [
+        "Yii3",
+        "config-plugin"
       ]
     ],
     "business": [
@@ -203,7 +211,9 @@
         "Laravel",
         "ThinkPHP",
         "Webman",
-        "Hyperf"
+        "Hyperf",
+        "Yii2",
+        "Yii3"
       ]
     },
     "entry": {

@@ -6,7 +6,7 @@
   <img src="../../../assets/pet.svg" width="200" alt="Маскот проекта poster-php Posty" />
 </p>
 
-Набор инструментов для генерации капчи и постеров на PHP — ядро без привязки к фреймворку + адаптеры Laravel / ThinkPHP / Webman / Hyperf.
+Набор инструментов для генерации капчи и постеров на PHP — ядро без привязки к фреймворку + адаптеры Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3.
 
 [English Documentation](../../../README_EN.md) | [Архитектурная документация](../../../docs/architecture.md) | [Все языки](../../../docs/i18n/README.md)
 
@@ -19,7 +19,7 @@ poster-php — это набор инструментов для работы с
 | **Капча** | Три способа проверки на человека — клик / поворот / слайдер — плюс случайный выбор; изображение и ответ генерируются на чистом PHP, без сторонних сервисов |
 | **Генерация постеров** | Цепочный Builder API: 14 типов элементов закрывают вёрстку текста, изображений, QR-кодов, таблиц, диаграмм, календаря и многого другого |
 | **Без привязки к фреймворку** | Ядру нужны только PHP ≥ 8.0 + GD; пакет используется как обычный Composer-пакет, фреймворк не требуется |
-| **Готово к работе** | 3 глобальные функции-хелпера + 4 адаптера фреймворков (Laravel / ThinkPHP / Webman / Hyperf) |
+| **Готово к работе** | 3 глобальные функции-хелпера + 6 адаптеров фреймворков (Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3) |
 | **Заменяемость** | Драйвер изображений (GD / ImageMagick) и хранилище (File / Session / Redis) — это реализации интерфейсов, заменяются по необходимости |
 
 > Маскот проекта **Posty** — талисман, собранный из самого постера, карточки с QR-кодом и пазла слайдера; он как раз соответствует двум главным возможностям пакета: генерации изображений и проверке. Он поставляется вместе с пакетом ([`assets/pet.svg`](../../../assets/pet.svg) / `assets/pet.png`), его можно нарисовать в постере через `->addPet()` или настроить как заглушку для отсутствующих изображений.
@@ -28,7 +28,7 @@ poster-php — это набор инструментов для работы с
 
 ```
 poster-php/
-├── src/                        # Ядро: 64 PHP-файла / около 6093 строк
+├── src/                        # Ядро: 70 PHP-файлов / около 6355 строк
 │   ├── Captcha/                # Модуль капчи: интерфейс + абстрактный базовый класс + 3 реализации + фабрика + менеджер
 │   │                           #   + RateLimiter (лимиты) / TrajectoryVerifier (проверка траектории)
 │   ├── Poster/                 # Модуль постеров (Elements/ElementRegistry.php — единый реестр элементов)
@@ -38,7 +38,7 @@ poster-php/
 │   ├── Drivers/                # Драйверы изображений: ImageDriverInterface / GdDriver / ImagickDriver
 │   ├── Storage/                # Хранилище данных проверки: File / Session / Redis / кэш PSR-16
 │   ├── Qrcode/                 # Генератор QR-кодов на чистом PHP (Model 2, v1-40, без расширений)
-│   ├── Adapters/               # Адаптеры фреймворков: Laravel / ThinkPHP / Webman / Hyperf
+│   ├── Adapters/               # Адаптеры фреймворков: Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3
 │   ├── PosterConfig.php        # Чтение конфигурации (значения по умолчанию + слияние с конфигом фреймворка)
 │   └── Installer.php           # Автокопирование конфигурации после установки через composer
 ├── config/
@@ -786,9 +786,59 @@ return [
 
 Регистрация происходит автоматически через ConfigProvider.
 
+### Yii2
+
+`config/web.php`:
+```php
+'components' => [
+    'poster' => ['class' => Erikwang2013\Poster\Adapters\Yii2\PosterComponent::class],
+],
+```
+
+```php
+Yii::$app->poster->captcha->create('click')->generate();   // доступ через магический getCaptcha()
+Yii::$app->poster->builder->width(750)->save('poster.jpg');
+```
+
+Опционально: добавьте `Erikwang2013\Poster\Adapters\Yii2\Bootstrap::class` в `'bootstrap'`, и в контроллер можно будет внедрять `CaptchaManager` через конструктор.
+
+> `builder` при каждом обращении возвращает новый экземпляр (он хранит состояние, `width()`/`add()` его накапливают); `captcha` состояния не хранит. Конфигурация читается из `config/poster.php` приложения, которую находит псевдоним `@app` — не через cwd, потому что под php-fpm cwd обычно `web/`, и тогда конфигурация молча перестаёт работать.
+
+### Yii3
+
+После `composer require` сборку выполняет `yiisoft/config` автоматически (`extra.config-plugin` уже объявлен, ручная привязка не нужна):
+
+```php
+use Erikwang2013\Poster\Adapters\Yii3\PosterBuilderFactory;
+use Erikwang2013\Poster\Adapters\Yii3\CaptchaManagerFactory;
+
+final class PosterController
+{
+    public function __construct(private PosterBuilderFactory $builders) {}
+
+    public function action(): void
+    {
+        ($this->builders)()->width(750)->background('#FFF')->save('/tmp/poster.jpg');
+    }
+}
+```
+
+Переопределение значений по умолчанию — через `config/params.php` приложения:
+
+```php
+return [
+    'erikwang2013/poster-php' => [
+        'image'   => ['driver' => 'imagick'],
+        'captcha' => ['storage' => 'cache', 'ttl' => 600],
+    ],
+];
+```
+
+> В контейнере лежит только то, что не хранит состояния: `StorageInterface` и две фабрики. Драйвер изображений / `CaptchaManager` / `PosterBuilder` в контейнер не попадают — `yiisoft/di` управляет только разделяемыми экземплярами, а они держат текущий холст (`GdDriver::$resource`, `ImagickDriver::$imagick`), и при общем экземпляре под RoadRunner / Swoole состояние потекло бы между запросами.
+
 ## Конфигурация
 
-После `composer require` файл `config/poster.php` автоматически копируется в каталог `config/` проекта (если он уже есть, копирование пропускается). Поддерживаются Laravel / ThinkPHP / Webman (`config/poster.php`) и Hyperf (`config/autoload/poster.php`).
+После `composer require` файл `config/poster.php` автоматически копируется в каталог `config/` проекта (если он уже есть, копирование пропускается). Поддерживаются Laravel / ThinkPHP / Webman / Yii2 (`config/poster.php`) и Hyperf (`config/autoload/poster.php`). В Yii3 значения переопределяются через пространство имён `erikwang2013/poster-php` в `config/params.php`, см. выше.
 
 Основные параметры конфигурации:
 

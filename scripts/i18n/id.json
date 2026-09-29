@@ -5,7 +5,7 @@
   },
   "architecture": {
     "title": "Arsitektur Sistem poster-php",
-    "subtitle": "Inti tanpa ketergantungan framework + 4 adapter · tiap lapisan hanya bergantung pada antarmuka di bawahnya",
+    "subtitle": "Inti tanpa ketergantungan framework + 6 adapter · tiap lapisan hanya bergantung pada antarmuka di bawahnya",
     "layerApi": "Lapisan API",
     "layerBusiness": "Lapisan Bisnis",
     "layerCore": "Lapisan Inti",
@@ -15,7 +15,9 @@
       ["Laravel", "Facade · Provider"],
       ["ThinkPHP", "CaptchaService"],
       ["Webman", "CaptchaPlugin"],
-      ["Hyperf", "ConfigProvider"]
+      ["Hyperf", "ConfigProvider"],
+      ["Yii2", "PosterComponent"],
+      ["Yii3", "config-plugin"]
     ],
     "business": [
       [
@@ -89,7 +91,7 @@
     "template": {
       "title": "Sistem Template",
       "chips1": ["Definisi JSON", "ganti {{variable}}", "tulis sekali pakai ulang"],
-      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf"]
+      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf", "Yii2", "Yii3"]
     },
     "entry": {
       "title": "Titik Masuk",

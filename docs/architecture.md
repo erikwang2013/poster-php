@@ -10,7 +10,7 @@
 graph TB
     subgraph "API Layer 接口层"
         HELPERS["helpers.php + native.php<br/>captcha_create / captcha_verify / poster_create<br/>原生 PHP 入口，无需 Composer"]
-        FACADES["Framework Facades<br/>Laravel / ThinkPHP / Webman / Hyperf"]
+        FACADES["Framework Facades<br/>Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3"]
     end
 
     subgraph "Business Layer 业务层"
@@ -464,7 +464,7 @@ graph TB
 
 - **`auto` 只探测一次**：结果（实例）缓存在 `StorageFactory` 的静态属性里，同一次请求内生成与校验必定落在同一后端；否则 Redis 探测偶发失败会让写入落到 File、校验落到 Redis，用户答对也验不过。长驻进程可用 `StorageFactory::reset()` 重新探测。
 - **`session` 驱动要求会话已启动**：`SessionStorage` 在 `session_status() !== PHP_SESSION_ACTIVE` 时抛 `RuntimeException`（会话未启动时 `$_SESSION` 读写会静默失效），无状态场景请改用 `file` / `redis` / `cache`。
-- **`cache` 驱动**：需先 `StorageFactory::setPsr16Pool($pool)`（Laravel 里 provider 自动注入 `Cache::store()`）；池只按 `get/set/delete` 鸭子类型使用，`incrementAttempts()` 是读改写、非原子，并发计数可能低估。
+- **`cache` 驱动**：需先 `StorageFactory::setPsr16Pool($pool)`（Laravel 里 provider 自动注入 `Cache::store()`，Yii3 里由 `config/di.php` 从容器取 `Psr\SimpleCache\CacheInterface`）；池只按 `get/set/delete` 鸭子类型使用，`incrementAttempts()` 是读改写、非原子，并发计数可能低估。
 - **`file` 驱动并发**：读走 `flock(LOCK_SH)`，写走「同目录临时文件 + `rename()`」原子替换，读方不会读到半截 JSON（旧实现原地 `ftruncate` 重写，40 并发下实测 16 次读到 null → 答对也判失败）；`incrementAttempts()` 的读改写用独立锁文件串行化，锁文件放系统临时目录，不落在存储目录里。
 
 ---
@@ -575,7 +575,7 @@ graph LR
     DRIVERS_DIR --> D_FILES["5 files<br/>Interface + Gd + Imagick + TextTrait + DriverFactory"]
     QRCODE_DIR --> Q_FILES["1 file<br/>Pure PHP QR Code Generator"]
     STORAGE_DIR --> S_FILES["6 files<br/>Interface + File + Session + Redis + Psr16 + StorageFactory"]
-    ADAPTERS_DIR --> A_FILES["22 files<br/>Laravel / ThinkPHP / Webman / Hyperf"]
+    ADAPTERS_DIR --> A_FILES["28 files<br/>Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3"]
 
     TESTS --> T_DIRS["6 test suites<br/>Drivers / Storage / Captcha / Poster / QR / Helpers"]
     DOCS --> DOC_FILES["architecture.md + i18n/（12 语言 README 与图表）+ 收款码"]

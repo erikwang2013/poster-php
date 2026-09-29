@@ -5,7 +5,7 @@
   },
   "architecture": {
     "title": "poster-php System Architecture",
-    "subtitle": "Framework-agnostic core + 4 framework adapters · every layer only depends on the interfaces below it",
+    "subtitle": "Framework-agnostic core + 6 framework adapters · every layer only depends on the interfaces below it",
     "layerApi": "API Layer",
     "layerBusiness": "Business Layer",
     "layerCore": "Core Layer",
@@ -30,6 +30,14 @@
       [
         "Hyperf",
         "ConfigProvider"
+      ],
+      [
+        "Yii2",
+        "PosterComponent"
+      ],
+      [
+        "Yii3",
+        "config-plugin"
       ]
     ],
     "business": [
@@ -203,7 +211,9 @@
         "Laravel",
         "ThinkPHP",
         "Webman",
-        "Hyperf"
+        "Hyperf",
+        "Yii2",
+        "Yii3"
       ]
     },
     "entry": {

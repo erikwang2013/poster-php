@@ -5,7 +5,7 @@
   },
   "architecture": {
     "title": "poster-php सिस्टम आर्किटेक्चर",
-    "subtitle": "फ़्रेमवर्क-स्वतंत्र कोर + 4 फ़्रेमवर्क अडैप्टर · हर परत नीचे के इंटरफ़ेस पर निर्भर",
+    "subtitle": "फ़्रेमवर्क-स्वतंत्र कोर + 6 फ़्रेमवर्क अडैप्टर · हर परत नीचे के इंटरफ़ेस पर निर्भर",
     "layerApi": "API लेयर",
     "layerBusiness": "बिज़नेस लेयर",
     "layerCore": "कोर लेयर",
@@ -15,7 +15,9 @@
       ["Laravel", "Facade · Provider"],
       ["ThinkPHP", "CaptchaService"],
       ["Webman", "CaptchaPlugin"],
-      ["Hyperf", "ConfigProvider"]
+      ["Hyperf", "ConfigProvider"],
+      ["Yii2", "PosterComponent"],
+      ["Yii3", "config-plugin"]
     ],
     "business": [
       [
@@ -89,7 +91,7 @@
     "template": {
       "title": "टेम्पलेट सिस्टम",
       "chips1": ["JSON परिभाषा", "{{variable}} रिप्लेस", "एक बार, बार-बार उपयोग"],
-      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf"]
+      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf", "Yii2", "Yii3"]
     },
     "entry": {
       "title": "एंट्री पॉइंट",

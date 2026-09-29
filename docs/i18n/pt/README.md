@@ -6,7 +6,7 @@
   <img src="../../../assets/pet.svg" width="200" alt="Mascote do projeto poster-php: Posty" />
 </p>
 
-Kit PHP de captcha de imagem e geração de pôsteres — núcleo agnóstico de framework + adaptadores Laravel / ThinkPHP / Webman / Hyperf.
+Kit PHP de captcha de imagem e geração de pôsteres — núcleo agnóstico de framework + adaptadores Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3.
 
 [Documentação em inglês](../../../README_EN.md) | [Documentação de arquitetura](../../../docs/architecture.md) | [Todos os idiomas](../README.md)
 
@@ -19,7 +19,7 @@ poster-php é um kit de ferramentas de imagem em PHP que faz apenas duas coisas 
 | **Captcha** | Três verificações humanas (clique / rotação / deslizar) mais seleção aleatória; imagens e respostas geradas em PHP puro, sem depender de serviços de terceiros |
 | **Geração de pôsteres** | API Builder encadeada, com 14 elementos cobrindo texto, imagem, QR Code, tabela, gráfico, calendário e outras necessidades de layout |
 | **Agnóstico de framework** | O núcleo depende apenas de PHP ≥ 8.0 + GD; pode ser usado como um pacote Composer comum, sem framework |
-| **Pronto para usar** | 3 funções auxiliares globais + 4 adaptadores de framework (Laravel / ThinkPHP / Webman / Hyperf) |
+| **Pronto para usar** | 3 funções auxiliares globais + 6 adaptadores de framework (Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3) |
 | **Substituível** | Driver de imagem (GD / ImageMagick) e backend de armazenamento (File / Session / Redis) são implementações de interface, trocáveis conforme a necessidade |
 
 > O mascote do projeto **Posty** — um mascote formado pelo próprio pôster, por um cartão de QR Code e por uma peça de quebra-cabeça deslizante, correspondendo exatamente às duas capacidades deste pacote: gerar imagens e verificar. Ele acompanha o pacote ([`assets/pet.svg`](../../../assets/pet.svg) / `assets/pet.png`), pode ser desenhado no pôster com `->addPet()` e também pode ser configurado como imagem de espaço reservado.
@@ -28,7 +28,7 @@ poster-php é um kit de ferramentas de imagem em PHP que faz apenas duas coisas 
 
 ```
 poster-php/
-├── src/                        # Código principal: 64 arquivos PHP / ~6093 linhas
+├── src/                        # Código principal: 70 arquivos PHP / ~6355 linhas
 │   ├── Captcha/                # Módulo captcha: interface + classe base abstrata + 3 implementações + factory + manager
 │   │                           #   + RateLimiter (limite de taxa) / TrajectoryVerifier (trajetória)
 │   ├── Poster/                 # Módulo pôster (Elements/ElementRegistry.php é o registro único de elementos)
@@ -38,7 +38,7 @@ poster-php/
 │   ├── Drivers/                # Drivers de imagem: ImageDriverInterface / GdDriver / ImagickDriver
 │   ├── Storage/                # Armazenamento dos dados de verificação: File / Session / Redis / cache PSR-16
 │   ├── Qrcode/                 # Gerador de QR Code em PHP puro (Model 2, v1-40, zero dependências de extensão)
-│   ├── Adapters/               # Adaptadores de framework: Laravel / ThinkPHP / Webman / Hyperf
+│   ├── Adapters/               # Adaptadores de framework: Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3
 │   ├── PosterConfig.php        # Leitura de configuração (merge da config do framework + padrões)
 │   └── Installer.php           # Copia o arquivo de config automaticamente após o composer install
 ├── config/
@@ -787,9 +787,59 @@ return [
 
 Registrado automaticamente via ConfigProvider.
 
+### Yii2
+
+`config/web.php`:
+```php
+'components' => [
+    'poster' => ['class' => Erikwang2013\Poster\Adapters\Yii2\PosterComponent::class],
+],
+```
+
+```php
+Yii::$app->poster->captcha->create('click')->generate();   // acesso mágico via getCaptcha()
+Yii::$app->poster->builder->width(750)->save('poster.jpg');
+```
+
+Opcional: adicione `Erikwang2013\Poster\Adapters\Yii2\Bootstrap::class` a `'bootstrap'` e os controllers poderão receber `CaptchaManager` por injeção no construtor.
+
+> `builder` devolve uma nova instância a cada acesso (ele tem estado — `width()`/`add()` acumulam); `captcha` não tem estado. A configuração é lida do `config/poster.php` da aplicação, localizado pelo alias `@app` — não pelo cwd, porque sob php-fpm o cwd costuma ser `web/`, o que faria a configuração falhar em silêncio.
+
+### Yii3
+
+Após o `composer require`, a montagem é automática via `yiisoft/config` (`extra.config-plugin` já está declarado, sem necessidade de fiação manual):
+
+```php
+use Erikwang2013\Poster\Adapters\Yii3\PosterBuilderFactory;
+use Erikwang2013\Poster\Adapters\Yii3\CaptchaManagerFactory;
+
+final class PosterController
+{
+    public function __construct(private PosterBuilderFactory $builders) {}
+
+    public function action(): void
+    {
+        ($this->builders)()->width(750)->background('#FFF')->save('/tmp/poster.jpg');
+    }
+}
+```
+
+Para sobrescrever os padrões, use o `config/params.php` da aplicação:
+
+```php
+return [
+    'erikwang2013/poster-php' => [
+        'image'   => ['driver' => 'imagick'],
+        'captcha' => ['storage' => 'cache', 'ttl' => 600],
+    ],
+];
+```
+
+> No contêiner só entram coisas sem estado: `StorageInterface` e as duas factories. Driver de imagem / `CaptchaManager` / `PosterBuilder` não entram no contêiner — o `yiisoft/di` gerencia apenas instâncias compartilhadas, e eles mantêm o canvas atual (`GdDriver::$resource`, `ImagickDriver::$imagick`); se fossem compartilhados, vazariam estado entre requisições sob processos residentes como RoadRunner / Swoole.
+
 ## Configuração
 
-Após o `composer require`, o arquivo `config/poster.php` é copiado automaticamente para o diretório `config/` do projeto (se já existir, é ignorado). Compatível com Laravel / ThinkPHP / Webman (`config/poster.php`) e Hyperf (`config/autoload/poster.php`).
+Após o `composer require`, o arquivo `config/poster.php` é copiado automaticamente para o diretório `config/` do projeto (se já existir, é ignorado). Compatível com Laravel / ThinkPHP / Webman / Yii2 (`config/poster.php`) e Hyperf (`config/autoload/poster.php`). No Yii3, os padrões são sobrescritos pelo namespace `erikwang2013/poster-php` do `config/params.php`, como acima.
 
 Principais opções de configuração:
 

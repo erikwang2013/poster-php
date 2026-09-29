@@ -5,7 +5,7 @@
   },
   "architecture": {
     "title": "poster-php 시스템 아키텍처",
-    "subtitle": "프레임워크 독립 코어 + 4개 프레임워크 어댑터 · 모든 계층은 아래 인터페이스에만 의존",
+    "subtitle": "프레임워크 독립 코어 + 6개 프레임워크 어댑터 · 모든 계층은 아래 인터페이스에만 의존",
     "layerApi": "API 계층",
     "layerBusiness": "비즈니스 계층",
     "layerCore": "코어 계층",
@@ -15,7 +15,9 @@
       ["Laravel", "파사드 · 프로바이더"],
       ["ThinkPHP", "CaptchaService"],
       ["Webman", "CaptchaPlugin"],
-      ["Hyperf", "ConfigProvider"]
+      ["Hyperf", "ConfigProvider"],
+      ["Yii2", "PosterComponent"],
+      ["Yii3", "config-plugin"]
     ],
     "business": [
       [
@@ -89,7 +91,7 @@
     "template": {
       "title": "템플릿 시스템",
       "chips1": ["JSON 정의", "{{variable}} 치환", "한 번 정의 후 재사용"],
-      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf"]
+      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf", "Yii2", "Yii3"]
     },
     "entry": {
       "title": "진입점",

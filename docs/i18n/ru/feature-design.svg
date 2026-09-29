@@ -49,15 +49,15 @@
   <text x="490" y="414" font-size="11" fill="#7F8C8D" text-anchor="end">сложнее обойти</text>
   <rect x="40" y="458" width="470" height="122" rx="12" fill="#FFF6F6" stroke="#FF6B6B" stroke-width="1.5"/>
   <text x="60" y="486" font-size="14" fill="#2D3436" font-weight="700">Безопасность и хранение</text>
-  <rect x="60" y="500" width="133.28" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <rect x="60" y="500" width="133.27" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
   <text x="126.64" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Одноразовый ключ</text>
-  <rect x="201.28" y="500" width="145.93" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <rect x="201.27" y="500" width="145.92" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
   <text x="274.24" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Максимум 3 попытки</text>
   <rect x="355.2" y="500" width="104.76" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
   <text x="407.58" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Лимит сессии</text>
-  <rect x="60" y="538" width="110.28" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <rect x="60" y="538" width="110.27" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
   <text x="115.14" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">3 уровня фона</text>
-  <rect x="178.28" y="538" width="137.99" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
+  <rect x="178.27" y="538" width="137.99" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
   <text x="247.27" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Траектория (опц.)</text>
   <rect x="324.27" y="538" width="133.85" height="28" rx="14" fill="#FFFFFF" stroke="#FF6B6B" stroke-width="1"/>
   <text x="391.19" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">File/Session/Redis</text>
@@ -84,7 +84,7 @@
   <rect x="628.56" y="264" width="58.92" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
   <text x="658.02" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Аватар</text>
   <rect x="693.48" y="264" width="56.61" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
-  <text x="721.79" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">QR-код</text>
+  <text x="721.78" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">QR-код</text>
   <rect x="756.09" y="264" width="58.92" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
   <text x="785.55" y="279.96" font-size="11" fill="#2D3436" text-anchor="middle">Фигуры</text>
   <rect x="821.01" y="264" width="52.1" height="24" rx="12" fill="#FFFFFF" stroke="#45B7D1" stroke-width="1"/>
@@ -107,7 +107,7 @@
   <text x="671.48" y="431.96" font-size="11" fill="#2D3436" text-anchor="middle">Водяной знак: мозаика / угол / шаг</text>
   <rect x="530" y="458" width="470" height="122" rx="12" fill="#F2FBF9" stroke="#4ECDC4" stroke-width="1.5"/>
   <text x="550" y="486" font-size="14" fill="#2D3436" font-weight="700">Система шаблонов</text>
-  <rect x="550" y="500" width="108.67" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <rect x="550" y="500" width="108.66" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
   <text x="604.33" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">JSON-описание</text>
   <rect x="666.67" y="500" width="145.01" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
   <text x="739.17" y="518.14" font-size="11.5" fill="#2D3436" text-anchor="middle">замена {{variable}}</text>
@@ -116,11 +116,15 @@
   <rect x="550" y="538" width="64.28" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
   <text x="582.14" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Laravel</text>
   <rect x="622.28" y="538" width="70.6" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
-  <text x="657.58" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">ThinkPHP</text>
+  <text x="657.57" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">ThinkPHP</text>
   <rect x="700.88" y="538" width="57.95" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
   <text x="729.85" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Webman</text>
   <rect x="766.83" y="538" width="57.95" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
   <text x="795.8" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Hyperf</text>
+  <rect x="832.78" y="538" width="45.3" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="855.43" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Yii2</text>
+  <rect x="886.08" y="538" width="45.3" height="28" rx="14" fill="#FFFFFF" stroke="#4ECDC4" stroke-width="1"/>
+  <text x="908.73" y="556.14" font-size="11.5" fill="#2D3436" text-anchor="middle">Yii3</text>
   <rect x="40" y="594" width="960" height="68" rx="12" fill="#F8FAFC" stroke="#D8E0E6" stroke-width="1.5"/>
   <text x="60" y="622" font-size="13.5" fill="#2D3436" font-weight="700">Точки входа</text>
   <text x="144" y="622" font-size="11.5" fill="#7F8C8D">Глобальные функции helpers.php — готовы к работе</text>

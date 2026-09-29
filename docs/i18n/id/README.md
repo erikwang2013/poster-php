@@ -6,7 +6,7 @@
   <img src="../../../assets/pet.svg" width="200" alt="Maskot proyek poster-php: Posty" />
 </p>
 
-Toolkit PHP untuk captcha gambar dan pembuatan poster — inti tanpa ketergantungan framework + adapter Laravel / ThinkPHP / Webman / Hyperf.
+Toolkit PHP untuk captcha gambar dan pembuatan poster — inti tanpa ketergantungan framework + adapter Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3.
 
 [Dokumentasi Bahasa Inggris](../../../README_EN.md) | [Dokumen Arsitektur](../../../docs/architecture.md) | [Semua bahasa](../README.md)
 
@@ -19,7 +19,7 @@ poster-php adalah toolkit gambar PHP yang hanya mengerjakan dua hal, dan mengerj
 | **Captcha** | Tiga verifikasi manusia (klik / putar / geser) plus mode acak; gambar dan jawaban dibuat murni dengan PHP, tanpa layanan pihak ketiga |
 | **Pembuatan poster** | API Builder berantai dengan 14 jenis elemen untuk kebutuhan tata letak teks, gambar, kode QR, tabel, diagram, kalender, dan lainnya |
 | **Tanpa ketergantungan framework** | Inti hanya butuh PHP ≥ 8.0 + GD, bisa dipakai sebagai paket Composer biasa tanpa framework |
-| **Siap pakai** | 3 fungsi helper global + 4 adapter framework (Laravel / ThinkPHP / Webman / Hyperf) |
+| **Siap pakai** | 3 fungsi helper global + 6 adapter framework (Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3) |
 | **Bisa ditukar** | Driver gambar (GD / ImageMagick) dan backend penyimpanan (File / Session / Redis) semuanya berupa implementasi antarmuka, tukar sesuai kebutuhan |
 
 > Maskot proyek **Posty** — maskot yang tersusun dari badan poster, kartu kode QR, dan puzzle slider, tepat mencerminkan dua kemampuan utama paket ini: menghasilkan gambar dan verifikasi. Ia ikut didistribusikan bersama paket ([`assets/pet.svg`](../../../assets/pet.svg) / `assets/pet.png`), bisa digambar ke poster dengan `->addPet()`, atau diatur sebagai placeholder untuk gambar yang hilang.
@@ -28,7 +28,7 @@ poster-php adalah toolkit gambar PHP yang hanya mengerjakan dua hal, dan mengerj
 
 ```
 poster-php/
-├── src/                        # kode inti: 64 file PHP / sekitar 6093 baris
+├── src/                        # kode inti: 70 file PHP / sekitar 6355 baris
 │   ├── Captcha/                # modul captcha: antarmuka + kelas abstrak + 3 implementasi + factory + manager
 │   │                           #   + RateLimiter (pembatasan) / TrajectoryVerifier (verifikasi jejak)
 │   ├── Poster/                 # modul poster (Elements/ElementRegistry.php sebagai registri elemen terpusat)
@@ -38,7 +38,7 @@ poster-php/
 │   ├── Drivers/                # driver gambar: ImageDriverInterface / GdDriver / ImagickDriver
 │   ├── Storage/                # penyimpanan data verifikasi: File / Session / Redis / cache PSR-16
 │   ├── Qrcode/                 # generator kode QR murni PHP (Model 2, v1-40, tanpa ekstensi)
-│   ├── Adapters/               # adapter framework: Laravel / ThinkPHP / Webman / Hyperf
+│   ├── Adapters/               # adapter framework: Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3
 │   ├── PosterConfig.php        # pembacaan konfigurasi (nilai default + merge config framework)
 │   └── Installer.php           # menyalin file konfigurasi otomatis setelah composer install
 ├── config/
@@ -787,9 +787,59 @@ return [
 
 Terdaftar otomatis lewat ConfigProvider.
 
+### Yii2
+
+`config/web.php`:
+```php
+'components' => [
+    'poster' => ['class' => Erikwang2013\Poster\Adapters\Yii2\PosterComponent::class],
+],
+```
+
+```php
+Yii::$app->poster->captcha->create('click')->generate();   // diakses lewat magic getCaptcha()
+Yii::$app->poster->builder->width(750)->save('poster.jpg');
+```
+
+Opsional: tambahkan `Erikwang2013\Poster\Adapters\Yii2\Bootstrap::class` ke `'bootstrap'`, maka controller bisa menyuntikkan `CaptchaManager` lewat konstruktor.
+
+> `builder` mengembalikan instance baru pada setiap akses (ia punya status, `width()`/`add()` akan terakumulasi); `captcha` tanpa status. Konfigurasi dibaca dari `config/poster.php` aplikasi, dilokasikan lewat alias `@app` — bukan lewat cwd, karena di bawah php-fpm cwd sering kali `web/` sehingga konfigurasi akan gagal secara diam-diam.
+
+### Yii3
+
+Setelah `composer require`, `yiisoft/config` merakitnya secara otomatis (`extra.config-plugin` sudah dideklarasikan, tanpa perlu penyambungan manual):
+
+```php
+use Erikwang2013\Poster\Adapters\Yii3\PosterBuilderFactory;
+use Erikwang2013\Poster\Adapters\Yii3\CaptchaManagerFactory;
+
+final class PosterController
+{
+    public function __construct(private PosterBuilderFactory $builders) {}
+
+    public function action(): void
+    {
+        ($this->builders)()->width(750)->background('#FFF')->save('/tmp/poster.jpg');
+    }
+}
+```
+
+Untuk menimpa nilai default, gunakan `config/params.php` aplikasi:
+
+```php
+return [
+    'erikwang2013/poster-php' => [
+        'image'   => ['driver' => 'imagick'],
+        'captcha' => ['storage' => 'cache', 'ttl' => 600],
+    ],
+];
+```
+
+> Container hanya diisi hal yang tanpa status: `StorageInterface` dan dua factory. Driver gambar / `CaptchaManager` / `PosterBuilder` semuanya tidak masuk container — `yiisoft/di` hanya mengelola instance bersama, sedangkan ketiganya memegang kanvas saat ini (`GdDriver::$resource`, `ImagickDriver::$imagick`), sehingga bila dibagikan akan mencampur status antar request di bawah proses persisten RoadRunner / Swoole.
+
 ## Konfigurasi
 
-Setelah `composer require`, `config/poster.php` otomatis disalin ke direktori `config/` proyek (dilewati jika sudah ada). Kompatibel dengan Laravel / ThinkPHP / Webman (`config/poster.php`) dan Hyperf (`config/autoload/poster.php`).
+Setelah `composer require`, `config/poster.php` otomatis disalin ke direktori `config/` proyek (dilewati jika sudah ada). Kompatibel dengan Laravel / ThinkPHP / Webman / Yii2 (`config/poster.php`) dan Hyperf (`config/autoload/poster.php`). Yii3 menimpa lewat namespace `erikwang2013/poster-php` di `config/params.php`, lihat di atas.
 
 Item konfigurasi utama:
 

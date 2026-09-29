@@ -5,7 +5,7 @@
   },
   "architecture": {
     "title": "Архитектура системы poster-php",
-    "subtitle": "Ядро без привязки к фреймворку + 4 адаптера · каждый слой зависит только от интерфейсов ниже",
+    "subtitle": "Ядро без привязки к фреймворку + 6 адаптеров · каждый слой зависит только от интерфейсов ниже",
     "layerApi": "Уровень API",
     "layerBusiness": "Уровень бизнес-логики",
     "layerCore": "Уровень ядра",
@@ -30,6 +30,14 @@
       [
         "Hyperf",
         "ConfigProvider"
+      ],
+      [
+        "Yii2",
+        "PosterComponent"
+      ],
+      [
+        "Yii3",
+        "config-plugin"
       ]
     ],
     "business": [
@@ -203,7 +211,9 @@
         "Laravel",
         "ThinkPHP",
         "Webman",
-        "Hyperf"
+        "Hyperf",
+        "Yii2",
+        "Yii3"
       ]
     },
     "entry": {

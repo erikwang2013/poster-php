@@ -5,7 +5,7 @@
     },
     "architecture": {
         "title": "Arquitectura del sistema poster-php",
-        "subtitle": "Núcleo agnóstico de framework + 4 adaptadores · cada capa solo depende de las interfaces de abajo",
+        "subtitle": "Núcleo agnóstico de framework + 6 adaptadores · cada capa solo depende de las interfaces de abajo",
         "layerApi": "Capa API",
         "layerBusiness": "Capa de negocio",
         "layerCore": "Capa núcleo",
@@ -30,6 +30,14 @@
             [
                 "Hyperf",
                 "ConfigProvider"
+            ],
+            [
+                "Yii2",
+                "PosterComponent"
+            ],
+            [
+                "Yii3",
+                "config-plugin"
             ]
         ],
         "business": [
@@ -203,7 +211,9 @@
                 "Laravel",
                 "ThinkPHP",
                 "Webman",
-                "Hyperf"
+                "Hyperf",
+                "Yii2",
+                "Yii3"
             ]
         },
         "entry": {

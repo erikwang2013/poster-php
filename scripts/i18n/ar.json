@@ -5,7 +5,7 @@
   },
   "architecture": {
     "title": "بنية نظام poster-php",
-    "subtitle": "نواة مستقلة عن الأطر + 4 محولات · كل طبقة تعتمد فقط على الواجهات أسفلها",
+    "subtitle": "نواة مستقلة عن الأطر + 6 محولات · كل طبقة تعتمد فقط على الواجهات أسفلها",
     "layerApi": "طبقة الواجهة",
     "layerBusiness": "طبقة الأعمال",
     "layerCore": "الطبقة الأساسية",
@@ -15,7 +15,9 @@
       ["Laravel", "Facade · Provider"],
       ["ThinkPHP", "CaptchaService"],
       ["Webman", "CaptchaPlugin"],
-      ["Hyperf", "ConfigProvider"]
+      ["Hyperf", "ConfigProvider"],
+      ["Yii2", "PosterComponent"],
+      ["Yii3", "config-plugin"]
     ],
     "business": [
       ["وحدة التحقق", "CaptchaManager → CaptchaFactory", ["نقر", "تدوير", "سحب", "عشوائي"]],
@@ -65,7 +67,7 @@
     "template": {
       "title": "نظام القوالب",
       "chips1": ["تعريف JSON", "استبدال {{variable}}", "عرّف مرة وأعد الاستخدام"],
-      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf"]
+      "chips2": ["Laravel", "ThinkPHP", "Webman", "Hyperf", "Yii2", "Yii3"]
     },
     "entry": {
       "title": "نقاط الدخول",

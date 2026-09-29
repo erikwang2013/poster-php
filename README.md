@@ -4,7 +4,7 @@
   <img src="assets/pet.svg" width="200" alt="poster-php 项目宠物 Posty" />
 </p>
 
-PHP 图片验证码与海报生成工具包 —— 框架无关核心 + Laravel / ThinkPHP / Webman / Hyperf 适配。
+PHP 图片验证码与海报生成工具包 —— 框架无关核心 + Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3 适配。
 
 [English Documentation](README_EN.md) | [架构设计文档](docs/architecture.md) | [全部语言](docs/i18n/README.md)
 
@@ -19,7 +19,7 @@ poster-php 是一个 PHP 图像工具包，只做两件事，并且做到够用�
 | **验证码** | 点击 / 旋转 / 滑块三种人机校验 + 随机切换，纯 PHP 生成图片与答案，不依赖第三方服务 |
 | **海报生成** | 链式 Builder API，14 种元素覆盖文字、图片、二维码、表格、图表、日历等排版需求 |
 | **框架无关** | 核心只依赖 PHP ≥ 8.0 + GD，可作为普通 Composer 包使用，无需框架 |
-| **开箱即用** | 3 个全局辅助函数 + 4 种框架适配（Laravel / ThinkPHP / Webman / Hyperf） |
+| **开箱即用** | 3 个全局辅助函数 + 6 种框架适配（Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3） |
 | **可替换** | 图像驱动（GD / ImageMagick）、存储后端（File / Session / Redis）均为接口实现，按需替换 |
 
 > 项目宠物 **Posty** —— 一只由海报本体、二维码卡片与滑块拼图组成的吉祥物，正好对应这个包的两大能力：出图与验证。它随包分发（[`assets/pet.svg`](assets/pet.svg) / `assets/pet.png`），可用 `->addPet()` 画进海报，也可配置为缺图占位图。
@@ -28,7 +28,7 @@ poster-php 是一个 PHP 图像工具包，只做两件事，并且做到够用�
 
 ```
 poster-php/
-├── src/                        # 核心代码：64 个 PHP 文件 / 约 6093 行
+├── src/                        # 核心代码：70 个 PHP 文件 / 约 6355 行
 │   ├── Captcha/                # 验证码模块：接口 + 抽象基类 + 3 种实现 + 工厂 + 管理器
 │   │                           #   + RateLimiter（限流）/ TrajectoryVerifier（轨迹校验）
 │   ├── Poster/                 # 海报模块（Elements/ElementRegistry.php 为元素单点注册表）
@@ -38,7 +38,7 @@ poster-php/
 │   ├── Drivers/                # 图像驱动：ImageDriverInterface / GdDriver / ImagickDriver
 │   ├── Storage/                # 验证数据存储：File / Session / Redis / PSR-16 缓存
 │   ├── Qrcode/                 # 纯 PHP 二维码生成器（Model 2，v1-40，零扩展依赖）
-│   ├── Adapters/               # 框架适配：Laravel / ThinkPHP / Webman / Hyperf
+│   ├── Adapters/               # 框架适配：Laravel / ThinkPHP / Webman / Hyperf / Yii2 / Yii3
 │   ├── PosterConfig.php        # 配置读取（默认值兜底 + 框架配置合并）
 │   └── Installer.php           # composer 安装后自动复制配置文件
 ├── config/
@@ -786,9 +786,59 @@ return [
 
 通过 ConfigProvider 自动注册。
 
+### Yii2
+
+`config/web.php`:
+```php
+'components' => [
+    'poster' => ['class' => Erikwang2013\Poster\Adapters\Yii2\PosterComponent::class],
+],
+```
+
+```php
+Yii::$app->poster->captcha->create('click')->generate();   // 经 getCaptcha() 魔术访问
+Yii::$app->poster->builder->width(750)->save('poster.jpg');
+```
+
+可选：把 `Erikwang2013\Poster\Adapters\Yii2\Bootstrap::class` 加进 `'bootstrap'`，控制器即可构造注入 `CaptchaManager`。
+
+> `builder` 每次访问返回新实例（它有状态，`width()`/`add()` 会累积）；`captcha` 无状态。配置读应用的 `config/poster.php`，经 `@app` 别名定位 —— 不用 cwd，因为 php-fpm 下 cwd 常是 `web/`，会让配置静默失效。
+
+### Yii3
+
+`composer require` 后由 `yiisoft/config` 自动装配（`extra.config-plugin` 已声明，无需手工接线）：
+
+```php
+use Erikwang2013\Poster\Adapters\Yii3\PosterBuilderFactory;
+use Erikwang2013\Poster\Adapters\Yii3\CaptchaManagerFactory;
+
+final class PosterController
+{
+    public function __construct(private PosterBuilderFactory $builders) {}
+
+    public function action(): void
+    {
+        ($this->builders)()->width(750)->background('#FFF')->save('/tmp/poster.jpg');
+    }
+}
+```
+
+覆盖默认值走应用的 `config/params.php`：
+
+```php
+return [
+    'erikwang2013/poster-php' => [
+        'image'   => ['driver' => 'imagick'],
+        'captcha' => ['storage' => 'cache', 'ttl' => 600],
+    ],
+];
+```
+
+> 容器里只放无状态的东西：`StorageInterface` 和两个工厂。图像驱动 / `CaptchaManager` / `PosterBuilder` 都不进容器 —— `yiisoft/di` 只管理共享实例，而它们持有当前画布（`GdDriver::$resource`、`ImagickDriver::$imagick`），共享后在 RoadRunner / Swoole 常驻进程下会跨请求串状态。
+
 ## 配置
 
-`composer require` 后自动将 `config/poster.php` 复制到项目 `config/` 目录（已存在则跳过）。兼容 Laravel / ThinkPHP / Webman（`config/poster.php`）和 Hyperf（`config/autoload/poster.php`）。
+`composer require` 后自动将 `config/poster.php` 复制到项目 `config/` 目录（已存在则跳过）。兼容 Laravel / ThinkPHP / Webman / Yii2（`config/poster.php`）和 Hyperf（`config/autoload/poster.php`）。Yii3 用 `config/params.php` 的 `erikwang2013/poster-php` 命名空间覆盖，见上。
 
 主要配置项：
 

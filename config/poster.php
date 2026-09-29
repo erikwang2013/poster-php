@@ -90,7 +90,8 @@ return [
         ],
 
         // PSR-16 缓存池（storage=cache 时生效）/ PSR-16 pool (effective when storage=cache)
-        // pool：任何具备 get/set/delete 的对象（Laravel Cache::store()、Hyperf 缓存等）；
+        // pool：任何具备 get/set/delete 的对象（Laravel Cache::store()、Hyperf 缓存、
+        // Yii3 容器里的 Psr\SimpleCache\CacheInterface 等）；
         // 也可运行时用 StorageFactory::setPsr16Pool($pool) 注入，未注入时 storage=cache 抛异常
         'cache' => [
             'pool'   => null,

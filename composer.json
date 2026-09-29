@@ -1,9 +1,9 @@
 {
     "name": "erikwang2013/poster-php",
-    "description": "PHP captcha (click/rotate/slider) and poster generation — framework-agnostic with adapters for Laravel, ThinkPHP, Webman, Hyperf.",
+    "description": "PHP captcha (click/rotate/slider) and poster generation — framework-agnostic with adapters for Laravel, ThinkPHP, Webman, Hyperf, Yii2, Yii3.",
     "type": "library",
     "license": "MIT",
-    "keywords": ["captcha", "poster", "image", "qr-code", "laravel", "thinkphp", "webman", "hyperf"],
+    "keywords": ["captcha", "poster", "image", "qr-code", "laravel", "thinkphp", "webman", "hyperf", "yii", "yii2", "yii3"],
     "authors": [
         {"name": "erik", "email": "erik@erik.xyz", "homepage": "https://erik.xyz"}
     ],
@@ -44,6 +44,10 @@
                 "Erikwang2013\\Poster\\Adapters\\ThinkPHP\\CaptchaService",
                 "Erikwang2013\\Poster\\Adapters\\ThinkPHP\\PosterService"
             ]
+        },
+        "config-plugin": {
+            "params": "src/Adapters/Yii3/config/params.php",
+            "di": "src/Adapters/Yii3/config/di.php"
         }
     },
     "scripts": {

@@ -232,6 +232,30 @@ class ImagickDriverTest extends TestCase
         $this->assertGreaterThan(64, (imagecolorat($decoded, 0, 0) >> 24) & 0x7F, '圆角外应透明');
     }
 
+    /** 验证 polygon 填充与自动闭合（path 绘制：ImagickDraw::polygon 在 imagick 3.8 报坐标数组错误）。 */
+    public function testPolygonFillsInsideAndAutoCloses(): void
+    {
+        $d = (new ImagickDriver())->create(40, 40);
+        $d->polygon([[5, 5], [35, 5], [35, 35]], ['color' => '#FF0000']);
+        $png = base64_decode(substr($d->output('png'), strpos($d->output('png'), ',') + 1));
+        $decoded = imagecreatefromstring($png);
+        $this->assertSame(0xFF0000, imagecolorat($decoded, 32, 22) & 0xFFFFFF, '三角形内部应着色');
+        $this->assertSame(127, (imagecolorat($decoded, 12, 30) >> 24) & 0x7F, '三角形外应保持透明');
+    }
+
+    /** 验证 mask 掩膜（COMPOSITE_DSTIN）：掩膜内保留原像素，掩膜外置空。 */
+    public function testMaskKeepsCoverageAndTransparentizesRest(): void
+    {
+        $d = (new ImagickDriver())->create(40, 40)->rectangle(0, 0, 40, 40, ['color' => '#FF0000']);
+        $mask = (new ImagickDriver())->create(40, 40);
+        $mask->polygon([[10, 10], [30, 10], [30, 30], [10, 30]], ['color' => '#FFFFFF']);
+        $d->mask($mask);
+        $png = base64_decode(substr($d->output('png'), strpos($d->output('png'), ',') + 1));
+        $decoded = imagecreatefromstring($png);
+        $this->assertSame(0, (imagecolorat($decoded, 20, 20) >> 24) & 0x7F, '掩膜内应保持不透明');
+        $this->assertSame(127, (imagecolorat($decoded, 2, 2) >> 24) & 0x7F, '掩膜外应被置为全透明');
+    }
+
     /** 验证 text 的 8 位色 alpha 生效（ImagickPixel 原生支持 #RRGGBBAA）。 */
     public function testTextEightDigitColorKeepsAlpha(): void
     {

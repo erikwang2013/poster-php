@@ -30,6 +30,18 @@ interface ImageDriverInterface
 
     public function filledArc(int $cx, int $cy, int $w, int $h, int $startAngle, int $endAngle, array $options = []): self;
 
+    /**
+     * 填充/描边任意多边形。$points 为 [[x, y], ...] 顶点列表（自动闭合）。
+     * $options: color（支持 #RRGGBBAA）、filled（默认 true）。
+     */
+    public function polygon(array $points, array $options = []): self;
+
+    /**
+     * 按掩膜裁剪：掩膜不透明处的原像素保留，透明处置空。掩膜尺寸内逐像素生效，
+     * 超出目标画布的部分忽略。掩膜与目标可以是不同驱动（内部转换）。
+     */
+    public function mask(self $mask): self;
+
     public function line(int $x1, int $y1, int $x2, int $y2, array $options = []): self;
 
     public function blur(int $radius = 1): self;

@@ -292,6 +292,73 @@ class GdDriver implements ImageDriverInterface
         return $this;
     }
 
+    public function polygon(array $points, array $options = []): static
+    {
+        $this->requireImage();
+        if (count($points) < 3) {
+            throw new InvalidArgumentException('Polygon needs at least 3 points, got ' . count($points));
+        }
+        // GD 只接受扁平的整数坐标 [x0,y0,x1,y1,...]
+        $flat = [];
+        foreach ($points as $point) {
+            $flat[] = intval(round($point[0]));
+            $flat[] = intval(round($point[1]));
+        }
+        $alloc = $this->allocColor($options['color'] ?? '#FFFFFF');
+
+        // num_points：PHP 8.1 起废弃可省略，8.0 仍必传
+        $args = [$this->resource, $flat];
+        if (PHP_VERSION_ID < 80100) {
+            $args[] = count($points);
+        }
+        $args[] = $alloc;
+        if ($options['filled'] ?? true) {
+            imagefilledpolygon(...$args);
+        } else {
+            imagepolygon(...$args);
+        }
+        return $this;
+    }
+
+    public function mask(ImageDriverInterface $mask): static
+    {
+        $res = $this->requireImage();
+        $maskRes = $mask->getResource();
+        $owned = false;
+        if ($maskRes instanceof \Imagick) {
+            // 与 image() 同一套跨驱动转换：克隆后强制 png32 保住透明区域
+            $clone = clone $maskRes;
+            $clone->setImageFormat('png32');
+            $maskRes = imagecreatefromstring($clone->getImageBlob());
+            $clone->clear();
+            if ($maskRes === false) {
+                throw new RuntimeException('Cannot convert Imagick mask to GD');
+            }
+            $owned = true;
+        }
+        if (!$maskRes instanceof \GdImage) {
+            throw new RuntimeException('Unsupported mask resource: expected GdImage or Imagick');
+        }
+
+        $w = min($this->width, imagesx($maskRes));
+        $h = min($this->height, imagesy($maskRes));
+        $transparent = imagecolorallocatealpha($res, 0, 0, 0, 127);
+        // 关闭混合后 imagesetpixel 是直接替换，才能把像素真正置为透明（同 roundCornersGD 的擦除方式）
+        imagealphablending($res, false);
+        for ($y = 0; $y < $h; $y++) {
+            for ($x = 0; $x < $w; $x++) {
+                if (((imagecolorat($maskRes, $x, $y) >> 24) & 0x7F) >= 64) {
+                    imagesetpixel($res, $x, $y, $transparent);
+                }
+            }
+        }
+        imagealphablending($res, true);
+        if ($owned) {
+            imagedestroy($maskRes);
+        }
+        return $this;
+    }
+
     public function line(int $x1, int $y1, int $x2, int $y2, array $options = []): static
     {
         $this->requireImage();

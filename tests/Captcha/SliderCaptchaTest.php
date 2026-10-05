@@ -51,6 +51,75 @@ class SliderCaptchaTest extends TestCase
         $this->assertSame(40, $result['extra']['puzzle_h']);
     }
 
+    /** 测试：jigsaw 拼图块为外扩后的外接矩形（50+2×10=70），轮廓外透明、本体内保留原像素 */
+    public function testJigsawPieceIsPaddedAndMasked(): void
+    {
+        $result = $this->manager->create('slider')->setShape('jigsaw')->generate();
+        $this->assertSame(50, $result['extra']['puzzle_w']);
+        $this->assertSame(50, $result['extra']['puzzle_h']);
+
+        $img = $this->pieceImage($result);
+        $this->assertSame(70, imagesx($img), '外接矩形 = 本体 + 两侧凸出半径');
+        $this->assertSame(70, imagesy($img));
+        $this->assertSame(127, (imagecolorat($img, 0, 0) >> 24) & 0x7F, '外接矩形四角应在轮廓外（透明）');
+        $this->assertSame(0, (imagecolorat($img, 35, 35) >> 24) & 0x7F, '本体中心应保留原像素');
+    }
+
+    /** 测试：hard 难度 jigsaw 凸出半径随本体缩小（40/5=8，外接 56×56） */
+    public function testHardJigsawShrinksKnob(): void
+    {
+        $result = $this->manager->create('slider')->setDifficulty('hard')->setShape('jigsaw')->generate();
+        $img = $this->pieceImage($result);
+        $this->assertSame(56, imagesx($img));
+        $this->assertSame(56, imagesy($img));
+    }
+
+    /** 测试：jigsaw 存储坐标是拼图块 PNG 左上角（本体位置减凸出半径），仍保留多位随机性 */
+    public function testJigsawStoresPaddedOrigin(): void
+    {
+        $positions = [];
+        for ($i = 0; $i < 8; $i++) {
+            $stored = $this->storage->get($this->manager->create('slider')->setShape('jigsaw')->generate()['key']);
+            // 本体 x∈[50,200] y∈[20,130]（同 square），各减凸出半径 10
+            $this->assertGreaterThanOrEqual(40, $stored['x']);
+            $this->assertLessThanOrEqual(190, $stored['x']);
+            $this->assertGreaterThanOrEqual(10, $stored['y']);
+            $this->assertLessThanOrEqual(120, $stored['y']);
+            $positions[$stored['x']] = true;
+        }
+        $this->assertGreaterThan(2, count($positions), '外扩坐标不应退化为固定值');
+    }
+
+    /** 测试：jigsaw 的验证容差与 square 相同（存储坐标即前端放置坐标，±4 通过 ±5 失败） */
+    public function testJigsawVerifyToleranceBoundary(): void
+    {
+        foreach ([0, 4, -4] as $offset) {
+            $result = $this->manager->create('slider')->setShape('jigsaw')->generate();
+            $x = $this->storage->get($result['key'])['x'];
+            $this->assertTrue($this->manager->verify($result['key'], ['type' => 'slider', 'data' => $x + $offset]));
+        }
+
+        $result = $this->manager->create('slider')->setShape('jigsaw')->generate();
+        $x = $this->storage->get($result['key'])['x'];
+        $this->assertFalse($this->manager->verify($result['key'], ['type' => 'slider', 'data' => $x + 5]));
+    }
+
+    /** 测试：captcha.slider_shape 配置生效（未显式 setShape 时取配置） */
+    public function testJigsawShapeFromConfig(): void
+    {
+        PosterConfig::merge(['captcha' => ['slider_shape' => 'jigsaw']]);
+        $img = $this->pieceImage($this->manager->create('slider')->generate());
+        $this->assertSame(70, imagesx($img));
+    }
+
+    /** 测试：未知形状明确拒绝（不静默回退为 square） */
+    public function testUnknownShapeIsRejected(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unknown slider shape');
+        $this->manager->create('slider')->setShape('triangle')->generate();
+    }
+
     /** 测试：小背景（100x80）无法容纳拼图 + 边距时明确拒绝（旧实现把 x 钳成唯一值 50，盲猜必中） */
     public function testSmallBackgroundIsRejected(): void
     {
@@ -131,5 +200,14 @@ class SliderCaptchaTest extends TestCase
     {
         $result = $this->manager->create('slider')->generate();
         $this->assertFalse($this->manager->verify($result['key'], ['type' => 'slider', 'data' => 'NaN']));
+    }
+
+    /** 解码 extra.puzzle 的 data URI 为 GD 图像（含 alpha）。 */
+    private function pieceImage(array $result): \GdImage
+    {
+        $png = base64_decode(substr($result['extra']['puzzle'], strlen('data:image/png;base64,')));
+        $img = imagecreatefromstring($png);
+        $this->assertNotFalse($img);
+        return $img;
     }
 }

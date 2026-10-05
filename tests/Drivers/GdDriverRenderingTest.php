@@ -283,6 +283,67 @@ class GdDriverRenderingTest extends TestCase
     }
 
     /** 用 sourceSize×sourceSize 的源图缩到 100×100、圆角 radius，返回首行 alpha 签名。 */
+    /** 多边形填充：内部着色、外部不染，末点自动连回起点（三点即可闭合）。 */
+    public function testPolygonFillsInsideAndAutoCloses(): void
+    {
+        $d = (new GdDriver())->create(40, 40)->rectangle(0, 0, 40, 40, ['color' => '#FFFFFF']);
+        $d->polygon([[5, 5], [35, 5], [35, 35]], ['color' => '#FF0000']);
+        $inside = imagecolorat($d->getResource(), 30, 25);   // 三角形内部（斜边 x=y 右上侧）
+        $outside = imagecolorat($d->getResource(), 10, 30);  // 斜边之外
+        $d->destroy();
+        $this->assertSame(0xFF0000, $inside & 0xFFFFFF);
+        $this->assertSame(0xFFFFFF, $outside & 0xFFFFFF);
+    }
+
+    /** mask 掩膜：掩膜不透明处保留原像素，透明处置空。 */
+    public function testMaskKeepsCoverageAndTransparentizesRest(): void
+    {
+        $d = (new GdDriver())->create(40, 40)->rectangle(0, 0, 40, 40, ['color' => '#FF0000']);
+        $mask = (new GdDriver())->create(40, 40);
+        $mask->polygon([[10, 10], [30, 10], [30, 30], [10, 30]], ['color' => '#FFFFFF']);
+        $d->mask($mask);
+        $inside = self::alphaAt($d->getResource(), 20, 20);
+        $outside = self::alphaAt($d->getResource(), 2, 2);
+        $d->destroy();
+        $mask->destroy();
+        $this->assertSame(0, $inside, '掩膜内应保持不透明');
+        $this->assertSame(127, $outside, '掩膜外应被置为全透明');
+    }
+
+    /**
+     * 缺口（半透明多边形）与拼图块（掩膜）的覆盖范围必须逐像素一致：
+     * 滑块验证码靠这条不变量保证「放回的拼图块恰好盖住缺口」。
+     * 用带凹口的轮廓，同时覆盖凹多边形与取整路径。
+     */
+    public function testPolygonAndMaskCoverageStayIdentical(): void
+    {
+        $points = [
+            [10, 10], [30, 10], [30, 20], [40, 20], [40, 30], [30, 30],
+            [30, 60], [10, 60], [10, 30], [0, 30], [0, 20], [10, 20],
+        ];
+        $gap = (new GdDriver())->create(70, 70)->rectangle(0, 0, 70, 70, ['color' => '#FFFFFF']);
+        $gap->polygon($points, ['color' => '#00000040']);
+        $mask = (new GdDriver())->create(70, 70);
+        $mask->polygon($points, ['color' => '#FFFFFF']);
+        $piece = (new GdDriver())->create(70, 70)->rectangle(0, 0, 70, 70, ['color' => '#FFFFFF']);
+        $piece->mask($mask);
+
+        $mismatch = 0;
+        for ($y = 0; $y < 70; $y++) {
+            for ($x = 0; $x < 70; $x++) {
+                $darkened = (imagecolorat($gap->getResource(), $x, $y) & 0xFFFFFF) !== 0xFFFFFF;
+                $kept = self::alphaAt($piece->getResource(), $x, $y) < 64;
+                if ($darkened !== $kept) {
+                    $mismatch++;
+                }
+            }
+        }
+        $gap->destroy();
+        $mask->destroy();
+        $piece->destroy();
+        $this->assertSame(0, $mismatch, '多边形与掩膜的覆盖范围出现了错位像素');
+    }
+
     private function topRowAlphaSignature(int $sourceSize, int $radius): string
     {
         $overlay = (new GdDriver())->create($sourceSize, $sourceSize)

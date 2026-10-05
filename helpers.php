@@ -5,6 +5,7 @@
  */
 
 use Erikwang2013\Poster\Captcha\CaptchaManager;
+use Erikwang2013\Poster\Captcha\SliderCaptcha;
 use Erikwang2013\Poster\Drivers\DriverFactory;
 use Erikwang2013\Poster\Storage\StorageFactory;
 use Erikwang2013\Poster\Poster\PosterBuilder;
@@ -22,6 +23,8 @@ if (!function_exists('captcha_create')) {
         // 难度：选项优先，其次 captcha.default_difficulty（此前只认选项，配置项是死配置）
         $difficulty = $options['difficulty'] ?? PosterConfig::get('captcha.default_difficulty');
         if ($difficulty !== null) $captcha->setDifficulty($difficulty);
+        // 滑块形状：选项优先，其次 captcha.slider_shape
+        if (isset($options['shape']) && $captcha instanceof SliderCaptcha) $captcha->setShape($options['shape']);
         if (isset($options['background'])) $captcha->setBackground($options['background']);
         return $captcha->generate();
     }

@@ -59,6 +59,9 @@ return [
         // 默认难度 / Default difficulty: 'easy' | 'medium' | 'hard'
         'default_difficulty' => 'medium',
 
+        // 滑块拼图形状 / Slider puzzle shape: 'square' | 'jigsaw'（凹凸拼图）
+        'slider_shape' => 'square',
+
         // 默认背景图目录（放 png/jpg/gif/webp），随机选用
         // null = 使用程序化生成
         // Background image directory; null = procedural generation

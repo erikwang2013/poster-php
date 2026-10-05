@@ -73,6 +73,17 @@ class HelpersTest extends TestCase
         $this->assertCount(2, $result['extra']['texts']);
     }
 
+    /** 测试 captcha_create() 的 shape 选项传给滑块验证码（jigsaw 拼图块外扩 10px → 70×70） */
+    public function testCaptchaCreateWithSliderShape(): void
+    {
+        $result = captcha_create('slider', ['shape' => 'jigsaw']);
+        $img = imagecreatefromstring(base64_decode(
+            substr($result['extra']['puzzle'], strlen('data:image/png;base64,'))
+        ));
+        $this->assertNotFalse($img);
+        $this->assertSame(70, imagesx($img));
+    }
+
     /** 测试 captcha_create() 未知类型抛出 InvalidArgumentException */
     public function testCaptchaCreateUnknownTypeThrows(): void
     {

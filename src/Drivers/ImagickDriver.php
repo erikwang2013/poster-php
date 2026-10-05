@@ -275,6 +275,61 @@ class ImagickDriver implements ImageDriverInterface
         return $this;
     }
 
+    public function polygon(array $points, array $options = []): static
+    {
+        $this->requireImage();
+        if (count($points) < 3) {
+            throw new InvalidArgumentException('Polygon needs at least 3 points, got ' . count($points));
+        }
+
+        $draw = new ImagickDraw();
+        if ($options['filled'] ?? true) {
+            $draw->setFillColor(new ImagickPixel($options['color'] ?? '#FFFFFF'));
+        } else {
+            $draw->setFillOpacity(0);
+            $draw->setStrokeColor(new ImagickPixel($options['color'] ?? '#FFFFFF'));
+            $draw->setStrokeWidth(1);
+        }
+        // 用路径绘制而非 ImagickDraw::polygon（imagick 3.8 对坐标数组两种形态都报
+        // "Unable to read coordinate array"）；path 方式同 filledArc() 已验证可用
+        $draw->pathStart();
+        $draw->pathMoveToAbsolute($points[0][0], $points[0][1]);
+        for ($i = 1, $n = count($points); $i < $n; $i++) {
+            $draw->pathLineToAbsolute($points[$i][0], $points[$i][1]);
+        }
+        $draw->pathClose();
+        $draw->pathFinish();
+
+        $this->resource->drawImage($draw);
+        $draw->clear();
+        return $this;
+    }
+
+    public function mask(ImageDriverInterface $mask): static
+    {
+        $image = $this->requireImage();
+        $maskRes = $mask->getResource();
+        $owned = false;
+        if ($maskRes instanceof \GdImage) {
+            // 与 image() 同一套跨驱动转换
+            ob_start();
+            imagepng($maskRes);
+            $maskRes = new Imagick();
+            $maskRes->readImageBlob(ob_get_clean());
+            $owned = true;
+        }
+        if (!$maskRes instanceof \Imagick) {
+            throw new RuntimeException('Unsupported mask resource: expected Imagick or GdImage');
+        }
+
+        // DSTIN：掩膜不透明处的原像素保留，透明处目标置空（同 circle()）
+        $image->compositeImage($maskRes, Imagick::COMPOSITE_DSTIN, 0, 0);
+        if ($owned) {
+            $maskRes->clear();
+        }
+        return $this;
+    }
+
     public function line(int $x1, int $y1, int $x2, int $y2, array $options = []): static
     {
         $this->requireImage();

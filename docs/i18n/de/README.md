@@ -224,6 +224,23 @@ $result = captcha_create('slider');
 $pass = captcha_verify($result['key'], 'slider', 173);  // x-Pixel der Nutzerbewegung, Toleranz ±4px
 ```
 
+**Puzzleteil-Form** (`shape`): zwei Werte, Standard `square`:
+
+| `shape` | Wirkung |
+|---------|------|
+| `square` (Standard) | Rechteckige Lücke, identisch zu früheren Versionen |
+| `jigsaw` | Teil mit Nase/Aussparung: jede der vier Seiten wölbt sich zufällig nach außen oder innen (16 Kombinationen), Lücke und Teil teilen dieselbe Kontur |
+
+![Beispiel: Jigsaw-Slider](../../../docs/jigsaw-slider.png)
+
+```php
+// Drei Konfigurationswege: captcha.slider_shape in config/poster.php, captcha_create('slider', ['shape' => ...]) oder setShape('jigsaw')
+$result = captcha_create('slider', ['shape' => 'jigsaw']);
+// Das Puzzle-PNG ist der erweiterte Rahmen (Körper 50×50 → 70×70; Radius = kurze Seite / 5, bei hard 8px), außerhalb der Kontur transparent;
+// das serverseitig gespeicherte x/y ist die linke obere Ecke des PNGs: das ganze PNG bei (x, y) platzieren, dann passt es zur Lücke;
+// extra.puzzle_w/h bleiben die Körpermaße; ±4px-Toleranz und Trajektorien-Prüfung sind identisch zu square.
+```
+
 #### 4. Zufallsauswahl (RandomCaptcha)
 
 Das System wählt zufällig eines von click / rotate / slider — das erschwert das Umgehen.
@@ -846,6 +863,7 @@ Wichtige Optionen:
 |--------|--------|------|
 | `captcha.default_type` | `random` | Standard-Captcha-Typ: `click` / `rotate` / `slider` / `random` |
 | `captcha.default_difficulty` | `medium` | Standard-Schwierigkeit: `easy` / `medium` / `hard` |
+| `captcha.slider_shape` | `square` | Form des Slider-Puzzles: `square` rechteckige Lücke / `jigsaw` Teil mit zufälligen Nasen/Aussparungen |
 | `captcha.click_words` | `[合,家,欢,...]` | Textpool für das Klick-Captcha, anpassbar |
 | `captcha.background_dir` | `assets/backgrounds/` | Verzeichnis der Hintergrundbilder; bei `null` wird programmatisch erzeugt |
 | `captcha.ttl` | `300` | Gültigkeit des Captchas (Sekunden) |

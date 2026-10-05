@@ -73,7 +73,7 @@
     "captchaTypes": [
       ["click", "Klik", "Klik karakter target secara berurutan", "2-4 target · ±18px"],
       ["rotate", "Putar", "Geser slider untuk meluruskan gambar", "30°-330° · ±5°"],
-      ["slider", "Geser", "Geser potongan puzzle ke celahnya", "±4px · ukuran bebas"],
+      ["slider", "Geser", "Geser potongan puzzle ke celahnya", "±4px · ukuran/bentuk"],
       ["random", "Acak", "Memilih satu dari tiga secara acak", "sulit dilewati"]
     ],
     "security": {

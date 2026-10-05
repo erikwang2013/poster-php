@@ -224,6 +224,23 @@ $result = captcha_create('slider');
 $pass = captcha_verify($result['key'], 'slider', 173);  // píxeles que deslizó el usuario en x, tolerancia ±4px
 ```
 
+**Forma de la pieza** (`shape`): dos valores, por defecto `square`:
+
+| `shape` | Efecto |
+|---------|------|
+| `square` (por defecto) | Hueco rectangular, idéntico a versiones anteriores |
+| `jigsaw` | Pieza con pestañas/muescas: cada lado sale o entra aleatoriamente (16 combinaciones); la pieza y el hueco comparten el mismo contorno |
+
+![Ejemplo de deslizador jigsaw](../../../docs/jigsaw-slider.png)
+
+```php
+// Tres formas de configurarlo: captcha.slider_shape en config/poster.php, captcha_create('slider', ['shape' => ...]) o setShape('jigsaw')
+$result = captcha_create('slider', ['shape' => 'jigsaw']);
+// El PNG de la pieza es el recuadro ampliado (cuerpo 50×50 → 70×70; radio = lado corto / 5, 8px en hard), transparente fuera del contorno;
+// la x/y guardada en el servidor es la esquina superior izquierda del PNG: coloca el PNG entero en (x, y) y encajará con el hueco;
+// extra.puzzle_w/h siguen siendo el tamaño del cuerpo; la tolerancia ±4px y la validación de trayectoria son idénticas a square.
+```
+
 #### 4. Selección aleatoria (RandomCaptcha)
 
 El sistema elige al azar uno de los captchas click / rotate / slider, lo que dificulta eludir la verificación.
@@ -846,6 +863,7 @@ Opciones principales:
 |--------|--------|------|
 | `captcha.default_type` | `random` | Tipo de captcha por defecto: `click` / `rotate` / `slider` / `random` |
 | `captcha.default_difficulty` | `medium` | Dificultad por defecto: `easy` / `medium` / `hard` |
+| `captcha.slider_shape` | `square` | Forma de la pieza del deslizador: `square` hueco rectangular / `jigsaw` pieza con pestañas y muescas aleatorias |
 | `captcha.click_words` | `[合,家,欢,...]` | Pool de textos del captcha de clic, personalizable |
 | `captcha.background_dir` | `assets/backgrounds/` | Directorio de imágenes de fondo; con `null` se generan programáticamente |
 | `captcha.ttl` | `300` | Vigencia del captcha (segundos) |

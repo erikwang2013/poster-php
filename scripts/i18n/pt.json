@@ -73,7 +73,7 @@
     "captchaTypes": [
       ["click", "Clique", "Clique nos caracteres-alvo na ordem", "2-4 alvos · ±18px"],
       ["rotate", "Rotação", "Arraste o slider até a imagem ficar reta", "30°-330° · ±5°"],
-      ["slider", "Deslizar", "Arraste a peça até encaixar na lacuna", "±4px · tamanho livre"],
+      ["slider", "Deslizar", "Arraste a peça até encaixar na lacuna", "±4px · tamanho/forma"],
       ["random", "Aleatório", "Sorteia um dos três aleatoriamente", "mais difícil de burlar"]
     ],
     "security": {

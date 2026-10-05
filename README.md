@@ -224,6 +224,23 @@ $result = captcha_create('slider');
 $pass = captcha_verify($result['key'], 'slider', 173);  // 用户滑动的 x 像素，±4px 容差
 ```
 
+拼图形状（`shape`）支持两种，默认 `square`：
+
+| `shape` | 效果 |
+|---------|------|
+| `square`（默认） | 矩形缺口，与历史版本一致 |
+| `jigsaw` | 凹凸拼图：四边各自随机半圆凸/凹（16 种组合），缺口与拼图块共用同一轮廓 |
+
+![凹凸拼图示例](docs/jigsaw-slider.png)
+
+```php
+// 配置三选一：config/poster.php 的 captcha.slider_shape、captcha_create('slider', ['shape' => ...])、setShape('jigsaw')
+$result = captcha_create('slider', ['shape' => 'jigsaw']);
+// 拼图块 PNG 是外扩后的外接矩形（50×50 本体 → 70×70；凸出半径 = 短边/5，hard 下 8px），轮廓外透明；
+// 服务端答案 x/y 是 PNG 左上角：前端把整块 PNG 放到 (x, y) 即与缺口对齐；
+// extra.puzzle_w/h 仍是本体尺寸；±4px 容差与轨迹校验均与 square 完全一致。
+```
+
 #### 4. 随机切换 (RandomCaptcha)
 
 系统随机从 click / rotate / slider 中选取一种验证码，增加破解难度。
@@ -846,6 +863,7 @@ return [
 |--------|--------|------|
 | `captcha.default_type` | `random` | 默认验证码类型：`click` / `rotate` / `slider` / `random` |
 | `captcha.default_difficulty` | `medium` | 默认难度：`easy` / `medium` / `hard` |
+| `captcha.slider_shape` | `square` | 滑块拼图形状：`square` 矩形缺口 / `jigsaw` 凹凸拼图（四边凸凹随机） |
 | `captcha.click_words` | `[合,家,欢,...]` | click 验证码文字池，可自定义 |
 | `captcha.background_dir` | `assets/backgrounds/` | 背景图目录，`null` 则程序化生成 |
 | `captcha.ttl` | `300` | 验证码有效期（秒） |

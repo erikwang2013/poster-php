@@ -224,6 +224,23 @@ $result = captcha_create('slider');
 $pass = captcha_verify($result['key'], 'slider', 173);  // البكسل x الذي سحبه المستخدم، بتفاوت ±4px
 ```
 
+**شكل القطعة** (`shape`) قيمتان، الافتراضي `square`:
+
+| `shape` | الأثر |
+|---------|------|
+| `square` (الافتراضي) | فراغ مستطيل، مطابق للإصدارات السابقة |
+| `jigsaw` | قطعة بنتوءات وانخسافات: كل ضلع يبرز أو ينخسف عشوائيًا (16 توليفة)، والقطعة والفراغ يشتركان في الحد نفسه |
+
+![مثال على سلايدر jigsaw](../../../docs/jigsaw-slider.png)
+
+```php
+// ثلاث طرق للتهيئة: `captcha.slider_shape` في config/poster.php، أو `captcha_create('slider', ['shape' => ...])`، أو `setShape('jigsaw')`
+$result = captcha_create('slider', ['shape' => 'jigsaw']);
+// صورة PNG للقطعة هي المستطيل الموسَّع (الجسم 50×50 ← 70×70؛ نصف قطر النتوء = الضلع القصير ÷ 5، و8px في hard)، شفافة خارج الحدود؛
+// الإحداثيان x/y المخزنان على الخادم هما الزاوية العلوية اليسرى للصورة: ضع الصورة كاملة عند (x, y) لتتطابق مع الفراغ؛
+// تبقى extra.puzzle_w/h بمقاس الجسم؛ والتفاوت ±4px والتحقق من المسار مطابقان تمامًا لـ square.
+```
+
 #### 4. التبديل العشوائي (RandomCaptcha)
 
 يختار النظام عشوائيًا أحد الأنواع click / rotate / slider، مما يزيد صعوبة الاختراق.
@@ -846,6 +863,7 @@ return [
 |--------|--------|------|
 | `captcha.default_type` | `random` | نوع التحقق الافتراضي: `click` / `rotate` / `slider` / `random` |
 | `captcha.default_difficulty` | `medium` | الصعوبة الافتراضية: `easy` / `medium` / `hard` |
+| `captcha.slider_shape` | `square` | شكل قطعة السلايدر: `square` فراغ مستطيل / `jigsaw` قطعة أحجية بنتوءات وانخسافات عشوائية |
 | `captcha.click_words` | `[合,家,欢,...]` | مجموعة نصوص تحقق click، قابلة للتخصيص |
 | `captcha.background_dir` | `assets/backgrounds/` | دليل صور الخلفية، و`null` يعني التوليد البرمجي |
 | `captcha.ttl` | `300` | مدة صلاحية التحقق (بالثواني) |

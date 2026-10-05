@@ -224,6 +224,23 @@ $result = captcha_create('slider');
 $pass = captcha_verify($result['key'], 'slider', 173);  // ユーザーがスライドさせた x ピクセル。±4px の許容誤差
 ```
 
+**ピースの形状**（`shape`）は 2 種類、デフォルトは `square`：
+
+| `shape` | 効果 |
+|---------|------|
+| `square`（デフォルト） | 矩形の欠け。従来バージョンと同一 |
+| `jigsaw` | 凹凸ピース：四辺がそれぞれランダムに外凸/内凹（16 通り）、欠けとピースが同じ輪郭を共有 |
+
+![凹凸スライダーの例](../../../docs/jigsaw-slider.png)
+
+```php
+// 設定方法は 3 つ：config/poster.php の captcha.slider_shape、captcha_create('slider', ['shape' => ...])、setShape('jigsaw')
+$result = captcha_create('slider', ['shape' => 'jigsaw']);
+// ピース PNG は外側に拡張した外接矩形（本体 50×50 → 70×70；凸出半径 = 短辺/5、hard では 8px）で、輪郭の外は透明；
+// サーバー側の回答 x/y は PNG の左上座標：PNG 全体を (x, y) に置けば欠けと一致します；
+// extra.puzzle_w/h は本体サイズのまま；±4px の許容誤差・軌跡検証は square と完全に同一です。
+```
+
 #### 4. ランダム切替 (RandomCaptcha)
 
 click / rotate / slider の中からランダムに 1 種類の CAPTCHA を選び、突破の難易度を上げます。
@@ -846,6 +863,7 @@ return [
 |--------|--------|------|
 | `captcha.default_type` | `random` | デフォルトの CAPTCHA タイプ：`click` / `rotate` / `slider` / `random` |
 | `captcha.default_difficulty` | `medium` | デフォルトの難易度：`easy` / `medium` / `hard` |
+| `captcha.slider_shape` | `square` | スライダーパズルの形状：`square` 矩形の欠け / `jigsaw` 四辺の凸凹がランダムなピース |
 | `captcha.click_words` | `[合,家,欢,...]` | click CAPTCHA の文字プール。カスタム可能 |
 | `captcha.background_dir` | `assets/backgrounds/` | 背景画像ディレクトリ。`null` ならプログラム生成 |
 | `captcha.ttl` | `300` | CAPTCHA の有効期限（秒） |

@@ -224,6 +224,23 @@ $result = captcha_create('slider');
 $pass = captcha_verify($result['key'], 'slider', 173);  // pixels parcourus en x par l'utilisateur, tolérance ±4px
 ```
 
+**Forme de la pièce** (`shape`) : deux valeurs, `square` par défaut :
+
+| `shape` | Effet |
+|---------|------|
+| `square` (par défaut) | Encoche rectangulaire, identique aux versions précédentes |
+| `jigsaw` | Pièce à tenons/mortaises : chaque côté sort ou rentre aléatoirement (16 combinaisons), la pièce et l'encoche partagent le même contour |
+
+![Exemple de captcha curseur jigsaw](../../../docs/jigsaw-slider.png)
+
+```php
+// Trois façons de configurer : captcha.slider_shape dans config/poster.php, captcha_create('slider', ['shape' => ...]) ou setShape('jigsaw')
+$result = captcha_create('slider', ['shape' => 'jigsaw']);
+// Le PNG de la pièce est la boîte englobante élargie (corps 50×50 → 70×70 ; rayon = petit côté / 5, 8px en hard), transparent hors du contour ;
+// la position x/y enregistrée côté serveur est le coin supérieur gauche du PNG : placez le PNG entier en (x, y) pour l'aligner sur l'encoche ;
+// extra.puzzle_w/h restent la taille du corps ; la tolérance ±4px et la validation de trajectoire sont identiques à square.
+```
+
 #### 4. Tirage aléatoire (RandomCaptcha)
 
 Le système tire au hasard l'un des captchas click / rotate / slider, ce qui complique le contournement.
@@ -846,6 +863,7 @@ Principales options :
 |--------|--------|------|
 | `captcha.default_type` | `random` | Type de captcha par défaut : `click` / `rotate` / `slider` / `random` |
 | `captcha.default_difficulty` | `medium` | Difficulté par défaut : `easy` / `medium` / `hard` |
+| `captcha.slider_shape` | `square` | Forme de la pièce du slider : `square` encoche rectangulaire / `jigsaw` pièce à tenons et mortaises aléatoires |
 | `captcha.click_words` | `[合,家,欢,...]` | Vivier de textes du captcha click, personnalisable |
 | `captcha.background_dir` | `assets/backgrounds/` | Répertoire des fonds ; `null` pour une génération programmatique |
 | `captcha.ttl` | `300` | Durée de validité du captcha (secondes) |

@@ -225,6 +225,23 @@ $result = captcha_create('slider');
 $pass = captcha_verify($result['key'], 'slider', 173);  // piksel x geseran pengguna, toleransi ±4px
 ```
 
+**Bentuk potongan** (`shape`) ada dua nilai, default `square`:
+
+| `shape` | Efek |
+|---------|------|
+| `square` (default) | Celah persegi, sama seperti versi sebelumnya |
+| `jigsaw` | Potongan bertonjolan/cekung: tiap sisi acak menonjol keluar atau mencekung ke dalam (16 kombinasi), potongan dan celah memakai kontur yang sama |
+
+![Contoh slider jigsaw](../../../docs/jigsaw-slider.png)
+
+```php
+// Tiga cara konfigurasi: captcha.slider_shape di config/poster.php, captcha_create('slider', ['shape' => ...]), atau setShape('jigsaw')
+$result = captcha_create('slider', ['shape' => 'jigsaw']);
+// PNG potongan adalah kotak yang diperluas (badan 50×50 → 70×70; radius tonjolan = sisi pendek / 5, 8px saat hard), transparan di luar kontur;
+// x/y yang disimpan server adalah pojok kiri atas PNG: letakkan seluruh PNG di (x, y) agar pas dengan celah;
+// extra.puzzle_w/h tetap ukuran badan; toleransi ±4px dan validasi lintasan identik dengan square.
+```
+
 #### 4. Mode Acak (RandomCaptcha)
 
 Sistem memilih satu jenis captcha secara acak dari click / rotate / slider, sehingga lebih sulit ditembus.
@@ -847,6 +864,7 @@ Item konfigurasi utama:
 |--------|--------|------|
 | `captcha.default_type` | `random` | Jenis captcha default: `click` / `rotate` / `slider` / `random` |
 | `captcha.default_difficulty` | `medium` | Tingkat kesulitan default: `easy` / `medium` / `hard` |
+| `captcha.slider_shape` | `square` | Bentuk puzzle slider: `square` celah persegi / `jigsaw` potongan dengan tonjolan & cekungan acak |
 | `captcha.click_words` | `[合,家,欢,...]` | Kumpulan kata untuk captcha click, bisa dikustomisasi |
 | `captcha.background_dir` | `assets/backgrounds/` | Direktori gambar latar, `null` berarti dibuat terprogram |
 | `captcha.ttl` | `300` | Masa berlaku captcha (detik) |

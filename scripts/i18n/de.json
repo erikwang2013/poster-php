@@ -73,7 +73,7 @@
     "captchaTypes": [
       ["click", "Klick", "Zielbuchstaben der Reihe nach anklicken", "2-4 Ziele · ±18px"],
       ["rotate", "Drehen", "Slider ziehen bis das Bild gerade ist", "30°-330° · ±5°"],
-      ["slider", "Slider", "Puzzleteil in die Lücke ziehen", "±4px · eigene Größe"],
+      ["slider", "Slider", "Puzzleteil in die Lücke ziehen", "±4px · Größe/Form frei"],
       ["random", "Zufall", "Wählt zufällig eine der drei Arten", "schwerer zu umgehen"]
     ],
     "security": {

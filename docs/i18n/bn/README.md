@@ -224,6 +224,23 @@ $result = captcha_create('slider');
 $pass = captcha_verify($result['key'], 'slider', 173);  // ব্যবহারকারীর স্লাইড করা x পিক্সেল, ±4px সহনসীমা
 ```
 
+**পাজলের আকৃতি** (`shape`) দুই ধরনের, ডিফল্ট `square`:
+
+| `shape` | প্রভাব |
+|---------|------|
+| `square` (ডিফল্ট) | আয়তাকার ফাঁক, আগের সংস্করণের মতোই |
+| `jigsaw` | খাঁজ-স্ফীতির টুকরো: চার পাশ এলোমেলোভাবে বাইরে স্ফীত বা ভিতরে খাঁজকাটা (16টি সমন্বয়), টুকরো ও ফাঁক একই রূপরেখা শেয়ার করে |
+
+![jigsaw স্লাইডারের উদাহরণ](../../../docs/jigsaw-slider.png)
+
+```php
+// কনফিগার করার তিন উপায়: config/poster.php-এ captcha.slider_shape, captcha_create('slider', ['shape' => ...]), বা setShape('jigsaw')
+$result = captcha_create('slider', ['shape' => 'jigsaw']);
+// টুকরোর PNG বর্ধিত বাউন্ডিং বক্স (মূল 50×50 → 70×70; স্ফীতির ব্যাসার্ধ = ছোট বাহু/5, hard-এ 8px), রূপরেখার বাইরে স্বচ্ছ;
+// সার্ভারে সংরক্ষিত উত্তর x/y হলো PNG-এর উপরের-বাম কোণ: সম্পূর্ণ PNG (x, y)-তে বসালেই ফাঁকের সাথে মিলবে;
+// extra.puzzle_w/h মূল আকারই থাকে; ±4px সহনসীমা ও ট্রাজেক্টরি যাচাই square-এর মতোই অপরিবর্তিত।
+```
+
 #### 4. র্যান্ডম সুইচ (RandomCaptcha)
 
 সিস্টেম click / rotate / slider-এর মধ্যে থেকে এলোমেলোভাবে একটি ক্যাপচা বেছে নেয়, ফলে ক্র্যাক করা আরও কঠিন হয়।
@@ -846,6 +863,7 @@ return [
 |--------|--------|------|
 | `captcha.default_type` | `random` | ডিফল্ট ক্যাপচা ধরন: `click` / `rotate` / `slider` / `random` |
 | `captcha.default_difficulty` | `medium` | ডিফল্ট কঠিনতা: `easy` / `medium` / `hard` |
+| `captcha.slider_shape` | `square` | স্লাইডার পাজলের আকৃতি: `square` আয়তাকার ফাঁক / `jigsaw` এলোমেলো খাঁজ-স্ফীতিযুক্ত পাজল |
 | `captcha.click_words` | `[合,家,欢,...]` | click ক্যাপচার শব্দের পুল, কাস্টম করা যায় |
 | `captcha.background_dir` | `assets/backgrounds/` | ব্যাকগ্রাউন্ড ছবির ডিরেক্টরি, `null` হলে প্রোগ্রামেটিক জেনারেশন |
 | `captcha.ttl` | `300` | ক্যাপচার মেয়াদ (সেকেন্ড) |

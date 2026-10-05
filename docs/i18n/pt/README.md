@@ -224,6 +224,23 @@ $result = captcha_create('slider');
 $pass = captcha_verify($result['key'], 'slider', 173);  // x em pixels deslizado pelo usuário, tolerância de ±4px
 ```
 
+**Forma da peça** (`shape`): dois valores, `square` por padrão:
+
+| `shape` | Efeito |
+|---------|------|
+| `square` (padrão) | Lacuna retangular, idêntica às versões anteriores |
+| `jigsaw` | Peça com saliências/reentrâncias: cada lado sai ou entra aleatoriamente (16 combinações); peça e lacuna compartilham o mesmo contorno |
+
+![Exemplo de slider jigsaw](../../../docs/jigsaw-slider.png)
+
+```php
+// Três formas de configurar: captcha.slider_shape no config/poster.php, captcha_create('slider', ['shape' => ...]) ou setShape('jigsaw')
+$result = captcha_create('slider', ['shape' => 'jigsaw']);
+// O PNG da peça é a caixa ampliada (corpo 50×50 → 70×70; raio = lado curto / 5, 8px no hard), transparente fora do contorno;
+// o x/y gravado no servidor é o canto superior esquerdo do PNG: posicione o PNG inteiro em (x, y) para alinhar com a lacuna;
+// extra.puzzle_w/h continuam sendo o tamanho do corpo; a tolerância ±4px e a validação de trajetória são idênticas ao square.
+```
+
 #### 4. Seleção aleatória (RandomCaptcha)
 
 O sistema sorteia um tipo de captcha entre click / rotate / slider, aumentando a dificuldade de burlar a verificação.
@@ -847,6 +864,7 @@ Principais opções de configuração:
 |--------|--------|------|
 | `captcha.default_type` | `random` | Tipo de captcha padrão: `click` / `rotate` / `slider` / `random` |
 | `captcha.default_difficulty` | `medium` | Dificuldade padrão: `easy` / `medium` / `hard` |
+| `captcha.slider_shape` | `square` | Forma da peça do slider: `square` lacuna retangular / `jigsaw` peça com saliências e reentrâncias aleatórias |
 | `captcha.click_words` | `[合,家,欢,...]` | Pool de texto do captcha de clique, personalizável |
 | `captcha.background_dir` | `assets/backgrounds/` | Diretório das imagens de fundo; `null` usa geração procedural |
 | `captcha.ttl` | `300` | Validade do captcha (segundos) |

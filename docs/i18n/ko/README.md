@@ -225,6 +225,23 @@ $result = captcha_create('slider');
 $pass = captcha_verify($result['key'], 'slider', 173);  // 사용자가 슬라이드한 x 픽셀, ±4px 허용
 ```
 
+**조각 모양**(`shape`)은 두 가지이며 기본값은 `square`입니다:
+
+| `shape` | 효과 |
+|---------|------|
+| `square`(기본) | 사각형 빈칸, 이전 버전과 동일 |
+| `jigsaw` | 볼록·오목 조각: 네 변이 각각 무작위로 밖으로 돌출/안으로 함몰(16가지 조합), 조각과 빈칸이 같은 윤곽 공유 |
+
+![jigsaw 슬라이더 예시](../../../docs/jigsaw-slider.png)
+
+```php
+// 설정 방법 3가지: config/poster.php의 captcha.slider_shape, captcha_create('slider', ['shape' => ...]), setShape('jigsaw')
+$result = captcha_create('slider', ['shape' => 'jigsaw']);
+// 조각 PNG는 확장된 외접 사각형입니다(본체 50×50 → 70×70, 돌출 반경 = 짧은 변/5, hard에서 8px), 윤곽 밖은 투명;
+// 서버에 저장되는 답 x/y는 PNG의 왼쪽 위 좌표입니다: PNG 전체를 (x, y)에 놓으면 빈칸과 맞습니다;
+// extra.puzzle_w/h는 본체 크기 그대로이며 ±4px 허용 오차와 궤적 검증은 square와 완전히 동일합니다.
+```
+
 #### 4. 랜덤 전환 (RandomCaptcha)
 
 시스템이 click / rotate / slider 중 하나를 무작위로 선택해 크래킹 난이도를 높입니다.
@@ -847,6 +864,7 @@ return [
 |--------|--------|------|
 | `captcha.default_type` | `random` | 기본 캡차 유형: `click` / `rotate` / `slider` / `random` |
 | `captcha.default_difficulty` | `medium` | 기본 난이도: `easy` / `medium` / `hard` |
+| `captcha.slider_shape` | `square` | 슬라이더 퍼즐 모양: `square` 사각형 빈칸 / `jigsaw` 네 변이 무작위 볼록·오목인 조각 |
 | `captcha.click_words` | `[合,家,欢,...]` | click 캡차 문자 풀, 사용자 정의 가능 |
 | `captcha.background_dir` | `assets/backgrounds/` | 배경 이미지 디렉터리, `null`이면 프로그램 생성 |
 | `captcha.ttl` | `300` | 캡차 유효 기간(초) |

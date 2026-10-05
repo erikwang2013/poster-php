@@ -224,6 +224,23 @@ $result = captcha_create('slider');
 $pass = captcha_verify($result['key'], 'slider', 173);  // उपयोगकर्ता के खींचे x पिक्सेल, ±4px टॉलरेंस
 ```
 
+**टुकड़े की आकृति** (`shape`) के दो मान हैं, डिफ़ॉल्ट `square`:
+
+| `shape` | प्रभाव |
+|---------|------|
+| `square` (डिफ़ॉल्ट) | आयताकार खाँचा, पुराने संस्करणों जैसा |
+| `jigsaw` | उभार-खाँचे वाला टुकड़ा: चारों भुजाएँ बेतरतीब ढंग से बाहर उभरती या भीतर धँसती हैं (16 संयोजन), टुकड़ा और खाँचा एक ही रूपरेखा साझा करते हैं |
+
+![jigsaw स्लाइडर का उदाहरण](../../../docs/jigsaw-slider.png)
+
+```php
+// कॉन्फ़िगर करने के तीन तरीके: config/poster.php में captcha.slider_shape, captcha_create('slider', ['shape' => ...]), या setShape('jigsaw')
+$result = captcha_create('slider', ['shape' => 'jigsaw']);
+// टुकड़े की PNG बढ़ा हुआ बाउंडिंग बॉक्स है (मूल 50×50 → 70×70; उभार त्रिज्या = छोटी भुजा/5, hard में 8px), रूपरेखा के बाहर पारदर्शी;
+// सर्वर पर सहेजा उत्तर x/y PNG का ऊपरी-बायाँ कोना है: पूरी PNG को (x, y) पर रखें, खाँचे से मेल खा जाएगी;
+// extra.puzzle_w/h मूल आकार ही रहते हैं; ±4px टॉलरेंस और ट्रैजेक्टरी जाँच square जैसी ही हैं।
+```
+
 #### 4. रैंडम स्विच (RandomCaptcha)
 
 सिस्टम click / rotate / slider में से कोई एक कैप्चा बेतरतीब चुनता है, जिससे तोड़ना कठिन हो जाता है।
@@ -846,6 +863,7 @@ return [
 |--------|--------|------|
 | `captcha.default_type` | `random` | डिफ़ॉल्ट कैप्चा प्रकार: `click` / `rotate` / `slider` / `random` |
 | `captcha.default_difficulty` | `medium` | डिफ़ॉल्ट कठिनाई: `easy` / `medium` / `hard` |
+| `captcha.slider_shape` | `square` | स्लाइडर पहेली की आकृति: `square` आयताकार खाँचा / `jigsaw` बेतरतीब उभार-खाँचों वाला टुकड़ा |
 | `captcha.click_words` | `[合,家,欢,...]` | click कैप्चा का अक्षर पूल, कस्टमाइज़ करने योग्य |
 | `captcha.background_dir` | `assets/backgrounds/` | बैकग्राउंड इमेज डिरेक्टरी, `null` होने पर प्रोग्रामेटिक जनरेशन |
 | `captcha.ttl` | `300` | कैप्चा की वैधता अवधि (सेकंड) |

@@ -186,6 +186,23 @@ $result = captcha_create('slider');
 $pass = captcha_verify($result['key'], 'slider', 173); // ±4px tolerance
 ```
 
+Puzzle shape (`shape`) supports two values, `square` by default:
+
+| `shape` | Effect |
+|---------|--------|
+| `square` (default) | Rectangular gap, identical to previous versions |
+| `jigsaw` | Tab/notch piece: each of the four sides randomly bulges out or dips in (16 combinations); the gap and the piece share one outline |
+
+![Jigsaw slider example](docs/jigsaw-slider.png)
+
+```php
+// Three ways to configure: captcha.slider_shape in config/poster.php, captcha_create('slider', ['shape' => ...]), or setShape('jigsaw')
+$result = captcha_create('slider', ['shape' => 'jigsaw']);
+// The piece PNG is the padded bounding box (50x50 body -> 70x70; overhang radius = short side / 5, 8px on hard), transparent outside the outline;
+// the server-stored answer x/y is the PNG top-left corner: place the whole PNG at (x, y) to line up with the gap;
+// extra.puzzle_w/h stay the body size; the ±4px tolerance and trajectory checks are identical to square.
+```
+
 #### Random Captcha
 
 Randomly picks one of click / rotate / slider to increase cracking difficulty.
@@ -523,6 +540,7 @@ Key config options:
 |--------|---------|-------------|
 | `captcha.default_type` | `random` | Default captcha type: `click` / `rotate` / `slider` / `random` |
 | `captcha.default_difficulty` | `medium` | Default difficulty: `easy` / `medium` / `hard` |
+| `captcha.slider_shape` | `square` | Slider puzzle shape: `square` / `jigsaw` (random tabs & notches) |
 | `captcha.click_words` | `[合,家,欢,...]` | Click captcha word pool, customizable |
 | `captcha.background_dir` | `assets/backgrounds/` | Background image directory, `null` for procedural |
 | `captcha.ttl` | `300` | Key TTL in seconds |

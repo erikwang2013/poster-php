@@ -214,6 +214,15 @@ sequenceDiagram
 
 所有绘制仅使用 `rectangle()`、`ellipse()`、`line()` 驱动原语，不依赖新接口。
 
+### 4.2 凹凸拼图轮廓 (Jigsaw Slider Shape)
+
+`captcha.slider_shape = 'jigsaw'` 时（或 `setShape('jigsaw')` / `captcha_create('slider', ['shape' => 'jigsaw'])`），滑块验证码的缺口与拼图块共用同一套自定义多边形轮廓：
+
+- **轮廓生成** — `SliderCaptcha::jigsawPoints()`：4 段边线 + 4 个半径 `k = 短边/5` 的半圆（圆心在各边中点，12 段采样），凸/凹逐边 `random_int` 随机，共 16 种组合
+- **两个驱动原语** — `ImageDriverInterface::polygon()`（任意多边形填充/描边，自动闭合）与 `mask()`（按掩膜裁剪：GD 逐像素置透明，Imagick `COMPOSITE_DSTIN`）；Imagick 侧多边形走 path 绘制（`ImagickDraw::polygon` 在 imagick 3.8 对两种坐标形态都报 "Unable to read coordinate array"）
+- **像素级对齐不变量** — 缺口（多边形填充）与拼图块（掩膜裁剪）的覆盖范围必须逐像素相等，由 `GdDriverRenderingTest::testPolygonAndMaskCoverageStayIdentical` 钉死；拼图块 PNG 是外扩 `k` 后的外接矩形，服务端答案 x/y = PNG 左上角
+- **边距保证** — `padX ≥ 拼图宽`、`padY ≥ 拼图高/3`（最小画布检查保证），恒大于 `k`，凸出不贴边、不越界
+
 ---
 
 ## 五、验证码验证流程 (Captcha Verification)

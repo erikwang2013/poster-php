@@ -81,7 +81,6 @@ class QrcodeElementTest extends TestCase
         $gen = new \Erikwang2013\Poster\Qrcode\QrcodeGenerator();
         $gd = $gen->setText($content)->setSize($size)->setErrorLevel('H')->render();
         $actual = imagesx($gd);
-        imagedestroy($gd);
         return $actual;
     }
 
@@ -91,7 +90,6 @@ class QrcodeElementTest extends TestCase
         $logo = sys_get_temp_dir() . '/qr-logo-' . uniqid() . '.png';
         $img = imagecreatetruecolor(10, 10);
         imagepng($img, $logo);
-        imagedestroy($img);
         try {
             $canvas = $this->createMock(ImageDriverInterface::class);
             $canvas->expects($this->once())->method('image');

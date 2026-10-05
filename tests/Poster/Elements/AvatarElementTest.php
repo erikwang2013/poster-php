@@ -160,7 +160,6 @@ class AvatarElementTest extends TestCase
         $path = sys_get_temp_dir() . '/avatar-el-' . uniqid() . '.png';
         $img = imagecreatetruecolor(10, 10);
         imagepng($img, $path);
-        imagedestroy($img);
         return $path;
     }
 }

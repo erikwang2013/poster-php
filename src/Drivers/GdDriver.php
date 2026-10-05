@@ -72,7 +72,6 @@ class GdDriver implements ImageDriverInterface
         $transparent = imagecolorallocatealpha($new, 0, 0, 0, 127);
         imagefill($new, 0, 0, $transparent);
         imagecopyresampled($new, $this->resource, 0, 0, 0, 0, $width, $height, $this->width, $this->height);
-        imagedestroy($this->resource);
         $this->resource = $new;
         $this->width  = $width;
         $this->height = $height;
@@ -92,7 +91,6 @@ class GdDriver implements ImageDriverInterface
         if ($rotated === false) {
             throw new RuntimeException("Image rotation failed");
         }
-        imagedestroy($this->resource);
         $this->resource = $rotated;
         imagealphablending($this->resource, true);
         imagesavealpha($this->resource, true);
@@ -110,7 +108,6 @@ class GdDriver implements ImageDriverInterface
         // 真圆 = 四角半径取半边长，直接复用圆角路径（旧实现额外要一张 4 倍超采样画布 + 整幅逐像素回写）
         if ($diameter > 1) {
             $rounded = $this->roundCornersGD($this->resource, intdiv($diameter, 2));
-            imagedestroy($this->resource);
             $this->resource = $rounded;
         }
         return $this;
@@ -126,7 +123,6 @@ class GdDriver implements ImageDriverInterface
         $transparent = imagecolorallocatealpha($new, 0, 0, 0, 127);
         imagefill($new, 0, 0, $transparent);
         imagecopy($new, $this->resource, 0, 0, $x, $y, $width, $height);
-        imagedestroy($this->resource);
         $this->resource = $new;
         $this->width  = $width;
         $this->height = $height;
@@ -186,7 +182,6 @@ class GdDriver implements ImageDriverInterface
     {
         $this->requireImage();
         $ov = $overlay->getResource();
-        $owned = false;
         if ($ov instanceof \Imagick) {
             // 克隆后强制 png32：Imagick 默认的 'png' 是 24 位，透明区域会在跨驱动合成时变成不透明
             $clone = clone $ov;
@@ -196,7 +191,6 @@ class GdDriver implements ImageDriverInterface
             if ($ov === false) {
                 throw new RuntimeException('Cannot convert Imagick overlay to GD');
             }
-            $owned = true;
         }
         if (!$ov instanceof \GdImage) {
             throw new RuntimeException('Unsupported overlay resource: expected GdImage or Imagick');
@@ -217,22 +211,14 @@ class GdDriver implements ImageDriverInterface
             imagesavealpha($scaled, true);
             imagefill($scaled, 0, 0, imagecolorallocatealpha($scaled, 0, 0, 0, 127));
             imagecopyresampled($scaled, $ov, 0, 0, 0, 0, $destW, $destH, $ovW, $ovH);
-            if ($owned) {
-                imagedestroy($ov);
-            }
             $ov = $scaled;
-            $owned = true;
             $ovW = $destW;
             $ovH = $destH;
         }
 
         if (($options['radius'] ?? 0) > 0) {
             $rounded = $this->roundCornersGD($ov, intval($options['radius']));
-            if ($owned) {
-                imagedestroy($ov);
-            }
             $ov = $rounded;
-            $owned = true;
         }
 
         if (isset($options['shadow'])) {
@@ -240,9 +226,6 @@ class GdDriver implements ImageDriverInterface
         }
 
         imagecopyresampled($this->resource, $ov, $x, $y, 0, 0, $destW, $destH, $ovW, $ovH);
-        if ($owned) {
-            imagedestroy($ov);
-        }
         return $this;
     }
 
@@ -324,7 +307,6 @@ class GdDriver implements ImageDriverInterface
     {
         $res = $this->requireImage();
         $maskRes = $mask->getResource();
-        $owned = false;
         if ($maskRes instanceof \Imagick) {
             // 与 image() 同一套跨驱动转换：克隆后强制 png32 保住透明区域
             $clone = clone $maskRes;
@@ -334,7 +316,6 @@ class GdDriver implements ImageDriverInterface
             if ($maskRes === false) {
                 throw new RuntimeException('Cannot convert Imagick mask to GD');
             }
-            $owned = true;
         }
         if (!$maskRes instanceof \GdImage) {
             throw new RuntimeException('Unsupported mask resource: expected GdImage or Imagick');
@@ -353,9 +334,6 @@ class GdDriver implements ImageDriverInterface
             }
         }
         imagealphablending($res, true);
-        if ($owned) {
-            imagedestroy($maskRes);
-        }
         return $this;
     }
 
@@ -398,7 +376,6 @@ class GdDriver implements ImageDriverInterface
         imagealphablending($this->resource, false);
         imagecopyresampled($this->resource, $small, 0, 0, 0, 0, $w, $h, $sw, $sh);
         imagealphablending($this->resource, true);
-        imagedestroy($small);
         return $this;
     }
 
@@ -491,10 +468,7 @@ class GdDriver implements ImageDriverInterface
 
     public function destroy(): void
     {
-        if ($this->resource instanceof \GdImage) {
-            imagedestroy($this->resource);
-            $this->resource = null;
-        }
+        $this->resource = null;
         $this->width = 0;
         $this->height = 0;
     }
@@ -706,7 +680,6 @@ class GdDriver implements ImageDriverInterface
             imagefilledrectangle($result, 0, $y2, $lo - 1, $y2, $transparent);
             imagefilledrectangle($result, $x2, $y2, $w - 1, $y2, $transparent);
         }
-        imagedestroy($mask);
         return $result;
     }
 
@@ -781,7 +754,6 @@ class GdDriver implements ImageDriverInterface
                 ));
             }
         }
-        imagedestroy($mask);
 
         // 放大回原尺寸：软边由 1/4 → 原尺寸的重采样给出
         $final = imagecreatetruecolor($sw, $sh);
@@ -789,14 +761,12 @@ class GdDriver implements ImageDriverInterface
         imagesavealpha($final, true);
         imagefill($final, 0, 0, imagecolorallocatealpha($final, 0, 0, 0, 127));
         imagecopyresampled($final, $small, 0, 0, 0, 0, $sw, $sh, $sw2, $sh2);
-        imagedestroy($small);
 
         imagecopy(
             $this->resource, $final,
             $x + $offsetX - $blur, $y + $offsetY - $blur,
             0, 0, $sw, $sh
         );
-        imagedestroy($final);
     }
 
 }

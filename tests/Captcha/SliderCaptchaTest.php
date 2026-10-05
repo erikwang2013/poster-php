@@ -127,7 +127,6 @@ class SliderCaptchaTest extends TestCase
         imagefill($img, 0, 0, imagecolorallocate($img, 200, 100, 50));
         $path = $this->tempDir . '/small.png';
         imagepng($img, $path);
-        imagedestroy($img);
 
         try {
             $this->manager->create('slider')->setBackground($path)->generate();
@@ -146,7 +145,6 @@ class SliderCaptchaTest extends TestCase
         imagefill($img, 0, 0, imagecolorallocate($img, 200, 100, 50));
         $path = $this->tempDir . '/min.png';
         imagepng($img, $path);
-        imagedestroy($img);
 
         $positions = [];
         for ($i = 0; $i < 10; $i++) {

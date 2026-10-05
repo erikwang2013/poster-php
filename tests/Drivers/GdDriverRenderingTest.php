@@ -51,7 +51,6 @@ class GdDriverRenderingTest extends TestCase
         $big = imagecreatetruecolor(2000, 2500);
         imagefill($big, 0, 0, imagecolorallocate($big, 30, 120, 200));
         imagejpeg($big, $path, 80);
-        imagedestroy($big);
 
         $t0 = microtime(true);
         $canvas = (new GdDriver())->create(400, 400);
@@ -397,7 +396,9 @@ class GdDriverRenderingTest extends TestCase
     private function wrap(string $text, int $maxWidth, callable $measure): array
     {
         $method = new \ReflectionMethod(GdDriver::class, 'wrapText');
-        $method->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {   // PHP 8.0 必需；8.1+ no-op，8.5 起弃用
+            $method->setAccessible(true);
+        }
         return $method->invoke(new GdDriver(), $text, $maxWidth, $measure);
     }
 

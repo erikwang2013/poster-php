@@ -28,7 +28,6 @@ class ImageElementTest extends TestCase
         $path = sys_get_temp_dir() . '/img-el-' . uniqid() . '.png';
         $img = imagecreatetruecolor(10, 10);
         imagepng($img, $path);
-        imagedestroy($img);
         try {
             $canvas = $this->createMock(ImageDriverInterface::class);
             $canvas->expects($this->once())->method('image')->with(
@@ -88,7 +87,6 @@ class ImageElementTest extends TestCase
         $path = sys_get_temp_dir() . '/img-el-' . uniqid() . '.png';
         $img = imagecreatetruecolor(10, 10);
         imagepng($img, $path);
-        imagedestroy($img);
         return $path;
     }
 }

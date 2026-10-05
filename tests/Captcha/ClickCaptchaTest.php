@@ -47,7 +47,6 @@ class ClickCaptchaTest extends TestCase
         imagefill($img, 0, 0, imagecolorallocate($img, 200, 100, 50));
         $path = $this->tempDir . '/' . uniqid() . '.png';
         imagepng($img, $path);
-        imagedestroy($img);
         return $path;
     }
 
@@ -236,7 +235,6 @@ class ClickCaptchaTest extends TestCase
                 }
             }
         }
-        imagedestroy($image);
         $this->assertSame(0, $hits);
     }
 
@@ -316,7 +314,6 @@ class ClickCaptchaTest extends TestCase
                     }
                 }
             }
-            imagedestroy($thumb);
             $this->assertSame(0, $hits);
         }
     }

@@ -21,7 +21,6 @@ class QrcodeTest extends TestCase
         $this->assertInstanceOf(\GdImage::class, $image);
         $this->assertGreaterThanOrEqual(100, imagesx($image));
         $this->assertGreaterThanOrEqual(100, imagesy($image));
-        imagedestroy($image);
     }
 
     public function testOutputReturnsNonEmptyPngData(): void
@@ -35,7 +34,6 @@ class QrcodeTest extends TestCase
         $pngData = ob_get_clean();
         $this->assertIsString($pngData);
         $this->assertGreaterThan(500, strlen($pngData));
-        imagedestroy($image);
     }
 
     public function testSmallSizeDoesNotCrash(): void
@@ -45,7 +43,6 @@ class QrcodeTest extends TestCase
         $image = $qr->render();
         $this->assertInstanceOf(\GdImage::class, $image);
         $this->assertGreaterThan(0, imagesx($image));
-        imagedestroy($image);
     }
 
     /** 验证空文本渲染抛出 InvalidArgumentException。 */
@@ -62,7 +59,6 @@ class QrcodeTest extends TestCase
         $img = (new QrcodeGenerator())->setText('0')->render();
         $this->assertInstanceOf(\GdImage::class, $img);
         $this->assertGreaterThan(0, imagesx($img));
-        imagedestroy($img);
     }
 
     /** 验证掩码只作用于数据区：finder/timing 等功能图形不被反转（版本 1：21 模块，margin=2，size=25 → scale=1）。 */
@@ -74,7 +70,6 @@ class QrcodeTest extends TestCase
         $this->assertSame(0x000000, imagecolorat($img, 16, 2) & 0xFFFFFF, 'top-right finder corner must stay dark');
         $this->assertSame(0x000000, imagecolorat($img, 2, 16) & 0xFFFFFF, 'bottom-left finder corner must stay dark');
         $this->assertSame(0x000000, imagecolorat($img, 10, 8) & 0xFFFFFF, 'timing pattern must stay dark');
-        imagedestroy($img);
     }
 
     /** 验证超大数据量抛出 InvalidArgumentException。 */
@@ -90,7 +85,6 @@ class QrcodeTest extends TestCase
     {
         $img = (new QrcodeGenerator())->setText('x')->setSize(5)->render();
         $this->assertSame(25, imagesx($img));
-        imagedestroy($img);
     }
 
     /** 验证 margin 影响输出尺寸（29 = 21 模块 + 8 边距）。 */
@@ -98,7 +92,6 @@ class QrcodeTest extends TestCase
     {
         $img = (new QrcodeGenerator())->setText('x')->setSize(42)->setMargin(4)->render();
         $this->assertSame(29, imagesx($img));
-        imagedestroy($img);
     }
 
     /** 验证负 margin 钳制为 0 后输出 42x42。 */
@@ -106,7 +99,6 @@ class QrcodeTest extends TestCase
     {
         $img = (new QrcodeGenerator())->setText('x')->setMargin(-3)->setSize(42)->render();
         $this->assertSame(42, imagesx($img));
-        imagedestroy($img);
     }
 
     /** 验证非法纠错级别回退到 H，且与显式 H 输出完全一致。 */
@@ -121,8 +113,6 @@ class QrcodeTest extends TestCase
         imagepng($b);
         $pb = ob_get_clean();
         $this->assertSame($pa, $pb);
-        imagedestroy($a);
-        imagedestroy($b);
     }
 
     /** 验证大小写混合的纠错级别均可渲染。 */
@@ -131,7 +121,6 @@ class QrcodeTest extends TestCase
         foreach (['L', 'M', 'Q', 'H', 'l', 'h'] as $lvl) {
             $img = (new QrcodeGenerator())->setText('test data')->setErrorLevel($lvl)->render();
             $this->assertInstanceOf(\GdImage::class, $img);
-            imagedestroy($img);
         }
     }
 
@@ -153,7 +142,6 @@ class QrcodeTest extends TestCase
             }
         }
         $this->assertTrue($found, '图像中应存在前景色像素');
-        imagedestroy($img);
     }
 
     /** 验证相同参数两次渲染输出完全一致（确定性）。 */
@@ -164,7 +152,6 @@ class QrcodeTest extends TestCase
             ob_start();
             imagepng($img);
             $data = ob_get_clean();
-            imagedestroy($img);
             return $data;
         };
         $this->assertSame($render(), $render());
@@ -176,7 +163,6 @@ class QrcodeTest extends TestCase
         $img = (new QrcodeGenerator())->setText(str_repeat('A', 2000))->setErrorLevel('L')->setSize(300)->render();
         $this->assertGreaterThan(21, imagesx($img));
         $this->assertLessThanOrEqual(300, imagesx($img));
-        imagedestroy($img);
     }
 
     /**
@@ -217,10 +203,11 @@ class QrcodeTest extends TestCase
                 $generator->setText(str_repeat('x', $this->byteCapacity($version, $level)))->setErrorLevel($level);
                 $img = $generator->setSize(21)->setMargin(4)->render(); // scale = 1 → 边长为模块数 + 8
                 $this->assertSame($version * 4 + 17 + 8, imagesx($img), "v$version-$level 模块数不符");
-                imagedestroy($img);
 
                 $property = new \ReflectionProperty(QrcodeGenerator::class, 'dataCells');
-                $property->setAccessible(true);
+                if (PHP_VERSION_ID < 80100) {   // PHP 8.0 必需；8.1+ no-op，8.5 起弃用
+                    $property->setAccessible(true);
+                }
                 $this->assertCount($raw, $property->getValue($generator), "v$version-$level 实际放置的编码区模块数不符");
             }
         }
@@ -253,7 +240,6 @@ class QrcodeTest extends TestCase
             // 5 位数据 = 纠错级别(2) + 掩码(3)，置于 15 位码字的 bit13-14 与 bit10-12
             $this->assertSame($levelBits, ($copy1 ^ 0x5412) >> 13 & 0b11, "$level 级格式信息纠错级别错误");
             $this->assertLessThan(8, ($copy1 ^ 0x5412) >> 10 & 0b111, '掩码编号超出范围');
-            imagedestroy($img);
         }
     }
 
@@ -276,7 +262,6 @@ class QrcodeTest extends TestCase
         $this->assertTrue($dark(6, 8), '格式信息不得写入 timing 模块 (6,8)');
         // 固定暗模块
         $this->assertTrue($dark($n - 8, 8), '固定暗模块必须为深色');
-        imagedestroy($img);
     }
 
     /** 版本信息（v7+）两份副本必须一致。 */
@@ -303,14 +288,15 @@ class QrcodeTest extends TestCase
         foreach ($bits as $i => $bit) { $value |= $bit << $i; }
         $version = intdiv($n - 17, 4);
         $this->assertSame($version, $value >> 12, '版本信息高 6 位必须等于版本号');
-        imagedestroy($img);
     }
 
     /** 超出 v1-40 的版本必须显式失败，不得静默吸附到邻近版本。 */
     public function testUnsupportedVersionThrowsInsteadOfSnapping(): void
     {
         $method = new \ReflectionMethod(QrcodeGenerator::class, 'blockLayout');
-        $method->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {   // PHP 8.0 必需；8.1+ no-op，8.5 起弃用
+            $method->setAccessible(true);
+        }
         foreach ([0, 41, 99] as $version) {
             try {
                 $method->invokeArgs(new QrcodeGenerator(), [$version, 0]);
@@ -333,7 +319,9 @@ class QrcodeTest extends TestCase
     private function rawDataModules(int $version): int
     {
         $method = new \ReflectionMethod(QrcodeGenerator::class, 'rawDataModules');
-        $method->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {   // PHP 8.0 必需；8.1+ no-op，8.5 起弃用
+            $method->setAccessible(true);
+        }
         return $method->invokeArgs(null, [$version]);
     }
 

@@ -141,7 +141,6 @@ class AbstractCaptchaTest extends TestCase
         imagefill($img, 0, 0, imagecolorallocate($img, 10, 20, 30));
         $path = $this->tempDir . '/bg.png';
         imagepng($img, $path);
-        imagedestroy($img);
 
         $captcha = $this->makeCaptcha(new GdDriver(), $this->createMock(StorageInterface::class));
         $captcha->setBackground($path);
@@ -171,7 +170,6 @@ class AbstractCaptchaTest extends TestCase
         $img = imagecreatetruecolor(50, 40);
         imagefill($img, 0, 0, imagecolorallocate($img, 200, 100, 50));
         imagepng($img, $this->tempDir . '/a.png');
-        imagedestroy($img);
         PosterConfig::merge(['captcha' => ['background_dir' => $this->tempDir]]);
 
         $driver = $this->createMock(ImageDriverInterface::class);

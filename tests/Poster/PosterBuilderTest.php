@@ -24,7 +24,6 @@ class PosterBuilderTest extends TestCase
         $path = sys_get_temp_dir() . '/poster-builder-bg-' . uniqid() . '.png';
         $img = imagecreatetruecolor(20, 20);
         imagepng($img, $path);
-        imagedestroy($img);
         return $path;
     }
 

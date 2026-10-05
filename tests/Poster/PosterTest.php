@@ -175,7 +175,6 @@ class PosterTest extends TestCase
         $src = imagecreatetruecolor(120, 120);
         imagefilledrectangle($src, 0, 0, 119, 119, imagecolorallocate($src, 255, 0, 0));
         imagepng($src, $avatar);
-        imagedestroy($src);
 
         try {
             $builder = new PosterBuilder();
@@ -187,7 +186,6 @@ class PosterTest extends TestCase
             $this->assertSame(0xFF0000, $this->rgbAt($img, 100, 100), '圆心应是头像本体');
             $this->assertSame(0x0000FF, $this->rgbAt($img, 100, 37), '半径 60~66 的圆环应是边框色');
 
-            imagedestroy($img);
             $builder->destroy();
         } finally {
             unlink($avatar);
@@ -224,7 +222,6 @@ class PosterTest extends TestCase
         $imgPath = sys_get_temp_dir() . '/poster-test-img-' . uniqid() . '.png';
         $img = imagecreatetruecolor(10, 10);
         imagepng($img, $imgPath);
-        imagedestroy($img);
 
         $builder = new PosterBuilder();
         $builder->width(200)->height(200);

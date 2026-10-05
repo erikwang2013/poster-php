@@ -253,7 +253,9 @@ class GdDriverGuardTest extends TestCase
     private static function reflect(string $method): int
     {
         $reflection = new \ReflectionMethod(GdDriver::class, $method);
-        $reflection->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {   // PHP 8.0 必需；8.1+ no-op，8.5 起弃用
+            $reflection->setAccessible(true);
+        }
         return $reflection->invoke(null);
     }
 }

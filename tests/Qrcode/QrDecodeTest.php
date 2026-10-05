@@ -52,7 +52,6 @@ class QrDecodeTest extends TestCase
                 $image = $generator->setText($text)->setErrorLevel($level)->setSize(600)->setMargin(4)->render();
                 $file = "$dir/$name.png";
                 imagepng($image, $file);
-                imagedestroy($image);
                 $expected[$file] = ['text' => $text, 'level' => $level, 'name' => $name];
             }
 

@@ -179,7 +179,6 @@ class CaptchaTest extends TestCase
         imagefill($testImg, 0, 0, imagecolorallocate($testImg, 200, 100, 50));
         $testPath = $this->tempDir . '/test-bg.png';
         imagepng($testImg, $testPath);
-        imagedestroy($testImg);
 
         $result = $this->manager->create('click')
             ->setBackground($testPath)
@@ -225,7 +224,6 @@ class CaptchaTest extends TestCase
         imagefill($testImg, 0, 0, imagecolorallocate($testImg, 200, 100, 50));
         $testPath = $this->tempDir . '/test-bg-min.png';
         imagepng($testImg, $testPath);
-        imagedestroy($testImg);
 
         $result = $this->manager->create('slider')->setBackground($testPath)->generate();
         $this->assertNotEmpty($result['key']);

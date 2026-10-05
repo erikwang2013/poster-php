@@ -97,7 +97,10 @@ class ImagickDriver implements ImageDriverInterface
 
         // DSTIN = 保留圆内的原像素（含原有 alpha），圆外置透明；
         // 与 GdDriver 的 circle()/image(radius=直径/2) 语义一致（旧代码用 COPYOPACITY 会把圆内 alpha 一并抹平）。
-        // 注：本机未安装 imagick 扩展，此处为静态修改，未经实测。
+        // DSTIN 依赖目标自身带 alpha 通道：JPEG 等无通道来源不会被合成产生透明（圆外保持不透明方块），先显式建通道
+        if (!$image->getImageAlphaChannel()) {
+            $image->setImageAlphaChannel(Imagick::ALPHACHANNEL_SET);
+        }
         $image->compositeImage($mask, Imagick::COMPOSITE_DSTIN, 0, 0);
         $mask->clear();
 
@@ -322,7 +325,11 @@ class ImagickDriver implements ImageDriverInterface
             throw new RuntimeException('Unsupported mask resource: expected Imagick or GdImage');
         }
 
-        // DSTIN：掩膜不透明处的原像素保留，透明处目标置空（同 circle()）
+        // DSTIN：掩膜不透明处的原像素保留，透明处目标置空（同 circle()）。
+        // 同样先确保目标带 alpha 通道：JPEG 等无通道来源否则整块保留（凹凸拼图外接矩形不透明）
+        if (!$image->getImageAlphaChannel()) {
+            $image->setImageAlphaChannel(Imagick::ALPHACHANNEL_SET);
+        }
         $image->compositeImage($maskRes, Imagick::COMPOSITE_DSTIN, 0, 0);
         if ($owned) {
             $maskRes->clear();

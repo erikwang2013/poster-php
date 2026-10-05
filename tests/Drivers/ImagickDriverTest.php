@@ -278,4 +278,36 @@ class ImagickDriverTest extends TestCase
         }
         $this->assertGreaterThan(0, $semi, '文字应有半透明像素（alpha 未生效说明 8 位色被丢弃）');
     }
+
+    /**
+     * 回归：JPEG 等无 alpha 通道来源经 mask/circle 后同样产生透明。
+     * DSTIN 不会为无通道目标凭空创建 alpha——修复前掩膜/圆形外的区域保持整块不透明
+     * （凹凸拼图拼图块会带出外接矩形黑框；JPEG 头像圆形裁剪失效）。
+     */
+    public function testMaskAndCircleBuildAlphaChannelForOpaqueSource(): void
+    {
+        // 构造无 alpha 通道的 JPEG 源
+        $jpg = tempnam(sys_get_temp_dir(), 'poster-jpg-') . '.jpg';
+        (new ImagickDriver())->create(40, 40)->rectangle(0, 0, 40, 40, ['color' => '#FF0000'])->save($jpg, 'jpg');
+        $this->assertGreaterThan(0, (int) filesize($jpg));
+
+        // mask：掩膜内保留、掩膜外透明
+        $src = (new ImagickDriver())->load($jpg);
+        $mask = (new ImagickDriver())->create(40, 40);
+        $mask->polygon([[10, 10], [30, 10], [30, 30], [10, 30]], ['color' => '#FFFFFF']);
+        $src->mask($mask);
+        $decoded = imagecreatefromstring(base64_decode(substr($src->output('png'), strpos($src->output('png'), ',') + 1)));
+        $this->assertNotFalse($decoded);
+        $this->assertGreaterThan(64, (imagecolorat($decoded, 2, 2) >> 24) & 0x7F, 'JPEG 来源掩膜外应透明');
+        $this->assertLessThan(64, (imagecolorat($decoded, 20, 20) >> 24) & 0x7F, 'JPEG 来源掩膜内应保持不透明');
+
+        // circle：圆角外透明
+        $src2 = (new ImagickDriver())->load($jpg);
+        $src2->circle(40);
+        $decoded2 = imagecreatefromstring(base64_decode(substr($src2->output('png'), strpos($src2->output('png'), ',') + 1)));
+        $this->assertNotFalse($decoded2);
+        $this->assertGreaterThan(64, (imagecolorat($decoded2, 0, 0) >> 24) & 0x7F, 'JPEG 来源圆形外应透明');
+
+        @unlink($jpg);
+    }
 }
